@@ -1,0 +1,33 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!Converted with LaTeX2HTML 95 (Thu Jan 19 1995) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds >
+<HEAD>
+<TITLE>8.2 Crash Assumptions</TITLE>
+</HEAD>
+<BODY>
+<meta name="description" value="8.2 Crash Assumptions">
+<meta name="keywords" value="main">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+<P>
+ <BR> <HR><A NAME=tex2html346 HREF="node29.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html344 HREF="node26.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html338 HREF="node27.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html347 HREF="node29.html">8.3 Multiple Databases</A>
+<B>Up:</B> <A NAME=tex2html345 HREF="node26.html">8 Enhancements to  Minirel</A>
+<B> Previous:</B> <A NAME=tex2html339 HREF="node27.html">8.1 Revised Error Protocol</A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00082000000000000000>8.2 Crash Assumptions</A></H2>
+<P>
+<A NAME=subsectionfuturecrash>&#160;</A>
+<P>
+The current implementation of <em> Minirel</em> requires a ``crashing''
+transaction to exit its critical sections, release its locks, <tt> up</tt>
+its semaphores, and call appropriate destructors.  This is hardly
+realistic.  These restrictions must be relaxed if <em> Minirel</em> is to
+function in a real environment where the system has little control
+over exceptional conditions.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+ajitk@cs.wisc.edu, cjin@cs.wisc.edu
+</ADDRESS>
+</BODY>

@@ -1,0 +1,48 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!Converted with LaTeX2HTML 95 (Thu Jan 19 1995) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds >
+<HEAD>
+<TITLE>5.2  class logrecord</TITLE>
+</HEAD>
+<BODY>
+<meta name="description" value="5.2  class logrecord">
+<meta name="keywords" value="main">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+<P>
+ <BR> <HR><A NAME=tex2html168 HREF="node12.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html166 HREF="node9.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html160 HREF="node10.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html169 HREF="node12.html">5.3  class shm_log</A>
+<B>Up:</B> <A NAME=tex2html167 HREF="node9.html">5 Implementation</A>
+<B> Previous:</B> <A NAME=tex2html161 HREF="node10.html">5.1  class lsn_t</A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00052000000000000000>5.2  class logrecord</A></H2>
+<P>
+<A NAME=subsectionimpllogrecord>&#160;</A>
+<P>
+<tt> Class logrecord</tt> declares a buffer which is an array of
+characters of size <IMG  ALIGN=BOTTOM ALT="" SRC="img23.gif">.  <tt> PAGESIZE</tt>, the size of
+a page, is declared in the header file <tt> page.h</tt>.  A normal update
+can log a modification to an entire page of the database.  Thus, the
+sizes of the before and after images can each be one page.  Header
+information in each log record will add another fraction of a page.
+Thus, a maximum size of 3 pages suffices.  Checkpoint records,
+however, could potentially be very large.  In such situations, the log
+record can be broken into several pieces, each piece of size less than
+3 pages.
+<P>
+	The first part of the buffer contains the log record header
+(described in Section <A HREF="node6.html#subsectioninterfacelogrecords">4.2</A>).  The
+remaining portion is the data.  Thus, the entire log record will be
+stored physically contiguously in the buffer.  The <tt>
+logrechead_ptr</tt> and <tt> data_ptr</tt> members point to the start of the
+buffer and start + <tt> sizeof(logrecheader)</tt> respectively.
+<P>
+	Implementation of the methods of this class also (see <tt>
+logrecord.h</tt> and <tt> logrecord.C</tt>) is straightforward and will not be
+described.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+ajitk@cs.wisc.edu, cjin@cs.wisc.edu
+</ADDRESS>
+</BODY>

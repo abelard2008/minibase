@@ -1,0 +1,3 @@
+setComment {Calc column for printing from second table}
+addRelationTable {Sailors {}} {sid _Id} {sname P.} {rating {}} {age {}} {{} p._D}
+addRelationTable {Reserves {}} {sid _Id} {bid {}} {date _D}

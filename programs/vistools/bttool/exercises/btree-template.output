@@ -1,0 +1,472 @@
+STARTUP 220 1
+INSERT 0 1 record #0000                                                                                                                                                                                                              0
+DO
+NEWROOT 3
+PUTIN node 3
+DONE
+INSERT 5 6 record #0005                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 3
+PUTIN node 3
+DONE
+INSERT 10 11 record #0010                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 3
+PUTIN node 3
+DONE
+INSERT 15 16 record #0015                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 3
+PUTIN node 3
+DONE
+INSERT 20 21 record #0020                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 3
+ROOTSPLIT IN nodes 3 4
+PUTIN node 4
+NEWROOT 5
+DONE
+INSERT 25 26 record #0025                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 4
+PUTIN node 4
+DONE
+INSERT 30 31 record #0030                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 4
+SPLIT node 4 IN nodes 4 6
+PUTIN node 6
+DONE
+INSERT 35 36 record #0035                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 6
+PUTIN node 6
+DONE
+INSERT 40 41 record #0040                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 6
+SPLIT node 6 IN nodes 6 7
+PUTIN node 7
+DONE
+INSERT 45 46 record #0045                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 7
+PUTIN node 7
+DONE
+INSERT 50 51 record #0050                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 7
+SPLIT node 7 IN nodes 7 8
+PUTIN node 8
+DONE
+INSERT 55 56 record #0055                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 8
+PUTIN node 8
+DONE
+INSERT 60 61 record #0060                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 8
+SPLIT node 8 IN nodes 8 9
+PUTIN node 9
+ROOTSPLIT IN nodes 5 10
+CHILDREN 5 nodes 3 4 6
+CHILDREN 10 nodes 7 8 9
+NEWROOT 11
+DONE
+INSERT 65 66 record #0065                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 11
+VISIT node 10
+VISIT node 9
+PUTIN node 9
+DONE
+INSERT 70 71 record #0070                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 11
+VISIT node 10
+VISIT node 9
+SPLIT node 9 IN nodes 9 12
+PUTIN node 12
+DONE
+INSERT 75 76 record #0075                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 11
+VISIT node 10
+VISIT node 12
+PUTIN node 12
+DONE
+INSERT 80 81 record #0080                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 11
+VISIT node 10
+VISIT node 12
+SPLIT node 12 IN nodes 12 13
+PUTIN node 13
+DONE
+INSERT 85 86 record #0085                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 11
+VISIT node 10
+VISIT node 13
+PUTIN node 13
+DONE
+INSERT 90 91 record #0090                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 11
+VISIT node 10
+VISIT node 13
+SPLIT node 13 IN nodes 13 14
+PUTIN node 14
+SPLIT node 10 IN nodes 10 15
+CHILDREN 10 nodes 7 8 9
+CHILDREN 15 nodes 12 13 14
+DONE
+INSERT 95 96 record #0095                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 11
+VISIT node 15
+VISIT node 14
+PUTIN node 14
+DONE
+DELETE 95 96 record #0095                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 11
+VISIT node 15
+VISIT node 14
+TAKEFROM node 14
+DONE
+DELETE 90 91 record #0090                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 11
+VISIT node 15
+VISIT node 14
+TAKEFROM node 14
+MERGE nodes 13 14
+MERGE nodes 10 15
+DONE
+DELETE 75 76 record #0075                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 11
+VISIT node 10
+VISIT node 13
+TAKEFROM node 13
+DONE
+DELETE 15 16 record #0015                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 11
+VISIT node 5
+VISIT node 4
+TAKEFROM node 4
+MERGE nodes 3 4
+CHILDREN 5 nodes 3 6 7
+CHILDREN 10 nodes 8 9 12 13
+DONE
+DELETE 85 86 record #0085                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 11
+VISIT node 10
+VISIT node 13
+TAKEFROM node 13
+MERGE nodes 12 13
+DONE
+DELETE 65 66 record #0065                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 11
+VISIT node 10
+VISIT node 12
+TAKEFROM node 12
+DONE
+DELETE 45 46 record #0045                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 11
+VISIT node 10
+VISIT node 8
+TAKEFROM node 8
+MERGE nodes 8 9
+MERGE nodes 5 10
+CHANGEROOT from node 11 to node 5
+DONE
+DELETE 20 21 record #0020                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 6
+TAKEFROM node 6
+MERGE nodes 3 6
+DONE
+DELETE 40 41 record #0040                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 8
+TAKEFROM node 8
+MERGE nodes 7 8
+DONE
+DELETE 35 36 record #0035                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 7
+TAKEFROM node 7
+DONE
+DELETE 70 71 record #0070                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 12
+TAKEFROM node 12
+DONE
+DELETE 55 56 record #0055                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 7
+TAKEFROM node 7
+DONE
+DELETE 30 31 record #0030                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 7
+TAKEFROM node 7
+DONE
+DELETE 0 1 record #0000                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 3
+TAKEFROM node 3
+MERGE nodes 3 7
+DONE
+DELETE 50 51 record #0050                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 3
+TAKEFROM node 3
+DONE
+DELETE 10 11 record #0010                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 3
+TAKEFROM node 3
+MERGE nodes 3 12
+CHANGEROOT from node 5 to node 3
+DONE
+DELETE 60 61 record #0060                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 3
+TAKEFROM node 3
+DONE
+DELETE 25 26 record #0025                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 3
+TAKEFROM node 3
+DONE
+DELETE 80 81 record #0080                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 3
+TAKEFROM node 3
+DONE
+DELETE 5 6 record #0005                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 3
+TAKEFROM node 3
+DEALLOCATEROOT 3
+DONE
+INSERT 5 6 hello                                                                                                                                                                                                                     0
+DO
+NEWROOT 3
+PUTIN node 3
+DONE
+INSERT 95 96 record #0095                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 3
+PUTIN node 3
+DONE
+INSERT 90 91 record #0090                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 3
+PUTIN node 3
+DONE
+INSERT 85 86 record #0085                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 3
+PUTIN node 3
+DONE
+INSERT 70 71 record #0070                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 3
+ROOTSPLIT IN nodes 3 4
+PUTIN node 3
+NEWROOT 5
+DONE
+INSERT 65 66 record #0065                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 3
+PUTIN node 3
+DONE
+INSERT 30 31 record #0030                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 3
+SPLIT node 3 IN nodes 3 6
+PUTIN node 3
+DONE
+INSERT 0 1 record #0000                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 3
+PUTIN node 3
+DONE
+INSERT 10 11 record #0010                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 3
+SPLIT node 3 IN nodes 3 7
+PUTIN node 3
+DONE
+INSERT 35 36 record #0035                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 7
+PUTIN node 7
+DONE
+INSERT 20 21 record #0020                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 3
+PUTIN node 3
+DONE
+INSERT 50 51 record #0050                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 7
+PUTIN node 7
+DONE
+INSERT 45 46 record #0045                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 7
+SPLIT node 7 IN nodes 7 8
+PUTIN node 7
+DONE
+INSERT 40 41 record #0040                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 7
+PUTIN node 7
+DONE
+INSERT 60 61 record #0060                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 8
+PUTIN node 8
+DONE
+INSERT 25 26 record #0025                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 5
+VISIT node 3
+SPLIT node 3 IN nodes 3 9
+PUTIN node 9
+ROOTSPLIT IN nodes 5 10
+CHILDREN 5 nodes 3 9 7 8
+CHILDREN 10 nodes 6 4
+NEWROOT 11
+DONE
+INSERT 55 56 record #0055                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 11
+VISIT node 5
+VISIT node 8
+PUTIN node 8
+DONE
+INSERT 5 6 record #0005                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 11
+VISIT node 5
+VISIT node 3
+PUTIN node 3
+DONE
+INSERT 75 76 record #0075                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 11
+VISIT node 10
+VISIT node 6
+PUTIN node 6
+DONE
+INSERT 80 81 record #0080                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 11
+VISIT node 10
+VISIT node 6
+PUTIN node 6
+DONE
+INSERT 15 16 record #0015                                                                                                                                                                                                              0
+DO
+SEARCH
+VISIT node 11
+VISIT node 5
+VISIT node 9
+PUTIN node 9
+DONE

@@ -1,0 +1,47 @@
+<HTML>
+<HEAD>
+<TITLE>BTView</TITLE>
+</HEAD>
+
+<BODY>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<H1>B+ Tree Viewer</H1>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+This visualization tool is intended to help understand B+ Tree
+search, insertion and deletion algorithms.
+As operations are carried out, the main window shows the structure of
+the tree, and an auxiliary window shows the nodes affected by the
+current operation.  The contents of any node can be seen by clicking
+on the node.  The tool can be run against a previously
+generated trace of B+ Tree operations, stepping through the trace
+one or more steps at a time or upto a preset breakpoint, or with
+interactive insertions and deletions.
+<P>
+The tool can be executed using the command <b>btview</b>.
+Examples are included in the directory <i>programs/vistools/bttool/exercises</i>.
+<P>
+<IMG SRC="../pics/hline.gif">
+
+<H2>Design Decisions</H2>
+
+The tool essentially maintains the visual state of the tree; the
+actual tree is maintained by executing Minibase in the background.
+When the contents of a node are desired, for instance, they are
+obtained by issuing a call to Minibase.
+
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+<A HREF="../project.html">Back to the List of Components</A><BR>
+<A HREF="../minibase.html">Back to the Minibase Home Page</A><BR>
+<!A HREF="report.ps">
+<!764 Report</A>
+
+
+</BODY>
+</HTML>
+
+

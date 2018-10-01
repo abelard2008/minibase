@@ -1,0 +1,3 @@
+setComment {Conditions box for complex conditions}
+addRelationTable {Sailors {}} {sid {}} {sname {}} {rating g.p.} {age _A}
+addConditionsBox {avg._a > 30}

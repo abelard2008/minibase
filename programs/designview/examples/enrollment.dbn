@@ -1,0 +1,128 @@
+
+% Database
+SourceRelations = Relation27
+Attribute = Course Char(20)
+Attribute = Grade Char(20)
+Attribute = Hour Char(20)
+Attribute = Room Char(20)
+Attribute = Student Char(20)
+Attribute = Teacher Char(20)
+FD = {Course} {Teacher}
+FD = {Hour Room} {Course}
+FD = {Hour Teacher} {Room}
+FD = {Course Student} {Grade}
+FD = {Hour Student} {Room Course Grade Teacher}
+
+% Relation
+ID = Relation27
+Name = Enrollment
+Attributes = Course Grade Hour Room Student Teacher
+Key = Hour Student
+Sessions = Session23 Session24 Session25 Session26
+
+% Relation
+ID = Relation28
+Name = Takes2
+Attributes = Course Student
+
+% Relation
+ID = Relation29
+Name = Grades2
+Attributes = Course Grade
+
+% Relation
+ID = Relation30
+Name = Grades
+Attributes = Course Grade Student
+Key = Course Student
+
+% Relation
+ID = Relation31
+Name = Courses
+Attributes = Course Hour Room Student Teacher
+Key = Hour Student
+
+% Relation
+ID = Relation32
+Name = Courses2
+Attributes = Course Hour Room Student
+Key = Hour Student
+
+% Relation
+ID = Relation33
+Name = Rooms
+Attributes = Hour Room Teacher
+Key = Hour Teacher
+
+% Relation
+ID = Relation34
+Name = Courses
+Attributes = Course Grade Hour Student Teacher
+Key = Hour Student
+Sessions = Session27 Session28
+
+% Relation
+ID = Relation35
+Name = Enrollment2
+Attributes = Hour Room Student
+Key = Hour Student
+
+% Relation
+ID = Relation36
+Name = Courses2
+Attributes = Course Hour Student Teacher
+Key = Hour Student
+
+% Relation
+ID = Relation37
+Name = Teaches
+Attributes = Course Teacher
+Key = Course
+
+% Relation
+ID = Relation38
+Name = Rooms
+Attributes = Course Hour Room
+Key = Hour Room
+
+% Relation
+ID = Relation39
+Name = Enrolled
+Attributes = Course Hour Student
+Key = Hour Student
+
+% Session
+ID = Session23
+Name = Session1
+Decomposition = Relation27 {Relation33 Relation34}
+Linked Session = Relation34 Session27
+
+% Session
+ID = Session24
+Name = Session1a
+Decomposition = Relation27 {Relation33 Relation34}
+Linked Session = Relation34 Session28
+
+% Session
+ID = Session25
+Name = Session2
+Decomposition = Relation27 {Relation30 Relation31}
+Decomposition = Relation31 {Relation32 Relation37}
+Decomposition = Relation32 {Relation38 Relation39}
+
+% Session
+ID = Session26
+Name = DetailTest
+Decomposition = Relation27 {Relation30 Relation35 Relation37 Relation38 Relation33}
+
+% Session
+ID = Session27
+Name = Courses1
+Decomposition = Relation34 {Relation30 Relation36}
+Decomposition = Relation36 {Relation37 Relation39}
+
+% Session
+ID = Session28
+Name = Courses2
+Decomposition = Relation30 {Relation28 Relation29}
+Decomposition = Relation34 {Relation37 Relation30 Relation39}

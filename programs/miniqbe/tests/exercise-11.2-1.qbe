@@ -1,0 +1,8 @@
+setComment {Suppliers who have supplied lots of a bunch of parts}
+addRelationTable {Suppliers {}} {sid _s} {sname p.} {city p.}
+addRelationTable {Parts {}} {pid _p1} {pname gear} {color blue}
+addRelationTable {Orders {}} {sid _s} {pid _p1} {quantity >150}
+addRelationTable {Parts {}} {pid _p2} {pname crankshaft} {color red}
+addRelationTable {Orders {}} {sid _s} {pid _p2} {quantity >150}
+addRelationTable {Parts {}} {pid _p3} {pname bumper} {color {"yellow"}}
+addRelationTable {Orders {}} {sid _s} {pid _p3} {quantity >150}

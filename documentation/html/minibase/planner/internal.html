@@ -1,0 +1,122 @@
+<BODY BGCOLOR="#FFDDDD">
+<HTML>
+<HEAD>
+<TITLE> Internal Design </TITLE>
+</HEAD>
+
+<BODY>
+
+
+<H1> Internal Design </H1>
+
+<HR>
+Our internal design was quite simple. Much of the code is actually performing
+translations from the optimizer representation to the minirel representation.
+Here is what our pseudo code look like:
+
+<PRE>
+<bf>
+Iterator* interpret(attributes&){
+
+	switch(kind_of_node){
+
+	case file_scan:
+
+		return new file_scan_iterator(node_parameters);
+
+	case index_scan:
+
+		return new index_scan_iterator(node_parameters);
+
+	case nested_loop_join:
+
+		outer_iterator = left_child.interpret(left_child_attr);
+		return new nested_loop_iterat(outer_iterat, inner_relation);
+
+	case sort_merge_join:
+
+		outer_iterator = left_child.interpret(left_child_attr);
+		inner_iterator = right_child.interpret(right_child_attr);
+		return new sort_merge_join(outer_iterat, inner_iterator);
+	}
+}
+</bf>
+</PRE>
+
+Attributes are returned by the <tt>interpret</tt> function because
+we have to pass all the relevant information with respect to specific
+iterator. <BR> 
+For exampe. Suppose that at some point in some plan node we want to project
+fields "emp.id" and "emp.salary". To do this we need offsets of these
+fields with respect to the input tuples. These offsets for the same field
+are changing as we go up the planner tree and that is why we need the
+current attribute list.
+<P>
+Now that we know what the main algorith is, let us focus on the details.
+As we said much of the code is doing translation between different conventions.
+This translation is encapsulated in the <tt>Converter</tt>class.
+We have mentioned this class in the public interface section but it was
+only the part of the story. Here is the full blown <tt> Converter</tt> class.
+<PRE>
+
+const int MAX_ATTR_LIST = 100;     // Maximum length of attribute list
+
+class Converter {
+
+// Converts various data structures that contains Attributes into the
+// analagous structures that contain field specification. (pair of numbers)
+
+public:
+
+    Converter(PlanNode* plan, AttributeList al);
+    // Converter constructor takes PlanNode on which this conversion is to be
+    // done and the attribute list of the CHILD node (this is unary converter).
+
+    Converter(PlanNode* plan, AttributeList al1, AttributeList al2);
+    // Converter constructor takes PlanNode on which this conversion is to be
+    // done and the attribute list of the two of its CHILDS.
+    // (this is binary converter).
+
+    int convert(AttributeList project, FldSpec outFlds[]);
+    // This function will convert attribute list into the field specifications.
+
+    void convert(Attribute* attrib, FldSpec& fld);
+    // This function will convert single attribute into field specifications.
+
+    CondExpr* convert(SelectElem* selEl, CondExpr* next);
+    // Takes SelectElem and next ptr and returns CondExpr
+
+    CondExpr* convert(SelectTerm* selTm, CondExpr* next);
+    // Takes SelectTerm and next ptr and returns CondExpr
+
+    CondExpr* convert(SelectExpr* selEx, CondExpr* next);
+    // Takes SelectExpr and next ptr and returns CondExpr
+
+    CondExpr* convert(Select sel, CondExpr* next);
+    // Converts single Select into the CondExpr which is return value
+    // of the function
+
+    int convert(SelectList selLst, CondExpr* selects[]);
+    // Convert Select List into the linked list of CondExpr.
+    // Returns the length of the list.
+
+    int convert(SelectList selLst, CondExpr* selects[], int& outerColl, 
+        int& innerColl);
+    // Convert Select List into the linked list of CondExpr but in
+    // addition isolates the primary join predicate (which is assumed
+    // to be equality) and expresses it in terms of outer and inner 
+    // column naumbers. Returns the length of the list.
+
+    int convert(AttrType types[], short* strLens, RelSpec rel = outer);
+    // This will return array of types and the string lengths for the
+    // Attribute list given in constructor.
+
+    void convert(RelSpec rel, PlanNode* child, int column,
+        int& fldLen, TupleOrder& ord);
+    // This is the function specific for the sort merge join.
+    // It returns the field length and tuple order of the child on the
+    // specified column.
+};
+<HR>
+</BODY>
+</HTML>

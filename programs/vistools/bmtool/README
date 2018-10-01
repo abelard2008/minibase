@@ -1,0 +1,8 @@
+This directory contains the buffer manager visualization tool, a
+Tcl/Tk program that graphically displays the inner workings of the
+minibase buffer manager.
+
+The tool requires a copy of "btree_wish", which is a modified version
+of the "tree" Tcl extension library, version 3.6.2.  This is the
+executable that wraps Tcl/Tk.  You must also modify the "view_bufmgr"
+script to refer to the public installation directory for the tool.

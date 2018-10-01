@@ -1,0 +1,51 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!Converted with LaTeX2HTML 95 (Thu Jan 19 1995) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds >
+<HEAD>
+<TITLE>5.1  class lsn_t</TITLE>
+</HEAD>
+<BODY>
+<meta name="description" value="5.1  class lsn_t">
+<meta name="keywords" value="main">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+<P>
+ <BR> <HR><A NAME=tex2html158 HREF="node11.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html156 HREF="node9.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html150 HREF="node9.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html159 HREF="node11.html">5.2  class logrecord</A>
+<B>Up:</B> <A NAME=tex2html157 HREF="node9.html">5 Implementation</A>
+<B> Previous:</B> <A NAME=tex2html151 HREF="node9.html">5 Implementation</A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00051000000000000000>5.1  class lsn_t</A></H2>
+<P>
+<A NAME=subsectionimpllsn>&#160;</A>
+<P>
+Every LSN is a three-tuple: <IMG  ALIGN=MIDDLE ALT="" SRC="img16.gif">wrap count, page ID,
+offset<IMG  ALIGN=MIDDLE ALT="" SRC="img17.gif">.  Figure <A HREF="node10.html#figurelsn">2</A> shows the layout.
+<P>
+	The wrap count is needed because the log is maintained in a
+bounded space and wraps around when it reaches the physical end of the
+space.  The wrap count field gives the number of times the log has
+wrapped around.  The current implementation stores the wrap count as
+an <tt> unsigned int</tt>.  It is an error for the wrap count to exceed
+<IMG  ALIGN=MIDDLE ALT="" SRC="img18.gif">.
+<P>
+<P><A NAME=154>&#160;</A><A NAME=figurelsn>&#160;</A><IMG  ALIGN=BOTTOM ALT="" SRC="img19.gif">
+<BR><STRONG>Figure 2:</STRONG> Layout of an LSN.  In the current implementation, each field
+is four bytes long.<BR>
+<P>
+<P>
+	The page ID and offset fields are required because the log can
+be read and written only in units of a page.  The page ID and offset
+give the location of the start of the log record within the log.
+<P>
+	Invalid LSNs are given the value: <IMG  ALIGN=MIDDLE ALT="" SRC="img20.gif">, <IMG  ALIGN=MIDDLE ALT="" SRC="img21.gif">, <IMG  ALIGN=MIDDLE ALT="" SRC="img22.gif">.  The implementation
+ensures that LSNs never reach this value.
+<P>
+	Implementation of the methods of <tt> class lsn_t</tt> (see <tt>
+lsn.h</tt> and <tt> lsn.C</tt>) is straightforward and will not be described.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+ajitk@cs.wisc.edu, cjin@cs.wisc.edu
+</ADDRESS>
+</BODY>

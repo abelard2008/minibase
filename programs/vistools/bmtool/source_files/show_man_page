@@ -1,0 +1,1 @@
+nroff -man manual/bm.man | less

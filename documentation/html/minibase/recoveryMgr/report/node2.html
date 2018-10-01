@@ -1,0 +1,66 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> External Interface:</TITLE>
+<meta name="description" value=" External Interface:">
+<meta name="keywords" value="rec">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html36 HREF="node3.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A> <A NAME=tex2html34 HREF="rec.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A> <A NAME=tex2html28 HREF="node1.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html37 HREF="node3.html"> Internal Design:</A>
+<B>Up:</B> <A NAME=tex2html35 HREF="rec.html">MINIREL : Recovery Manager
+<P>
+</A>
+<B> Previous:</B> <A NAME=tex2html29 HREF="node1.html"> Introduction :</A>
+<BR> <HR> <P>
+<H1><A NAME=SECTION00020000000000000000> External Interface:</A></H1>
+ <A NAME=secexternal>&#160;</A>
+This section presents the public interface  provided by the Recovery Manager.
+Class <b>RecoveryMgr</b>  is the base class. 
+In addition to providing constructors
+and destructors, it provides methods to perform the recovery actions.
+<P>
+<PRE>Class RecoveryMgr{
+
+public :
+  Status Rollback();   /* Aborts the current transaction */
+  Status Restart();    /* Restarts the database */
+  Status Checkpoint(); /* Takes a checkpoint */
+  Status RecoverEarliestLSN(lsn_t lsn);
+         /*
+         Returns the earliest LSN needed by the Recovery Mgr
+         This is used by the log manager for log compaction
+         */
+  Status WriteUpdateLog(int size,int pgid,int offset,
+             void *old_data,void *new_data,Page* pg);
+         /* Writes Update log rec */
+  Status WriteCommitLog(lsn_t&amp; lsn); // Writes commit log rec
+  Status WriteAbortLog(lsn_t&amp; lsn);  // Writes abort log rec 
+  Status GetRecoveryLSN(int pgid, lsn_t lsn);
+private :
+  - - - -
+  - - - -
+};</PRE>
+The <em>Rollback() </em> method performs transaction rollback on an aborted
+transaction.
+The transaction
+number is implicit as every process has its own 'current' transaction variable.
+<em>Restart(), Rollback()</em> and <em>Checkpoint()</em> perform the functions
+as described in Section <A HREF="node1.html#secintro">1</A>. These functions are invoked  by
+the Log Manager.
+<em>WriteUpdateLog(),
+WriteCommitLog()</em> and <em>WriteAbortLog()</em> create appropriate update,
+commit and abort log records which are written to the log file, by the Log
+Manager. These are used by all sub-systems that access and modify pages in
+the buffer pool : for example, the Space Manager and  all access methods.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+<I> ranjani ramamurthy <BR>
+Sat May 13 16:56:49 CDT 1995</I>
+</ADDRESS>
+</BODY>

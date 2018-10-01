@@ -1,0 +1,274 @@
+\documentstyle{article}
+\title{Space Management}
+\author{Ravi Murthy \\
+        Sriram Narasimhan}
+\date{}
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+The space manager is the lowermost layer of minirel. It performs basic
+input and output    operations and    manages the    allocation    and
+deallocation of space in the database.
+
+In minirel, a database is simply a single UNIX file. The space manager
+allows the users to create new databases and to open existing ones. It
+supports allocation    and  deallocation of runs   of   pages. It also
+provides {\em directory  service}.  The  directory  consists of   file
+entries which   are  records of  file  names  and   their header  page
+identifiers. The  space manager allows  insertion, deletion and access
+to file entries.
+
+The buffer manager is the  layer on top of  space manager. It uses the
+space manager for loading pages into the buffer pool and flushing them
+to disk. Further,  the storage and access  methods components also use
+the directory service for  registering the header  pages of the  files
+that  they   create and use.   Examples   of such  components are {\em
+heapfiles} and {\em B-Trees}.  The  space manager uses the  primitives
+provided by   the OS   infrastructure component  for  managing  shared
+memory.   Also,   it  uses     the   lock manager     for  concurrency
+control.  Further, it interacts  with the recovery manager for writing
+log records.
+
+
+\section{External Interface}
+
+The  space manager exports  the classes  {\bf DB}  and {\bf Page}. The
+header files for these two classes are in * and *.
+
+%hypertext links here
+
+
+A description of the methods in the public interface follows.
+
+\subsection{Class Page}
+\begin{verbatim}
+class Page
+{
+private:
+        char data[PAGESIZE - sizeof(lsn_t)];
+        lsn_t page_lsn;
+
+public:
+        lsn_t get_page_lsn();
+        Status set_page_lsn(lsn_t pagelsn);
+}
+\end{verbatim}
+
+The  Page  class provides   the    abstraction  of  a  page  of    the
+database. This class is  used by all the higher  layers that deal with
+pages. A  page contains  a LSN and  a data  portion. The higher layers
+superimpose their  notion of  a page  on   this common structure.  The
+methods  {\tt  get\_page\_lsn()} and {\tt   set\_page\_lsn()} are used for
+accessing the LSN portion of the page.
+
+
+\subsection{Class DB}
+\begin{verbatim}
+class DB
+{
+public:
+        // Constructors
+        DB(const char* name,int num_pages, Status& status);
+        DB(const char* name, Status& status);
+
+        // Destructors
+        ~DB();
+        Status db_destroy();
+
+        // Database characteristics
+        const char* db_name() const;
+        int db_num_pages() const;
+        int db_page_size() const;
+
+        // Allocation and deallocation
+        Status allocate_page(PageId& start_page_num, int run_size = 1);
+        Status deallocate_page(PageId start_page_num, int run_size = 1);
+
+        // Directory service
+        Status add_file_entry(const char* fname, PageId start_page_num);
+        Status delete_file_entry(const char* fname);
+        Status get_file_entry(const char* name, PageId& start_pg);
+
+        // Input and output
+        Status read_page(PageId pageno, Page* pageptr);
+        Status write_page(PageId pageno, Page* pageptr);
+
+        // Actions at transaction commit or abort 
+        Status db_release();
+        Status flush_list();
+
+}
+\end{verbatim}
+
+The  DB   class provides  the abstraction of   a   single database.  A
+database can be  viewed as a set  of pages each of  which has a unique
+identifier. Most of the methods return a status to indicate the result
+of   the  method.  OK indicates  success    while  DBMGR indicates  an
+error. The actual  reason for the error is  registered with the global
+error object (refer global\_error).  The  first form of the constructor
+creates a database with the specified number of pages and the specfied
+name. The size of each page is a  predefined constant. The second form
+of the constructor opens  an existing database. The destructor  closes
+the database  and  it can   be  opened again  later. The  method  {\tt
+db\_destroy()} removes the entire database.
+
+{\tt  db\_name(), db\_num\_pages() and  db\_page\_size()} return  the name,
+number of pages and the page size of the database.
+
+{tt allocate\_page()} searches for a run  of free pages in the database
+and returns the identifier of  the first page of the  run. This run of
+pages  have     now   been  allocated   and    are     not  free. {\tt
+deallocate\_page()} releases a set  of pages starting at the  specified
+page. In both these functions, the run size has a default value of 1.
+
+The directory  of a database consists of  records each of which have a
+name and a page identifer. {\tt add\_file\_entry()} adds a new record to
+the  directory if   a  record with  the   same name  does  not already
+exist.   {\tt delete\_file\_entry()} deletes   the  file entry with  the
+specified  name,  if  such   a  record  exists.   The input   to  {\tt
+get\_file\_entry()}  is  a name  and  it   returns  the page  identifier
+corresponding to it. These functions are primarily used by the storage
+and access methods  to maintain a correspondence between file/relation
+names and their header pages.
+
+The methods  {\tt read\_page() and write\_page()}  perform the  basic IO
+between memory  and disk. {\tt  read\_page()} reads the contents of the
+page specified by its unique  identifer. {\tt write\_page()} writes out
+the contents of the page to disk.
+
+Requests to deallocate pages  made by a  transaction are not performed
+immediately.  This  is necessary  for   the  recoverability of   these
+operations.   The pages to be  deallocated   are buffered by the space
+manager and a decision about these  pages is made when the transaction
+ends. If the transaction commits, {\tt db\_release()}  is called by the
+transaction manager and  this method performs  the actual deallocation
+of the pages. In case of  an abort, {\tt  flush\_list()} is invoked and
+the deallocation is not done.
+
+\section{Internal Design}
+
+The design of the {\em Page} class is straight forward. The algorithms
+and the   data structures  involved in  the  design  of  {\em DB}  are
+discussed in the  following  sections.   Each  section deals  with   a
+separate functionality offered by the class.
+
+\subsection{Space management}
+The class {\em  DSM} provides the  support for the management of space
+within a database. A set of a few pages of the database are treated as
+the {\em space map}. The space map is a bitmap,  one bit per page that
+indicates whether the page has been allocated or is free. Depending on
+the number of pages in the database and the  size of individual pages,
+the space map can span several pages.
+
+Several transactions running as different processes  can have the same
+database open at the same time. Thus the space  map of the database is
+stored in  shared memory and is  accessed by  all  the processes.  The
+shared memory structure is as follows.
+
+\begin{verbatim}
+typedef struct 
+{
+        char dbname[MAX_NAME];   // Name of the database
+        int pin_count;           // Number of users accessing the spacemap
+        int spm_size;            // Size of the space map in pages
+        int header_size;         // Number of header pages
+        header_page_t header[MAX_HEADER_PAGES];// List of header page pointers
+        Page space_map[MAX_SPM_PAGES];    // List of Space map pages
+}DBEntry;               
+\end{verbatim}
+
+The fourth  and the fifth  fields in the   structure correspond to the
+directory  service   and is discussed  in the   next section. Thus the
+complete set of  pages comprising the  space map  is  stored in shared
+memory. The first process that opens a database initializes the shared
+memory  structure   with  the information   stored   on  disk (or just
+initializes it if the database  is being created). Every other process
+that opens the database will simply  attach to the same structure. The
+accesses to shared memory by multiple processes are synchronized using
+the methods provided by the shared memory  manager. Each process locks
+the shared memory before accessing  the structure and unlocks it after
+it has finished  the access. Since  locking  the entire shared  memory
+region is the only primitive available to us,  this is done, though it
+might result in loss of concurrency.
+
+The {\em pin\_count}  maintains the count of   the number of  processes
+that are currently accessing the database. When this count is drops to
+zero, the  space map which is  possibly different from the  version on
+disk, is written out. Allocation of a run of pages involves inspecting
+the bits in the space map and determining if a sequence of consecutive
+0s  of the required  length is present.  This  is a rather complicated
+algorithm, which  is  typical with  bit-level manipulation.  A further
+complication arises  in  determining runs that  span  (space map) page
+boundaries. When a run has been detected, a  routine is invoked to set
+all these bits to 1. Deallocation of a run  of pages involves the same
+routine, but this time the bits are set to 0.
+
+Since minirel is  a multiuser system,  there  is need  for locking and
+logging in the space manager   component. Accesses  to the space   map
+results in locking  the appropriate pages.  All  pages that are  being
+changed are  locked in exclusive mode and   the lock is held  till the
+transaction commits or aborts. On the other hand, those pages that are
+only inspected but not modified are locked in shared mode. All changes
+to  the space map are logged.  Since a byte is  the smallest size that
+can  be logged, changes  to a few bits  in  the space map  can incur a
+significant overhead.
+
+All pages  that have been deallocated  by a transaction are maintained
+in a private list.  Since there is only   one active transaction in  a
+minirel process, a  single  list in private  memory  is sufficient. At
+commit time, the list  is traversed and changes  are made to the space
+map to reflect the deallocation.  If the transaction aborts, the  list
+is simply discarded.
+
+\subsection{Directory service}
+
+The directory  of a database   is maintained in a   set of {\em header
+pages}. Initially,  a single page  is allocated  for the directory. As
+new file  entries are added,  additional header  pages are dynamically
+allocated. The structure of each header page looks as follows.
+
+\begin{verbatim}
+struct header_entry_t {
+        int valid;
+        char fname[MAX_NAME];
+        PageId pagenum;
+};
+
+const int num_header_entries = (int)((PAGESIZE-sizeof(lsn_t)-sizeof(int))/
+                                        sizeof(header_entry_t));
+ 
+struct header_page_t {
+        PageId next_page;
+        header_entry_t entry[num_header_entries];
+        char dummy[PAGESIZE - sizeof(lsn_t) - sizeof(int) - 
+                             num_header_entries*sizeof(header_entry_t)];
+        lsn_t lsn;
+};
+\end{verbatim}
+
+The header pages form a singly linked  list and {\tt next\_page} stores
+the page identifier of the next header page. There are  a fixed set of
+file  entries on each  page. The  field {\tt  dummy} is  necessary for
+purposes of  alignment.  Each  file entry consists  of  the name, page
+identifier and also a valid field that  indicated whether the entry is
+currently  in use. The  first entry in the   directory consists of the
+database  name   and  the number  of   pages  in the  database.   This
+information is needed when a database is opened.
+
+The shared memory structure   presented in the previous  section  also
+contains all the header  pages of the  database. To add a file  entry,
+all the valid  entries are first searched. If  an entry  with the same
+name already exists,   the new entry cannot  be  added. Otherwise, the
+entry is inserted in some invalid slot. If there  are no invalid slots
+in any of the header pages, a new page is allocated and linked in. The
+new entry is stored on this page. Deletion of a file entry operates in
+a similar fashion.
+
+Any page  that has  been  modified in the course   of an operation  is
+locked in exclusive mode, while those that are only read are locked in
+shared  mode.  The  insertion  and  deletion  of   file entries  cause
+appropriate log records to be written.
+
+\end{document}

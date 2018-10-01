@@ -1,0 +1,59 @@
+<HTML>
+<HEAD>
+<TITLE>B+ Trees</TITLE>
+</HEAD>
+
+<BODY>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<H1>B+ Trees</H1>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+<h2> Introduction </h2>
+<p>
+B+ Trees are one of the <A HREF= "../AM/am.html">access methods</A> that
+are available in Minibase.  
+<P>
+<IMG SRC="../pics/hline.gif">
+
+<H2>Design Decisions</H2>
+A few assumptions are made with respect to inserts and deletes in
+B+ Trees. <p>
+
+On inserts,when a page becomes full it is split in such a way as to keep
+the resulting pages about half full, subject to the condition
+that all duplicates remain on the same page.  (Two key/rid pairs
+are `duplicates' if they have the same key value.)  In Minibase,
+we assume that there will never be more than a page full of
+index entries with the same key value.
+<P>
+Index entries are deleted without any attempt to merge pages
+that become less than half-full.  
+Pages are de-allocated when they become empty.
+(Thus, only a simplified form of the B+ tree deletion algorithm
+is implemented.)
+
+<P>
+The <B>BTreeFile</B> class is derived from <B>IndexFile</B>,
+and scans are objects of the <B>BTreeFileScan</B> class.
+Pages are <B>BTreePage</B> objects.  Lower levels (e.g. the Disk
+Space Manager) treat pages as <B>Page</B> objects; casting
+is used to obtain <B>BTreePage</B> objects. 
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+Click here for the <A HREF="public.txt"><B>public interface</B></A>.
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+<A HREF="../project.html">Back to the List of Components</A><BR>
+<A HREF="../minibase.html">Back to the Minibase Home Page</A><BR>
+<!A HREF="report.ps">
+<!764 Report</A>
+
+
+</BODY>
+</HTML>
+
+

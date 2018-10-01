@@ -1,0 +1,65 @@
+  Schema: 0x7810d8
+    Primitive: 0x776cf8 of-type: Relates
+      Attr: Name == 
+      Attr: Name2 == 
+      Attr: Relationship ==  0x778440
+      Attr: Entity ==  0x7d9560
+      Attr: Total == Partial
+      Attr: Cardinality1 == ManyTo
+      Attr: Cardinality2 == ManyTo
+      Attr: SelfRelates == Does Not
+    Primitive: 0x775090 of-type: Relates
+      Attr: Name == 
+      Attr: Name2 == 
+      Attr: Relationship ==  0x778440
+      Attr: Entity ==  0x7d8b80
+      Attr: Total == Partial
+      Attr: Cardinality1 == ManyTo
+      Attr: Cardinality2 == ManyTo
+      Attr: SelfRelates == Does Not
+    Primitive: 0x7d8d70 of-type: Attribute
+      Attr: Name == budget
+      Attr: AssociatedWith ==  0x7d8b80
+      Attr: Key == Is-Not-Key
+      Attr: Type == float
+    Primitive: 0x7d9028 of-type: Attribute
+      Attr: Name == dname
+      Attr: AssociatedWith ==  0x7d8b80
+      Attr: Key == Is-Not-Key
+      Attr: Type == char
+    Primitive: 0x7d9258 of-type: Attribute
+      Attr: Name == did
+      Attr: AssociatedWith ==  0x7d8b80
+      Attr: Key == Is-Key
+      Attr: Type == int
+    Primitive: 0x7d9750 of-type: Attribute
+      Attr: Name == name
+      Attr: AssociatedWith ==  0x7d9560
+      Attr: Key == Is-Not-Key
+      Attr: Type == char
+    Primitive: 0x778138 of-type: Attribute
+      Attr: Name == ssn
+      Attr: AssociatedWith ==  0x7d9560
+      Attr: Key == Is-Key
+      Attr: Type == int
+    Primitive: 0x778638 of-type: Attribute
+      Attr: Name == since
+      Attr: AssociatedWith ==  0x778440
+      Attr: Key == Is-Not-Key
+      Attr: Type == date
+    Primitive: 0x7788f0 of-type: Attribute
+      Attr: Name == lot
+      Attr: AssociatedWith ==  0x7d9560
+      Attr: Key == Is-Not-Key
+      Attr: Type == int
+    Primitive: 0x778440 of-type: Relationship
+      Attr: Name == Manages
+      Attr: RelatesWeakToOwner == Does Not
+    Primitive: 0x7d8b80 of-type: Entity
+      Attr: Name == Departments
+      Attr: Strength == Strong
+      Attr: OwnedThroughRel == @
+    Primitive: 0x7d9560 of-type: Entity
+      Attr: Name == Employees
+      Attr: Strength == Strong
+      Attr: OwnedThroughRel == @

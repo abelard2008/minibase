@@ -1,0 +1,65 @@
+<HTML>
+<HEAD>
+<TITLE>Shared Memory Manager</TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<H1>Shared Memory Manager</H1>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+
+The Shared Memory Manager provides two kinds of operating systems
+support to Minibase: It provides the lowest levels of semaphores, which
+are required to provide locking and mutual exclusion, and
+a collection of methods using which shared memory 
+may be instantiated and accessed.
+
+<P>
+<IMG SRC="../pics/hline.gif">
+
+<H2>Design Decisions</H2>
+The system maintains an array of available semaphores and assigns them, as
+they are requested. A Shared Memory class object
+is responsible for allocating chunks
+of shared memory as and when required. It also maintains some book-keeping 
+information about the shared memory. A shared memory manager 
+(ShMemMgr) class object keeps
+track of all global pointers to the shared memory region and provides
+methods to access these pointers.
+<p>
+A point to note when observing the <A HREF="os.h">
+public interface</A> is that the SharedRegion class is the base class
+from which shared data structures like the Lock table are derived.
+The SharedRegion class contains a semaphore. If a class is derived from
+this base class, it thus contains a semaphore and can call the <i>lock</i>
+and <i>unlock</i> methods provided for semaphores. Each method of the derived
+class may be sandwiched between a lock and an unlock call. It is
+therefore appropriate for a class to be derived from the base SharedRegion
+when the methods of the derived class are naturally formed units
+of mutual exclusion.  The definitions of the 
+<A HREF="../bufMgr/public.txt"> buffer manager</A> indicate 
+that the BufMgr class is not a derived class of the class SharedRegion.
+This is because we would like the granularity of latching to be at the
+level of <i>buffer frames</i>, rather than the entire buffer pool.
+<p>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+Click here for the <A HREF="os.h"><B>public interface</B></A>.<br>
+Click here for details of the<A HREF="report.html"><B> shared mem module</B></A>.
+<P>
+
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+<B><A HREF="../project.html">Back to the List of Components</A></B><BR>
+<B><A HREF="../minibase.html">Back to the Minibase Home Page</A></B><BR>
+<!A HREF="report/report.html">
+<!Original 764 Report</A> 
+
+</BODY>
+</HTML>
+

@@ -1,0 +1,75 @@
+#include<assert.h>
+#include "new_error.h"
+#include "minirel.h"
+
+class Tuple {
+public:
+
+	Tuple(){cerr << "Tuple constructor should never be called! \n";};
+
+	int getFld(int fldNo, int& val){	// Convert this field into integer	
+		assert(fldNo > 0 && fldNo <= fldCnt);
+		val = *((int*)((char*)this + fldOffset[fldNo - 1]));
+		return val;
+	}
+	
+	float getFld(int fldNo, float& val){ // Convert this field into float	
+		assert(fldNo > 0 && fldNo <= fldCnt);
+		val = *((float*)((char*)this + fldOffset[fldNo - 1]));
+		return val;
+	}
+
+	char* getFld(int fldNo, char*& val){ //Convert this field into string	
+		assert(fldNo > 0 && fldNo <= fldCnt);
+		val = (char*)this + fldOffset[fldNo - 1];
+		return val;
+	}
+
+	char* getFld(int fldNo){      // Just return a char * pointer to the data
+		assert(fldNo > 0 && fldNo <= fldCnt);
+		return (char*)this + fldOffset[fldNo - 1];
+	}
+
+	Tuple* setFld(int fldNo, int val){ // Set this field to integer value
+		assert(fldNo > 0 && fldNo <= fldCnt);
+		char* adr = (char*) this + fldOffset[fldNo - 1];
+		*((int*) adr) = val;
+		return this;
+	}
+
+	Tuple* setFld(int fldNo, float val){ // Set this field to float value
+		assert(fldNo > 0 && fldNo <= fldCnt);
+		char* adr = (char*) this + fldOffset[fldNo - 1];
+		*((float*) adr) = val;
+		return this;
+	}
+
+	Tuple* setFld(int fldNo, char* val){ // Set this field to string value
+		assert(fldNo > 0 && fldNo <= fldCnt);
+		char* adr = (char*) this + fldOffset[fldNo - 1];
+		strcpy(adr, val);
+		return this;
+	}
+
+	static int max_size;	// Maximum size of any tuple 
+
+	Status setHdr(short numFlds, AttrType types[], short strSizes[] = 0); 
+	
+	// setHdr will set the header of this tuple. If there is enough
+	// space available returned status will be OK. 
+	// Array strSizes contains the sizes of the string (excluding trailing \0)
+	// Array types contains the types that will be in this tuple.
+
+	short size(){		// Returns size of this tuple in bytes
+		return fldOffset[fldCnt];
+	}
+
+	short noOfFlds(){	// Returns number of fields in this tuple
+		return fldCnt;
+	}
+	
+	void print(AttrType type[], ostream& out = cout); 
+
+		// Print this tuple to stream out, by default cout; 
+
+};

@@ -1,0 +1,5 @@
+INTERPRETER_SRCS = interpreter.C converter.C
+INTERPRETER_HDRS = interpreter.h iterator.h
+
+INTERPRETER_OBJS = $(INTERPRETER_SRCS:.C=.o)
+

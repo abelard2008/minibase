@@ -1,0 +1,144 @@
+###################################################################
+# 
+# Below is the configuration file for the btreeA visualization tool.
+# Mostly colors and sizes are defined here (NOTE: they are defined
+# together ie the color(s) and the font of a button are defined
+# at the same place). Also the directory where the bitmaps and the
+# log-files are stored.
+#
+# Author: Harry Stavropoulos (harryst@cs.wisc.edu)
+# 
+###################################################################
+
+
+#
+# The background color of the root window...
+#
+
+#set bg_color #b5c4a2
+set bg_color wheat
+
+#
+# configuration of the tree
+#
+
+set nodedistance  80
+set bwidth        30
+set bm_color      red
+
+#
+# configuration of the old path
+#
+
+set nodedistance_old_path  80
+set bwidth_old_path        30
+set bm_color_old_path      red
+
+#
+# width of windows showing contents of nodes
+#
+
+set widthsize 11
+
+#
+# width of window showing the number of steps to be taken
+#
+
+set width_steps 4
+
+#
+# width of window showing the record, pageno, slotno to be inserted/deleted
+#
+
+set width_key 10
+set width_pageno 2
+set width_slotno 2
+
+#
+# width of window showing the command for insert/delete
+#
+
+set width_update 1
+
+#
+# colors for buttons and entry showing actions to be taken
+#
+
+set bg_button_act    wheat
+set bg_entry_steps   white
+set fg_entry_steps   red
+set cont_button_act_fg    red
+set cont_button_act_bg    white
+set cont_button_noact_fg  black
+
+#
+# The colors that the help & show_man_page menu buttons have,
+# as well as the colors of the man page
+#
+
+set bg_help_color           yellow
+set bg_show_man_page_color  yellow
+set bg_man_color            black
+set fg_man_color            wheat
+
+#
+# window showing the actions taken
+#
+
+set bg_window_action    white
+set fg_window_action    red
+set font_window_action  6x13
+
+#
+# window showing the contents of nodes
+#
+
+set bg_window_contents    white
+set fg_window_contents    red
+set font_window_contents  6x13
+
+#
+# window showing the node contents before the update
+#
+
+set bg_node_old_contents    white
+set fg_node_old_contents    red
+set font_node_old_contents  6x13
+set geom_node_old_contents  40x20
+
+#
+# window titles
+#
+
+set main_window_title           BTree
+set path_followed_window_title  path_followed
+set old_contents_window_title   node_contents_before_update 
+
+#
+# Directory where the bitmaps are - as of know they are in
+# subdirectory /BITMAPS of the current directory. If you want
+# to change this, do it here...
+#
+
+set bitmap_dir $btree_code_dir/source_files/BITMAPS
+
+set child_bm    ""
+set node_bm     ""
+set magnify_bm  ""
+set leaf_bm     ""
+set root_bm     ""
+#  set child_bm    @$bitmap_dir/child.gif
+#  set node_bm     @$bitmap_dir/index.gif
+#  set magnify_bm  @$bitmap_dir/magnify1.gif
+#  set leaf_bm     @$bitmap_dir/leaf.gif
+#  set root_bm     @$bitmap_dir/root.xbm
+
+#
+# colors for the log-file prompt window
+#
+
+set message_prompt_color yellow
+set file_prompt_color red
+set welcome_color white
+
+set dir_w_btree_logs $btree_trace_dir

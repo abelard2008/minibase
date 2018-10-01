@@ -1,0 +1,300 @@
+<html>
+<head>
+<title>Heapfiles</title>
+</head>
+<body>
+<h1>Heapfiles</h1>
+<h2>Introduction</h2>
+
+A <i>heapfile</i> is an unordered set of  variable sized records. Each record
+is viewed  as a sequence of bytes.  The  heapfile component of Minirel
+provides the  ability to create  heapfiles and to open  existing ones.
+Records can be inserted to and  deleted from the heapfile. Each record
+has  a  unique  record  identifier.  By  specifying the   record id, a
+specific   record can be retrieved or    updated in place.  Sequential
+scans on    the heapfile are  supported.   Finally,  heapfiles  can be
+deleted from the database.
+<p>
+
+The heapfile  component uses the  <i>buffer   manager</i> to  read and  write
+pages. It also directly accesses the directory  service offered by the
+<i>space   manager</i>. The methods  provided  the <i>lock manager</i>  are used for
+regulating the  accesses  by concurrent users  of  the heapfile. Crash
+recovery is ensured through the  physical logging of updates to  pages,
+using the <i>recovery manager</i>.
+<p>
+<hr>
+<h2>External Interface</h2>
+
+The heapfile  component  exports the  classes  <b>HeapFile</b> and <b>
+Scan</b>. 
+
+<h3>Class HeapFile</h3>
+
+<pre>
+class HeapFile 
+{
+friend class Scan;
+public:
+	HeapFile(char* name,Status& returnStatus); 
+        ~HeapFile();                      
+
+        Status insertRecord(char* recPtr, int recLen, 
+			    RID& outRid); 
+        Status deleteRecord(const RID& rid); 
+        Status updateRecord(const RID& rid, char* recPtr, 
+			    int reclen);
+
+        int getRecCnt();
+        Status getRecord(const RID& rid, char* recPtr, 
+			 int& recLen); 
+	
+        Scan* openScan(Status& status);
+
+        Status deleteFile();
+}
+</pre>
+<p>
+
+The class <i>HeapFile</i> provides the abstraction  of an unordered set
+of records. The records are a sequence of bytes and no field structure
+is assumed.  The  methods return  a status  that indicates whether the
+operation was successful or not (refer global_error).
+<p>
+
+The constructor takes the  name as an input  parameter. If  a heapfile
+with the name already exists in the database,  it is opened. If not, a
+heapfile   is created with   this   name. The  destructor closes   the
+heapfile.
+<p>
+
+Each record in the heapfile has a unique  identifier of type RID. <tt>
+insertRecord()</tt> inserts the specified  record  into the heapfile and
+returns  the rid corresponding   to  the record. <tt> deleteRecord()</tt>
+takes the record identifier  and deletes the corresponding record from
+the  heapfile. If the  specified record identifier does not correspond
+to  an  actual  record,   an  error  is   flagged.  The  method   <tt>
+updateRecord()</tt> modifies the contents of  the specified record without
+changing   its   rid. In the    current   implementation,  there is  a
+restriction that the  length of the  new record should not exceed  that
+ of the old record.
+<p>
+
+<tt> getRecCnt()</tt> returns the  number of  records that are currently
+stored in the heapfile. A specific  record can be retrieved by passing
+its record   identifier to   <tt> getRecord()</tt>.   <tt> deleteFile()</tt>
+removes  the heapfile  from the  database.   A sequential scan of  the
+heapfile  can  be initiated   through  <tt>openScan()</tt>.   This method
+returns an object   of type <i> Scan</i>, which is   discussed  in  the  next
+section.
+
+<h3>Class Scan</h3>
+
+<pre>
+class Scan
+{
+public:
+        ~Scan();
+        Status getNext(RID& rid, char* recPtr, int& recLen);
+}
+</pre>
+<p>
+
+The <i>Scan</i> class supports  the sequential scan of  a heapfile. No conditions
+can be applied  on the scan and thus,  all the records in the heapfile
+are retrieved in turn. Objects of this type can only be constructed by
+<tt>openScan()</tt>   method  of  the  <i>HeapFile</i>    class and hence,   the
+constructor of this class is  not public to  the users of the heapfile
+component.
+<p>
+
+<tt> getNext()</tt> fetches  the  next record  in the  heapfile.  It also
+returns the  record  identifier of  the  retrieved record. This method
+returns DONE when there are no more records to be fetched.
+<p>
+
+<HR>
+<h2>Internal Design</h2>
+
+The <i>heapfile</i> is essentially a set of pages  in the database on which a
+special structure  is imposed.  When a heapfile   is created, a header
+page is allocated and  the file entry consisting  of the name  and the
+identifier of  the header page is  inserted into the directory using a
+method  of the  DB class.  When  the  constructor of  the heapfile  is
+invoked, it is  determined whether  the heapfile is  to be  created or
+just  opened. This is done by  using the <tt>get_file_entry()</tt> method
+of the DB class.  If the entry with the  specified name does not exist
+in the directory,  the heapfile is  created. Otherwise it simply opens
+the heapfile.
+<p>
+
+The header page  of the heapfile is  different from the other pages of
+the heapfile.  The  header   page  does  not store  any  records.  The
+structure of the header page is as follows.
+<p>
+
+<pre>
+struct HeaderPage
+{
+    char        fileName[MAX_NAME];  // name of file
+    PageId      firstPage;      // pageNo of first data page
+    PageId      lastPage;       // pageNo of last data page
+    int         pageCnt;        // number of pages
+    int         recCnt;         // record count
+};
+</pre>
+<p>
+
+The <tt>firstPage</tt> and <tt> lastPage</tt> fields are  used in the  method
+for inserting records.
+<p>
+
+Each of the data  pages of the heapfile share  a common structure. The
+class <b>HFPage</b> provides  the abstraction  for  a data page  of the
+heapfile.
+<p>
+
+<pre>
+
+// slot structure
+struct slot_t {
+        short   offset;  
+        short   length;  // equals -1 if slot is not in use
+};
+
+const int DPFIXED= sizeof(lsn_t)+sizeof(slot_t)+4*sizeof(short)+
+                   3*sizeof(int);
+const int DATASIZE = PAGESIZE - sizeof(lsn_t);
+
+class HFPage {
+private:
+    char        data[DATASIZE - DPFIXED]; 
+    slot_t      slot[1]; // first element of slot array
+    short       slotCnt; // number of slots in use;
+    short       freePtr; // offset of first free byte in data[]
+    short       freeSpace; // number of bytes free in data[]
+    short       dummy;  // for alignment purposes
+    PageId      prevPage; // backward pointer to data page
+    PageId      nextPage; // forward pointer to data page
+    PageId      curPage;  // page number of current pointer
+
+public:
+    void init(PageId pageNo); // initialize a new page
+    void dumpPage(); // dump contents of a page
+
+    PageId getNextPage(); // returns value of nextPage
+    PageId getPrevPage(); // returns value of prevPage
+    void setNextPage(PageId pageNo); // sets value of nextPage
+    void setPrevPage(PageId pageNo); // sets value of prevPage
+
+    // inserts a new record pointed to by recPtr with length 
+    // recLen onto the page, returns RID of record 
+    Status insertRecord(char* recPtr, int recLen, RID& rid);
+
+    // delete the record with the specified rid
+    Status deleteRecord(const RID& rid);
+
+    // returns RID of first record on page
+    // returns NORECORDS if page contains no records. 
+    // Else, returns OK
+
+    Status firstRecord(RID& firstRid);
+
+    // returns RID of next record on the page 
+    // returns ENDOFPAGE if no more records exist on the page
+    Status nextRecord (RID curRid, RID& nextRid);
+
+    // copies out record with RID rid into recPtr
+    Status getRecord(RID rid, char* recPtr, int& recLen);
+
+    // returns a pointer to the record with RID rid
+    Status returnRecord(RID rid, char*& recPtr, int& recLen);
+}
+
+</pre>
+<p>
+<hr>
+<br>
+<b> Slot Directory Structure </b><br><br>
+<IMG SRC = "page.gif">
+<br><br><hr>
+<p>
+
+The  HFPage  class uses a  <i> slotted page</i> approach for organizing
+variable  sized records.   The records  are stored   one after another
+starting  at byte 0 of the  page while the  slot array  grows from the
+rear of the page towards the  front.  As the  records are deleted, the
+resulting hole is compacted.  However, since records are addressed via
+a RID (consisting of the <pageNo, slotno> pair), the slot array is not
+compacted. Each element of the slot array contains the offset into the
+page where the  record starts and its length.   If the slot is  not in
+use, the length  field is  set   to -1. The  slots  in  the array  are
+themselves  numbered   as 0,-1,-2 and  so   on.  Thus the  slot number
+specified in a    RID has to    be inverted before  indexing into  the
+array. slotCnt is used to indicate the current end  of the slot array.
+freePtr is the first free byte in  data[] and freeSpace keeps track of
+how much  free space  is  available in data[].   dummy is   needed for
+alignment.  The nextPage  and prevPage attributes  are used to  form a
+<i>doubly linked list</i> of the pages in the heapfile.
+<p>
+
+The methods of HFPage provide the primitives for all operations on
+a  single page.  <tt>insertRecord()</tt> tries   to  insert the specified
+record into the  page. It returns a error  if there is not  sufficient
+free space on the    page. <tt>deleteRecord()</tt> deletes   the  specified
+record  and compacts  the  hole created.  This  requires that all  the
+offsets in the slot array, of all the records to the right of the hole
+be adjusted by   the size of  the hole.  <tt>firstRecord()</tt> and  <tt>
+nextRecord()</tt> are  used  to fetch  records  off  a  page.  The <tt>
+getRecord()</tt> method copies out the   specified record, while the <tt>
+returnRecord()</tt> method returns a   pointer to the record.  The  latter
+function is used by the <tt>updateRecord</tt> method of HeapFile.
+<p>
+
+The   methods in  the HeapFile class    invoke suitable methods of the
+HFPage class. <tt>insertRecord</tt>  first determines the page  where the
+record insertion is attempted. In the current implementation, the last
+page of the  heapfile is the  only page  considered  for insertion. If
+there is not enough space on the last page, a  new page is created and
+the record inserted there. An alternative implementation could involve
+maintaining   a  list of     pages  that have  some   free   space  in
+them.  However, due to  variable  sized  records, this strategy  might
+degenerate to an entire scan on insert, in the worst case.
+<p>
+
+<tt>deleteRecord()</tt> simply calls the function with the same name on the
+appropriate data page. <tt>updateRecord()</tt>  first obtains a pointer  to
+the   record   on the page  and    then modifies   its  contents. <tt>
+deleteFile()</tt> deallocates the pages  belonging to the heapfile  and also
+deletes the file entry from the directory.
+<p>
+
+<tt>openScan()</tt> returns  a Scan object. The  Scan class maintains the
+RID of the last  record that has been  returned by it.  Thus a call to
+<tt>getNext()</tt> searches for the record following  the current rid and
+returns it. If no  such record is  found  i.e. the last record  on the
+last page has already been returned, the scan is done.
+<p>
+
+The page level  locking primitives  provided by  the lock manager  are
+used for concurrency control.  A page that is   read is locked in  the
+shared mode and  any that is modified is  locked in exclusive mode.  A
+finer granularity  of locking could have  improved  the concurrency of
+operations on the heapfile immensely.
+<p>
+
+
+Updates to pages belonging to the heapfile are logged using the method
+provided by the recovery   manager. Physical logging is  performed and
+the before and after  images of the affected portions  of the page are
+logged.
+
+<BR><BR>
+<HR>
+<BR>
+<I> Ravi Murthy</I><BR>
+<I> Sriram Narasimhan </I><BR><BR>
+<IMG SRC="uwlogo.gif"><BR>
+
+</body>
+</html>

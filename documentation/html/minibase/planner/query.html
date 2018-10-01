@@ -1,0 +1,57 @@
+<HTML> 
+<HEAD> 
+<TITLE>Query Page</TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+
+<H1>Query Page</H1>
+<P>
+<IMG SRC="../pics/hline.gif">
+
+<P>
+A query in Minibase follows this path:
+<UL>
+ <LI>User enters query using SQL (or using the QBE front end; if QBE is used,
+	the query is translated to SQL).
+ <LI>The <A HREF="../parser/parser.html"><B>parser</B></A> reads the SQL query 
+	and checks for syntactic validity.
+ <LI>The <B><A HREF="../optimizer/optimizer.html">optimizer</B></A> checks 
+	the catalog and makes sure that the relations
+	exist, that the user has used the proper attribute names, etc.
+	Similar to type checking.  
+ <LI>The <B><A HREF="../optimizer/optimizer.html">optimizer</A></B> then creates 
+	possible plans, using heuristics and catalog
+	information (e.g., cardinalities and availability of indexes) to find the
+	best plan.
+ <LI>The <A HREF="planner.html"><B>planner</B></A> then walks down the tree, 
+	calling itself recursively. It creates an
+	<B><A HREF="iterator.html">iterator tree</B></A>.
+ <LI>At run-time, tuples are returned one at a time through the 
+	a get_next call on the iterator at the root of the iterator tree.
+</UL>
+<P>
+<IMG SRC="../pics/hline.gif">
+
+<H2>Details</H2>
+There are two ways to return tuples of a query.  The first is to return a pointer
+into the buffer pool to the record.  This would only work for simple scans, 
+without projections or joins.  The limitations of this method are obvious, and it is 
+made even more difficult because then the low level record space management 
+(heap files for example) would pin the page in the buffer pool and the upper layer
+would need to unpin the page.
+<P>
+The other method is to copy tuples into dynamically allocated main memory.  
+This is the choice that was made in Minibase.
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+<B><A HREF="../project.html">Back to the Components Page</A></B><BR>
+<B><A HREF="../minibase.html">Back to the Minibase Home Page</A></B><BR>
+
+
+
+
+</BODY>
+</HTML>

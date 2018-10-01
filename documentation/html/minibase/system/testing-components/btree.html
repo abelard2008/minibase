@@ -1,0 +1,82 @@
+<HTML>
+<HEAD>
+<TITLE>BTree Test Page</TITLE>
+</HEAD>
+<body background = "../../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+
+
+<H1>BTree Test Page</H1>
+
+
+<IMG SRC="../../pics/hline.gif">
+<P>
+
+These tests require that the file "keys" be in the same directory 
+as the Minibase executable.
+<P>
+The Btree tests periodically stop to allow the user to examine individual pages
+in the tree.  The header, root, internal and leaf pages may be examined to see
+what pages are next to one another.  A visual interface is added to 
+visualize the structure of the tree.
+<P>
+<IMG SRC="../../pics/hline.gif">
+
+<H2>Test 1</H2>
+Create an index and insert key / rid pairs into it.  In Test 1
+keys are integers.  The keys are inserted in ascending order.
+The maximum number of keys that can be inserted into the tree
+is set at 4000 (enough to create three levels of the tree).
+A random deletion of 10% of the key/rid pairs is done.  
+<P>
+Test the range scans: <I>All Scan</I>, <I>Max Range Scan</I>, <I>Min Range
+Scan</I>, and <I>Min-Max Range Scan</I>.  Also <I>Exact Match</I>.
+Delete current is done as well. The tree is not destroyed because
+Test 2 uses it.
+<P>
+<IMG SRC="../../pics/hline.gif">
+
+<H2>Test 2</H2>
+In Test 2, scans are performed that make no sense (e.g., 
+low values higher than
+the high values, etc.).  The index that was created in Test 1 is used 
+for testing these scans.  The scans should return no tuples.  They should not
+return any errors.  Finally, the Btree index is destroyed. 
+<P>
+<IMG SRC="../../pics/hline.gif">
+
+<H2>Test 3</H2>
+In this test, the full deletion algorithm is exercised. 
+After inserting 2000 integer key/rid pairs, 1950 of these 
+are deleted. 2000 keys are sufficient to create two levels
+of the tree. At this point, the user is allowed to examine
+the root and leaf pages. Due to the deletions, the root page
+is converted back to a leaf page (from an index page) as it 
+can hold 50 records. Again, various scans are tested and then
+the index is destroyed. 
+<P>
+<IMG SRC="../../pics/hline.gif">
+
+<H2>Test 4</H2>
+Basically the same as Test 1 and Test 2 combined, 
+except that instead of an integer
+key, a string is used.  The keys read from the file "keys" (in the 
+same directory as the Minibase executable) are inserted in 
+lexicographic order. Deletion of a particular key and different
+types of scans as in Test 1 are done. Like in Test 2, abnormal 
+scans are tested. Finally, the index is destroyed. 
+
+
+
+<P>
+<IMG SRC="../../pics/hline.gif">
+
+<BR>
+<B><A HREF="../../BTree/BTree.html">BTree Page</A></B><BR>
+<B><A HREF="../../project.html">Back to the Components Page</A></B><BR>
+<B><A HREF="../../minibase.html">Back to the Minibase Home Page</A></B><BR>
+
+
+</BODY>
+</HTML>

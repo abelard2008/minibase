@@ -1,0 +1,28 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0 plus SQ/ICADD Tables//EN" "html.dtd"
+>
+<HTML>
+<HEAD>
+<TITLE>Grid File  Interface April 2, 1995</TITLE>
+</HEAD>
+<BODY><UL>
+ 
+<LI>Our .h interface as of April 2 : </LI> 
+<LI>Status gridfile_index :: create (char * filename, Key key1,
+<STRONG>...</STRONG>);</LI>
+<LI>Status gridfile_index:: open();</LI>
+<LI>Status gridfile_index::close();</LI>
+<LI>Status gridfile_index::insert_record(RID record_id, Key key1,
+<STRONG>...</STRONG>);</LI>
+<LI>Status gridfile_index::delete_record(RID record_id, Key1, <STRONG>...</STRONG>);</LI>
+<LI>Status gridfile_scan::() ;//full file scan</LI>
+<LI>Status gridfile_scan::(Key key1, <STRONG>...</STRONG>); //exact
+key match scan</LI>
+<LI>Status gridfile_range_scan::gridfile_range_scan(Key key1, Key
+Key1_low, Key Key1_high <STRONG>...</STRONG>);//range scan</LI> 
+<LI>// Index_scan is virtual class ancestor of gridfile_scan and
+gridfile_range_scan</LI>
+<LI>Status Index_scan:: get_next_record (RID&amp;record_id)</LI>
+<LI>Status Index_scan::delete_current_record(RID &amp;record_id)</LI></UL><HR
+>
+</BODY>
+</HTML>   

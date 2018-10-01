@@ -1,0 +1,52 @@
+<BODY BGCOLOR="#FFDDDD">
+
+<HTML>
+<HEAD>
+<TITLE>Introduction</TITLE>
+</HEAD>
+
+<BODY>
+
+
+<H1>Evolution of the System</H1>
+
+	Work got under way in early March when project teams formed and began
+to design their interfaces.  As expected, the interface negotiation proved to
+be a thorny problem, and interface changes were made as late as May.
+<P>
+	Minor problems arose throughout the course of the project as it
+developed, but there are a few that are especially important.
+<P>
+	Multiple DataBases:  There was some confusion as to how many separate
+databases (implemented as separate UNIX files) the Minirel II DBMS would 
+support at one time.  It was decided that multiple DBs should be supported,
+resulting in minor changes to the interfaces of groups, most notably the
+log manager.  Only late in the project, however, was it discovered that only
+one DB could be opened at any given time because of the way in which UNIX
+assigns file descriptors to processes.
+<P>
+	Minibase integration: Using the Minibase optimizer, parser, and some
+of the catalog design meant that a large amount of work was spent between the
+planner, catalogs, front end, and optimizer groups hammering out interfaces.
+<P>
+Overall, however, design issues did not cause any delays or major problems
+in the progress of the project.
+<P>
+
+<H2>Errors</H2>
+Minirel II uses an error protocol whereby errors are chained together
+by a global error object.  The path from the original error to its 
+detection at the user level can be accessed.  This error protocol was
+written with the original Minirel protocol in mind.  Only minor changes 
+were required.
+
+
+<H2>Global Identifiers</H2>
+There are several global identifiers woirth mentioning.  Each shared memory
+system requires a pointer so that every process can access it.  These include
+the buffer manager, log manager, recovery manager, disk space manager, and
+the lock manager.
+
+
+</BODY>
+</HTML>

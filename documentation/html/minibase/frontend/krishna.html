@@ -1,0 +1,177 @@
+
+<HTML>
+<HEAD>
+<TITLE>The Minibase Front-End</TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+
+<H1>The Minibase Front-End</H1>
+
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+		     
+
+The Minibase GUI front-end allows 
+users to invoke almost all database functions, and is described below.
+It can be run using the command <b>minibaseview</b>. 
+
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+
+<H2>Design and Implementation</H2>
+
+The current version of the GUI is written using the base Tcl/Tk
+toolkit (by John Ousterhout, available from Sun Microsystems and
+UC-Berkeley) and extensions to it (various authors).  The GUI
+runs as a separate process, invokes the Minibase backend (which
+forms the core database engine), and communicates with the
+backend through Unix pipes.  The GUI is best run with the
+single-user version of the Minibase backend, but the following
+descriptions do not change in any significant way for multi-user
+Minibase.
+<P>
+
+The proper versions of the Tcl/Tk toolkit and extensions are
+necessary to run the GUI---these toolkits are part of the
+Minibase distribution and need to be installed as appropriate.
+
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+
+<H2>Operating Modes</H2>
+
+The GUI operates in three modes:
+(1) The Catalog Editor mode.  (2) The Query Optimizer mode.  (3) The
+Database mode.
+Some of the functionality of the GUI is common to all modes while
+some commands are available only in certain modes.  The
+transition from one mode to the other in the GUI is generally
+transparent to the user---they are mentioned here only to simply
+the description of the front-end.
+<P>
+
+Global and context-sensitive help is available for most parts of
+the GUI; it is also simple and easy enough to use that the user
+can figure out most of the functionality by experimenting with
+the tool.
+
+
+<H3>The Catalog Editor Mode</H3>
+
+On invocation, the GUI starts out in the Catalog Editor mode.
+Although, the GUI process spawns and connects (via Unix pipes) to
+the Minibase backend, it does not yet allow the user to invoke
+any database related functions.
+<P>
+
+The only functional part of the GUI is the Catalog Editor.  The
+Catalog Editor provides a syntax directed, forms-based interface
+to creating and editing Minibase catalogs (without the user
+having to understand the underlying catalog format).
+<P>
+
+Minibase catalogs created and edited via the Catalog Editor are
+stored as files i.e. they are not automatically associated with
+the Minibase backend or with any databases.
+
+
+<H3>The Query Optimizer Mode</H3>
+
+When a Minibase catalog is "opened" (rather than "created" or
+"edited"), the GUI switches to the Query Optimizer mode.  In this
+mode, all of the Catalog Editor functions are still available.
+From this point on, the GUI switches back and forth between the
+Query Optimizer and Database modes only---it does not revert to
+the Catalog Editor mode (however, all Catalog Editing functions
+remain accessible to the user).
+<P>
+
+In the Query Optimizer mode, the user can type SQL queries
+against the "opened" catalog (henceforth, "current catalog"),
+have the query optimized (i.e. have various query plans generated
+by the Minibase backend and the best plans selected).  The
+selected query plans are then displayed in the main window of the
+GUI.  These plans can then be examined in detail.  The user can
+also make various refinements to the plans via "toggles"
+available in the GUI menus and observer the effects of changes in
+query optimization strategy on the selection of different plans
+by the optimizer.
+<P>
+
+Examples exercises and catalogs are included in 
+the directory <i>programs/opttool/catalogs</i>.
+The catalogs and exercises
+test various parts of the optimizer and demonstrate the effects
+of indexes, access costs, query selectivity, joins, sorting, data
+clustering, and so on.
+<P>
+
+In the Query Optimization mode, no query plan is actually
+evaluated against any data since the current catalog is not
+associated with any actual database.
+
+
+<H3>The Database Mode</H3>
+
+When the user "opens" a database, the GUI switches from its
+previous mode (Catalog Editor or Query Optimizer) to the Database
+mode.  As mentioned before, all Catalog Editor functions are
+still available.  The Minibase backend loads the "opened"
+database (henceforth "current database") and performs any
+necessary initializations.  At this point, a number of additional
+functions are available to the user.
+<P>
+
+Every valid Minibase database has an internal catalog---when
+users create new databases, they need to associate a catalog with
+each database.  Existing catalogs may also be modified (however,
+the GUI cannot be used for modifying catalogs bound to
+databases---the Minibase C++ interface should be used for making
+changes to the bound catalogs).
+<P>
+
+Users can invoke all database operations: inserting and deleting
+tuples into relations, and updating them.  Data can also be read
+in from, and printed out to files/printers.  In addition to these
+database functions, users can also perform all the functions
+available in the Query Optimization mode and execute query
+plans against the relations/tuples in the database.
+<P>
+
+The Database mode remains active until the user "opens" a
+catalog---when the GUI switches to the Query Optimizer mode.
+
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+
+<H2>Termination and Cleanup</H2>
+
+The GUI can be terminated in one of two ways.  Menu buttons
+provide for a graceful exit, in which case the Minibase backend
+is properly shutdown and the GUI terminates; and an abort
+function, in which case the Minibase backend and GUI are
+terminated.  The "abort" may be required if the Minibase backend
+is unable to recover from any error (some syntax errors in user
+commands may cause a loss of synchronization between the GUI and
+the backend).
+
+<P>
+
+<IMG SRC="../pics/hline.gif">
+<BR>
+<A HREF="../project.html">Back to the List of Components</A><BR>
+<A HREF="../minibase.html">Back to the Minibase Home Page</A><BR>
+
+
+</BODY>
+
+</HTML>
+
+
+

@@ -1,0 +1,28 @@
+
+  You need to have gnuMake, and g++ 2.7.2 to properly build
+  and install Minibase.
+
+      
+  1) Set the environment variables 'MINIBASE_ROOT' to the top of
+     the installed source tree.  The variable 'PLATFORM' should be
+     set to the platform name as determined by the "sysname" script.
+
+     In csh, this is done with:
+
+     setenv MINIBASE_ROOT <the top level directory>
+
+     setenv PLATFORM `$MINIBASE_ROOT/bin/sysname`
+
+
+  2) Modify CONFIG to set a few include directories and compilers.
+
+     Internal Release:
+     2b) Unpack the proper version of 'tclpack.tar' for your m/c.
+
+  3) type 'make'
+
+
+  4) Users of minibase will need to:
+       Add $MINIBASE_ROOT/bin to your search path, and add the
+       definitions of MINIBASE_ROOT and PLATFORM to your
+       startup (.cshrc) file.

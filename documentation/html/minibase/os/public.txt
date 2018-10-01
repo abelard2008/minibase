@@ -1,0 +1,145 @@
+/*-------------------------------------------------------------------------
+
+  public interface for os.h and xact.h
+
+--------------------------------------------------------------------------*/
+
+
+/**--- os.h ---*/
+
+class Semaphore {
+
+public:
+      Semaphore(int init=1, int flag = 0); //constructor
+                                           //bin-semaphore if flag=0, 
+					   //else general sem
+					   //default is bin-sem with init_val=1;
+					  
+      ~Semaphore();                        //destructor
+      void operator delete(void *p);       //this only will be called by
+					   //os group   
+
+      void up();                           //semaphore value minus 1, 
+					   //for bin-sem, is unlock
+      void  down();                        //val + 1,  for bin-sem, is lock
+      void remove();                       //release the sem to system when
+					   //not needed any more.
+};
+
+//SharedRegion base class
+//It will be the parent of other classes like BuferPool, locktable, etc. in shm.
+
+class SharedRegion {
+
+public:
+     SharedRegion(){};       			//constructor
+     ~SharedRegion(){};      			//destructor
+
+     inline void lock(){mutex.down();};         //enter, set semaphore
+     inline void unlock(){mutex.up();};         //leave_normally
+
+};
+
+class SharedMemory{
+
+public:
+      //constructor will get a chunk of shared memory using a GLOBALLY
+      //know SHM_KEY, and then mapping the shm into the calling process's
+      //address space.
+      //Since the KEY is globally know, it can be used by all user process,
+      //and be used to make sure the shared memory will be mapped to
+      //the same location for all calling process.
+      //It will also check to see if this is the first calling process,
+      //If yes, get shm and mapping, otherwise, only do mapping.
+
+      SharedMemory(int size);       //in kilo_bytes
+                                    //HP system has a limit 
+				    //use default key
+
+      ~SharedMemory();              //destructor
+
+      char* begin_shmadd();         //the beginngin address of shm
+
+      char* malloc(int size);       //size in bytes
+                                    //get bytes  and return the start address
+
+      void lock(){mutex->down();};  //lock shm, needed at startup to avoid
+				    //race condition, i.e. only one process
+				    //do the initialization
+      void unlock(){mutex->up();};
+
+};
+
+class ShMemMgr{
+
+public:
+       ShMemMgr(int size = 20); //default 20K bytes
+       ~ShMemMgr();
+       char* malloc(int size);
+};
+
+
+/**-------  xact.h ------**/
+
+/*************************************************************************
+
+Xaction_manager is a  hash table that will reside in the shared memory.
+Hash table has about 200 slots which contain Xaction pointer point to
+corresponding Xaction inside the shared memory. 
+
+**************************************************************************/
+
+
+class Xaction_manager:public SharedRegion
+{
+
+public:
+	Xaction_manager();	
+	~Xaction_manager();
+
+	int 	begin();	
+	/*This is the function which will be called by every xaction 
+	at the startup time. It will return a xid to the calling process; */
+	
+
+	Status 	commit();		
+	/* In commit time, this function will be called to do some 
+	clean up job. One thing for sure is that it will delete Xaction
+	object from Xaction_manager; */
+
+	Status 	abort();			
+	/* see explanation above*/
+
+
+	Status 	sleep();		
+	/*call this function will put the calling process to sleep at 
+	xid's semophore.  Note: the caller should know his xid before 
+	make sleep call; */
+
+	Status 	wakeup(int xid);		
+	/* Call this function will awake one of the sleeping process
+	( if there are any) given they are sleeping on xid's semophore; */
+
+	Status 	print();		
+
+	int 	get_key(int seq);		/* hash function */
+
+/************************************************************************* 
+	From now on, we will put all the "hanger" for other groups who need 
+	   access xaction_manager to get some kind of access
+**************************************************************************/
+	
+
+Status 	GetRecInfo(int xxid,RecInfo &recInfo);
+
+Status 	SetRecInfo(int xxid,RecInfo &recInfo);
+
+Status 	GetAllRecInfo(char *db_name,int &num_entries,int xid[], 
+					RecInfo recInfoList[]);
+Status 	get_lock_info(trans_lock_info* &lock_info);
+	
+	
+};
+
+/*------------------------------------------------------------------------*/
+

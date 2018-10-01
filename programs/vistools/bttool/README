@@ -1,0 +1,7 @@
+This directory contains the B-tree visualization tool, a Tcl/Tk
+program that graphically displays the inner workings of a B+ tree.
+
+The tool requires a copy of "btree_wish", which is a modified version
+of the "tree" Tcl extension library, version 3.6.2.  This is the
+executable that wraps Tcl/Tk.  You must also modify the "view_btree"
+script to refer to the public installation directory for the tool.

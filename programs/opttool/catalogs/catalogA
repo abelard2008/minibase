@@ -1,0 +1,29 @@
+3
+emp 5 40000 50 2000
+	empid 1 I 10001 60000 4 0 1
+		Hash 675 R 1 0 40000 1 1 emp-Hash-empid
+	ename 2 T Aaronson Zywronski 30 4 1
+		B_Index 2700 A 1 0 39000 2 2 emp-B_Index-ename
+	dno 3 I 1001 4000 4 34 1
+		Hash 650 R 1 0 3000 1 1 emp-Hash-dno
+	jno 4 I 1 2500 4 38 1
+		B_Index 640 A 1 0 2000 2 2 emp-B_Index-jno
+	sal 5 R 15000 500000 8 42 2
+		B_Index 1000 A 1 0 5000 2 2 emp-B_Index-sal
+		FileScan 2000 R 0
+dept 3 3000 40 120
+	dno 1 I 1001 4000 4 0 1
+		Hash 50 R 1 0 3000 1 1 dept-Hash-dno
+	dname 2 T Accounting World 32 4 1
+		B_Index 200 A 1 0 3000 1 2 dept-B_Index-dname
+	mgrid 3 I 10001 60000 4 36 2
+		Hash 45 R 1 0 2500 1 1 dept-Hash-mgrid
+		FileScan 120 R 0
+job 3 2000 200 400
+	jno 1 I 1 2500 4 0 1
+		Hash 35 R 1 0 2000 1 1 job-Hash-jno
+	jname 2 T Accountant Webmaster 46 4 1
+		B_Index 100 D 1 0 2000 1 2 job-B_index-jname
+	jdesc 3 T A zzz 150 50 2
+		B_Index 720 D 1 0 2000 2 2 job-B_index-jdesc
+		FileScan 400 R 0

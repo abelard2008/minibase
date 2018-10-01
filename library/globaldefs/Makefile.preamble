@@ -1,0 +1,6 @@
+GLOBALDEFS_SRCS = new_error.C system_defs.C ext_sys_defs.C
+GLOBALDEFS_HDRS = new_error.h system_defs.h ext_sys_defs.h \
+		  minirel.h planner.h query.h tuple.h
+
+GLOBALDEFS_OBJS = $(GLOBALDEFS_SRCS:.C=.o)
+

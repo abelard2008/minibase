@@ -1,0 +1,90 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!Converted with LaTeX2HTML 95 (Thu Jan 19 1995) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds >
+<HEAD>
+<TITLE>1 Introduction</TITLE>
+</HEAD>
+<BODY>
+<meta name="description" value="1 Introduction">
+<meta name="keywords" value="main">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+<P>
+ <BR> <HR><A NAME=tex2html54 HREF="node2.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html52 HREF="main.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html46 HREF="main.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html55 HREF="node2.html">2 ARIES Recovery</A>
+<B>Up:</B> <A NAME=tex2html53 HREF="main.html">An ARIES Log Manager </A>
+<B> Previous:</B> <A NAME=tex2html47 HREF="main.html">An ARIES Log Manager </A>
+<BR> <HR> <P>
+<H1><A NAME=SECTION00010000000000000000>1 Introduction</A></H1>
+<P>
+<A NAME=sectionintro>&#160;</A>
+<P>
+The recovery subsystem is an essential part of any Relational Database
+Management System (RDBMS).  Functions that are performed by the
+recovery subsystem include:
+<P>
+<OL><LI> <A NAME=introenumlogging>&#160;</A> Logging of all updates done
+to the database.  Either physical changes to the database may be
+logged (<em>physical logging</em>, e.g., the bytes in the offset range
+20--24 in page 3 of the database changed from &lt20, 30, 40, 50,
+60&gt to &lt75, 32, 47, 95, 126&gt) or the
+operations performed on the data may be logged (<em>logical logging</em>,
+e.g., an insert of the &lt<em>key</em>, <em>record-id</em>&gt
+pair &lt25, 65&gt was done on the B<IMG  ALIGN=BOTTOM ALT="" SRC="img13.gif">-tree index on
+employee ID of relation foo of the database).
+<P>
+	<LI> Supporting the notion of transaction <em> aborts</em> or
+<em> rollbacks</em>.  Every change that the transaction effected on the
+database must be undone.  The log of changes made by the transaction
+to the database (maintained, as described in
+(<A HREF="node1.html#introenumlogging">1</A>) above) is used for this purpose.
+<P>
+	<LI> Crash recovery.  The data in the database must be
+protected against crashes.  Modern RDBMSs use a buffer pool to cache
+the most often/recently used pages of the database.  If the system
+crashes before the changes made in main memory make it to disk, the
+recovery subsystem, on restart, will have to reconstruct the changes.
+Again, the log is consulted to determine the changes effected.  Also,
+transactions that were in progress at the time of the crash need to be
+undone.
+<P>
+	<LI> Checkpointing and Savepointing.  Checkpointing takes a
+snapshot of certain key data structures and stores it in the log.
+This checkpoint is used during restart to minimize the amount of work
+the system needs to do before everything is back to normal.
+Savepointing allows transactions to snapshot themselves at various
+points within themselves, and rollback to any previously made
+savepoint.
+<P>
+</OL>
+<P>
+	It is clear that logging is an integral part of the recovery
+subsystem.  This project report describes the design and
+implementation of a log manager for a recovery subsystem based on
+ARIES [<A HREF="node32.html#aries">Mohan et al. 92</A>].  The recovery subsystem is a part of a simple,
+multi-user RDBMS called <em> Minirel</em>.
+<P>
+	Section <A HREF="node2.html#sectionariesintro">2</A> briefly describes how ARIES
+recovery works.  This section also introduces the features expected of
+a log manager based on ARIES.  Section <A HREF="node3.html#sectionminirelintro">3</A>
+describes <em> Minirel</em> and how an ARIES-based log manager fits into
+it.  Section <A HREF="node4.html#sectioninterface">4</A> defines the interface that our
+log manager provides to other parts of <em> Minirel</em>.
+Section <A HREF="node9.html#sectionimplementation">5</A> outlines how the log manager
+implements the interface and other implementation issues.
+Sections <A HREF="node23.html#sectionfuturework">7</A>
+and <A HREF="node26.html#sectionminirelenhancements">8</A> enumerate some additional work
+that can be done to enhance the utility and performance of our log
+manager and <em> Minirel</em> as a whole, respectively.  Finally,
+Section <A HREF="node31.html#sectionconclusions">9</A> concludes the report.
+<P>
+<BR> <HR><A NAME=tex2html54 HREF="node2.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html52 HREF="main.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html46 HREF="main.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html55 HREF="node2.html">2 ARIES Recovery</A>
+<B>Up:</B> <A NAME=tex2html53 HREF="main.html">An ARIES Log Manager </A>
+<B> Previous:</B> <A NAME=tex2html47 HREF="main.html">An ARIES Log Manager </A>
+<BR> <HR> <P>
+<BR> <HR>
+<P><ADDRESS>
+ajitk@cs.wisc.edu, cjin@cs.wisc.edu
+</ADDRESS>
+</BODY>

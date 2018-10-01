@@ -1,0 +1,15 @@
+#!/bin/sh
+
+BMPATH=$MINIBASE_ROOT/programs/vistools/bmtool
+PWD=`pwd`
+TMPDIR=/tmp/view_bufmgr_$$
+
+TCL_LIBRARY=$MINIBASE_ROOT/packages/tcl/$PLATFORM/lib/tcl7.4
+TK_LIBRARY=$MINIBASE_ROOT/packages/tcl/$PLATFORM/lib/tk4.0
+export TCL_LIBRARY TK_LIBRARY
+
+mkdir $TMPDIR
+cd $TMPDIR
+$MINIBASE_ROOT/bin/btree_wish -f $BMPATH/source_files/main.tcl $BMPATH $PWD
+cd $PWD
+rm -rf $TMPDIR

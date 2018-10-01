@@ -1,0 +1,36 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> Create/Open index</TITLE>
+<meta name="description" value=" Create/Open index">
+<meta name="keywords" value="report">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html257 HREF="node20.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A> <A NAME=tex2html255 HREF="node16.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A> <A NAME=tex2html249 HREF="node18.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html258 HREF="node20.html"> Destroy index</A>
+<B>Up:</B> <A NAME=tex2html256 HREF="node16.html"> Internal Design</A>
+<B> Previous:</B> <A NAME=tex2html250 HREF="node18.html"> Data Structure</A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00033000000000000000> Create/Open index</A></H2>
+<P>
+When the index is created, the user is required to supply the name of
+the index, the length and AttrType of the key and the number of
+initial buckets. (Its default value is 1.) Then a new page is created
+(by Buffer Manager) as the RootPage and its PageId is given to db
+to set the file entry for the index. Then HeaderPage, DirPages and
+initial buckets are created and initialized.<BR>When  the index is opened, the user is required to supply the name of
+the index. Then the name is passed to db to get the PageId of
+RootPage. The RootPage is read into the buffer pool. The page
+number of HeaderPage is on the RootPage and from header page we can access
+all the pages in the index.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+<I> Weiqing Huang <BR>
+Sun May 14 16:22:27 CDT 1995</I>
+</ADDRESS>
+</BODY>

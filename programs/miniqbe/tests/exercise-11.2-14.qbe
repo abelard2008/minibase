@@ -1,0 +1,5 @@
+setComment {Suppliers of all parts}
+addRelationTable {Suppliers {}} {sid p.g._s} {sname {}} {city {}}
+addRelationTable {Orders {}} {sid _s} {pid _p1} {quantity {}}
+addRelationTable {Parts {}} {pid _p2} {pname {}} {color {}}
+addConditionsBox {cnt._p1 = cnt._p2}

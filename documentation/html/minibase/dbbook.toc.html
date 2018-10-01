@@ -1,0 +1,383 @@
+
+<HTML>
+<HEAD>
+<TITLE>Database Management Systems</TITLE>
+</HEAD>
+
+<body background = "pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link
+ = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+
+<P>
+<IMG SRC="pics/hline.gif">
+<P>
+
+<H1>Table of Contents for ``Database Management Systems, Beta Edition''</H1>
+<P>
+Chapters marked with an asterisk can be dropped without loss of continuity,
+and the remaining material in the chapters through Recovery can be covered in
+a first course that gives a broad introduction to databases.
+Dependencies between chapters have
+been kept to a minimum, and other choices of material to emphasize or omit can
+be made as well.  For more on the organization of chapters, 
+<a HREF="dbbook.info.html"><B>click here.</B></a>
+<P>
+In the first edition of the book, expected to be available in May 1997,
+chapters on Object-Databases,
+Rule-Oriented Extensions, and Additional Topics in Databases will be added
+to those listed below.
+
+<P>
+<IMG SRC="pics/hline.gif">
+<P>
+
+<I>
+
+<P>
+<B>PREFACE ix</B>
+<BR>
+Acknowledgements  xiv  
+<P>
+<B>Introduction to Database Management Systems    1 </B> 
+<BR>
+1.1  Who Deals with Databases?  3  
+<BR>
+1.2  Data Models  5  
+<BR>
+1.3  Levels of Abstraction in a DBMS  7  
+<BR>
+1.4  The Concept of a Transaction  10  
+<BR>
+1.5  Structure of a DBMS  14  
+<BR>
+1.6  Summary  16  
+<P>
+<B>Introduction to the Relational Model    19 </B> 
+<BR>
+2.1  Relations  20  
+<BR>
+2.2  Integrity Constraints  22  
+<BR>
+2.3  Query Languages  25  
+<BR>
+2.4  Summary  29  
+<P>
+<B>Storing Data: Disks and Files    32 </B> 
+<BR>
+3.1  Disks and Tapes  32  
+<BR>
+3.2  Disk Space Management  35  
+<BR>
+3.3  Buffer Manager  37  
+<BR>
+3.4  Record Formats *  42  
+<BR>
+3.5  Page Formats *  45  
+<BR>
+3.6  Files and Access Methods  48  
+<BR>
+3.7  Mapping Relations to Files  52  
+<BR>
+3.8  Summary  55  
+<P>
+<B>Introduction to File Organizations    60 </B> 
+<BR>
+4.1  Cost Model  61  
+<BR>
+4.2  Comparison of Three File Organizations  62  
+<BR>
+4.3  Introduction to Indexes  68  
+<BR>
+4.4  Summary  76  
+<P>
+<B>Tree Structured Indexing    79  </B>
+<BR>
+5.1  Indexed Sequential Access Method (ISAM) *  79  
+<BR>
+5.2  B+ Trees: A Dynamic Index Structure  85  
+<BR>
+5.3  Format of a Node  86  
+<BR>
+5.4  Search  87  
+<BR>
+5.5  Insert  89  
+<BR>
+5.6  Delete *  93  
+<BR>
+5.7  Duplicates *  98  
+<BR>
+5.8  B+ Trees in Practice *  99  
+<BR>
+5.9  Summary  104  
+<P>
+<B>Hash-Based Indexing    111  </B>
+<BR>
+6.1  Static Hashing  112  
+<BR>
+6.2  Extendible Hashing *  113  
+<BR>
+6.3  Linear Hashing *  119  
+<BR>
+6.4  Extendible Hashing vs. Linear Hashing *  125  
+<BR>
+6.5  Summary  126  
+<P>
+<B>External Sorting    133  </B>
+<BR>
+7.1  Introduction  133  
+<BR>
+7.2  A Simple Two-Way Merge Sort  134  
+<BR>
+7.3  External Merge Sort  135  
+<BR>
+7.4  Using B+ Trees for Sorting *  140  
+<BR>
+7.5  Summary  144  
+<P>
+<B>Relational Algebra and Calculus    147  </B>
+<BR>
+8.1  Relational Algebra  149  
+<BR>
+8.2  Relational Calculus  163  
+<BR>
+8.3  Expressive Power of Algebra vs. Calculus *  170  
+<BR>
+8.4  Summary  172  
+<P>
+<B>SQL: The Query Language    176  </B>
+<BR>
+9.1  The Form of a Basic SQL Query  178  
+<BR>
+9.2  UNION, INTERSECT and EXCEPT  184  
+<BR>
+9.3  Nested Queries  187  
+<BR>
+9.4  Aggregate Operators  193  
+<BR>
+9.5  Null Values *  202  
+<BR>
+9.6  Embedded SQL *  205  
+<BR>
+9.7  Cursors *  208  
+<BR>
+9.8  Dynamic SQL *  212  
+<BR>
+9.9  Summary  213  
+<P>
+<B>Creating and Modifying Relations in SQL    219  </B>
+<BR>
+10.1  Introduction to The Data Definition Language (DDL)  219  
+<BR>
+10.2  Integrity Constraints  221  
+<BR>
+10.3  Inserting, Deleting and Updating Rows  226  
+<BR>
+10.4  Summary  231  
+<P>
+<B>Security and Views    234  </B>
+<BR>
+11.1  Views  236  
+<BR>
+11.2  Access Control  240  
+<BR>
+11.3  Discretionary Access Control *  241  
+<BR>
+11.4  Mandatory Access Control *  251  
+<BR>
+11.5  Additional Issues Related to Security *  255  
+<BR>
+11.6  Summary  260  
+<P>
+<B>Query-By-Example (QBE)    265  </B>
+<BR>
+12.1  Introduction  265  
+<BR>
+12.2  Basic QBE Queries  266  
+<BR>
+12.3  Queries Over Multiple Relations  268  
+<BR>
+12.4  Negation in the Relation-name Column  269  
+<BR>
+12.5  Aggregates  270  
+<BR>
+12.6  Conditions Box  271  
+<BR>
+12.7  Unnamed Columns  274  
+<BR>
+12.8  Updates  275  
+<BR>
+12.9  Division in QBE, Relational Completeness *  277  
+<BR>
+12.10  Summary  279  
+<P>
+<B>Implementation of Relational Operations    282  </B>
+<BR>
+13.1  Introduction  282  
+<BR>
+13.2  The Selection Operation  284  
+<BR>
+13.3  The Join Operation  291  
+<BR>
+13.4  The Projection Operation *  307  
+<BR>
+13.5  The Set Operations *  311  
+<BR>
+13.6  Aggregate Operations *  312  
+<BR>
+13.7  The Impact of Buffering  314  
+<BR>
+13.8  Summary  315  
+<P>
+<B>Relational Query Optimization    322  </B>
+<BR>
+14.1  An Example Illustrating Query Optimization  324  
+<BR>
+14.2  Overview of Relational Query Optimization  330  
+<BR>
+14.3  Statistics and Reduction Factors *  336  
+<BR>
+14.4  Relational Algebra Equivalences *  339  
+<BR>
+14.5  Enumeration of Alternative Plans *  343  
+<BR>
+14.6  Nested Subqueries *  356  
+<BR>
+14.7  A Note on Other Approaches to Query Optimization *  359  
+<BR>
+14.8  Summary  359  
+<P>
+<B>Conceptual Database Design and the ER Model    368  </B>
+<BR>
+15.1  The Entity-Relationship Model  369  
+<BR>
+15.2  Additional Features of the ER Model  375  
+<BR>
+15.3  Conceptual Design Using the ER Model  387  
+<BR>
+15.4  Conceptual Design for Large Enterprises  398  
+<BR>
+15.5  Summary  399  
+<P>
+<B>Schema Refinement and Normal Forms for Relations    407  </B>
+<BR>
+16.1  Functional Dependencies  409  
+<BR>
+16.2  Motivating Examples  410  
+<BR>
+16.3  Reasoning About FDs  416  
+<BR>
+16.4  Normal Forms  419  
+<BR>
+16.5  Decompositions  423  
+<BR>
+16.6  Normalization  428  
+<BR>
+16.7  Other Kinds of Dependencies *  435  
+<BR>
+16.8  Summary  441  
+<P>
+<B> Physical Database Design and Database Tuning    449  </B>
+<BR>
+17.1  Introduction  449  
+<BR>
+17.2  Overview of Index Selection  452  
+<BR>
+17.3  Basic Examples Illustrating Choice of Indexes  455  
+<BR>
+17.4  Clustering and Indexing *  457  
+<BR>
+17.5  Indexes on Multiple-Attribute Search Keys *  463  
+<BR>
+17.6  Indexes that Enable Index-Only Plans *  464  
+<BR>
+17.7  Overview of Database Tuning  467  
+<BR>
+17.8  Choices in Tuning the Conceptual Schema *  470  
+<BR>
+17.9  Tuning Queries and Views  475  
+<BR>
+17.10  Impact of Concurrency *  477  
+<BR>
+17.11  Summary  478  
+<P>
+<B>Concurrency Control    489  </B>
+<BR>
+18.1  Transactions and Schedules  490  
+<BR>
+18.2  Notions of Consistency  492  
+<BR>
+18.3  Lock-Based Concurrency Control  496  
+<BR>
+18.4  Lock Management *  503  
+<BR>
+18.5  Specialized Locking Techniques *  510  
+<BR>
+18.6  Transaction Support in SQL-92 *  516  
+<BR>
+18.7  Concurrency Control Without Locking *  520  
+<BR>
+18.8  Summary  525  
+<P>
+<B>Crash Recovery and Transaction Rollback    532  </B>
+<BR>
+19.1  Overview of ARIES  533  
+<BR>
+19.2  Normal Execution *  534  
+<BR>
+19.3  Recovering From a System Crash *  541  
+<BR>
+19.4  Media Recovery *  550  
+<BR>
+19.5  Other Algorithms, Interaction with Concurrency Control *  550  
+<BR>
+19.6  Summary  552  
+<P>
+<B> Parallel and Distributed Databases    557  </B>
+<BR>
+20.1  Parallel Databases  558  
+<BR>
+20.2  Introduction to Distributed Databases  562  
+<BR>
+20.3  Distributed DBMS Architectures  563  
+<BR>
+20.4  Storing Data  565  
+<BR>
+20.5  Distributed Catalog Management  567  
+<BR>
+20.6  Distributed Query Optimization and Processing  569  
+<BR>
+20.7  Updating Distributed Data  576  
+<BR>
+20.8  Distributed Transaction Management  581  
+<BR>
+20.9  Distributed Concurrency Control  582  
+<BR>
+20.10  Distributed Recovery  585  
+<BR>
+20.11  Summary  590  
+<P>
+<B> REFERENCES     600  </B>
+<P>
+<B>INDEX     627  </B>
+<P>
+
+<P>
+<IMG SRC="pics/hline.gif">
+<P>
+<I>July 12, 1996</I>
+<P>
+
+</I>
+
+<ADDRESS>
+<a HREF="http://www.cs.wisc.edu/~raghu/raghu.html"> Raghu Ramakrishnan</a> 
+<A HREF="http://www.cs.wisc.edu/cgi-bin/finger?raghu@cs.wisc.edu">
+[raghu@cs.wisc.edu]</A>
+<BR>
+</ADDRESS>
+
+
+</BODY>
+
+</HTML>
+

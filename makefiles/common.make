@@ -1,0 +1,13 @@
+
+include $(MINIBASE_ROOT)/CONFIG
+
+PARSER_LIBS := -L$(FLEX_LIB_LOC) -lfl
+OPTIMIZER_LIBS := -L$(MATH_LIB_LOC) -lm
+
+EXTERNAL_LIBS := $(OPTIMIZER_LIBS) $(PARSER_LIBS)
+
+DFLAGS := -g
+MOREFLAGS := -O -Wall -fno-implicit-templates
+CFLAGS = $(DFLAGS) $(INCLUDES) $(MOREFLAGS)
+
+INSTALLHDRS := /bin/cp -p

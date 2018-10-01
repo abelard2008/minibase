@@ -1,0 +1,172 @@
+<html>
+<head>
+<title>	Accomplishments, Testing and Retrospective </title>
+
+<body>
+<h1> Accomplishments, Testing and Retrospective </h1>
+
+
+<h2>Accomplishments</h2>
+
+We  implemented   the <i>space  manager</i>   and  the <i>heapfile</i>
+components of minirel.  The space   manager comprises of the   classes
+</i>DB, DSM  and Page</i>.  These had  to  be implemented from scratch
+since the    notion of a database  was   entirely different   from the
+previous version of  minirel. The  DB and  DSM classes were  initially
+implemented   to support   a  very   general use   of   databases.  In
+particular, it supported multiple open  databases within a process and
+several different databases being  opened by different processes.  The
+change in the  design to permit  only one open  database and only  one
+database across all processes resulted  in us going  back to the  code
+and removing all   the generality from   it.  Further, the   bit level
+manipulations that  are necessary for maintaining  the  space map were
+typically hard and   required exhaustive   testing  to ensure    their
+correctness.  <p>
+
+The  heapfile component consists of  the  <i>HeapFile, HFPage and Scan
+</i> classes. Of these, the HFPage code could  be re-used in large part
+from  the earlier version   of minirel.   However, since  the heapfile
+itself  is now  built on top  of  totally different interface, most of
+HeapFile code had to be  written afresh. An  entire new class Scan was
+implemented to support sequential scans.  <p>
+
+The development of the multiuser versions of the  above required us to
+modify   some  of  the single  user  code  to    now  deal with shared
+memory. Further, locking and logging for concurrency control and crash
+recovery ensured    that   we had a    complete   understanding of the
+primitives offered, their limitations and  means of obtaining the best
+results with them.
+<p>
+
+<hr>
+<h2>Testing</h2>
+
+The testing of our code can be viewed  as having </i>two</i> phases. The first
+phase consisted  of us running a series  of tests that stress the code
+and  test  its   correctness.   In  the second  phase,   other  groups
+integrated our code with theirs and ran their own tests.
+<p>
+
+The normal operation of the space  manager was tested  by having a set
+of tests   that  use every   call in  the  interface.   Then,  several
+pathological cases were  explored. We  forced the  space  map to  span
+several pages, by having  a large number of pages  and a smaller sized
+page. Then, the allocation and  deallocation of runs that span  across
+page  boundaries were checked.  Similarly,  the  header page can  also
+overflow. By having a small  enough page size  (128 bytes), we  forced
+the directory to overflow across several pages and tested the routines
+that insert, delete and retrieve file entries.
+<p>
+
+The multiuser version   of the space manager   uses shared memory  for
+storing the  space map and the  directory, Synchronization of accesses
+to shared memory   was tested by designing   one process to  lock  the
+shared memory and  sleep for a while. This  caused the other processes
+to  block trying to access the  shared  memory. When the first process
+woke up and  released  the lock, the  other  process could finish  its
+execution.
+<p>
+
+The  heapfile component   was   exhaustively tested  by  a   series of
+tests. These  use  all  the methods in  the  public  interface to  the
+heapfile and in several  different   combinations. We inserted   large
+number  of   records  that  caused  the    heapfile to  grow   to many
+pages.  Under such   conditions, we tested    the working of  inserts,
+deletes, scans and all other operations.
+<p>
+
+Our  code has been integrated  with  several other  components and has
+been used by them for several weeks.  No major bug has been reported
+by any of   them, thus reenforcing  the  reliability of our code.  The
+space  management   code   has  been  used     by the  <i>buffer  manager</i>
+group. Heapfiles have been used by the <i>catalogs</i> group among others.
+
+<p>
+<hr>
+<h2>Retrospective</h2>
+
+The close  association with this   project from the beginning  of  the
+design phase has shown us the difficulty in designing a system of this
+kind. We have learned about tradeoffs that need to be made and the near
+impossibility of getting  everything right in  the first attempt.  The
+following comments express our feelings about the future directions in
+which minirel can evolve and the improvements that can be made. We are
+not sure if they are feasible,  or how they  affect other parts of the
+system.
+<p>
+
+Currently,  there are several restrictions  about the use of databases
+within a  process and also  among processes. Support  for several open
+databases   in  a transaction might  be  useful.  Also, processes with
+different open databases should be permitted to  share the same buffer
+pool.
+<p>
+
+The  current structure  requires that the   higher layers talk to  the
+buffer manager <i>most of the time</i>. However,  they need to call the
+DB  methods  for allocation,  deallocation   and directory service. It
+might be better if  a common interface that  provides all the features
+is developed.
+<p>
+
+The shared memory implementation handles only allocation of memory but
+does  not  support  deallocation. The  users   should write  their own
+mechanism for     managing the deallocated space.   In   a system like
+minirel, where several components use shared  memory and are developed
+separately,  this  would  mean  a  severe   case   of redundancy   of
+code. Every  component has its own  free  list implementation and some
+components require the maintenance of several lists. It would be nice
+if  the shared region class  also supported deallocation  of memory in
+some clean way.
+<p>
+
+Only   page level locks are   supported.  This severely restricts  the
+amount of concurrency  possible.  For instance,  a change to   a single
+record on  a heapfile page  causes the  entire  page to be  locked  in
+exclusive mode. No other  transaction  can access  this page  till the
+previous    one  committed or   aborted.   Having locks with different
+granularities and support for a richer variety of locks would aid high
+concurrency.
+<p>
+
+Byte level logging causes high overhead while logging changes to a few
+bits on the space map. We are not aware of any scheme that avoids this
+overhead.
+<p>
+
+As regards our implementation, there is  some scope for improvement in
+the   way inserts on  heapfiles  are  handled. We  are  not sure  that
+maintaining  a  list of  pages  with some free space  on  it is a good
+solution.  Some better scheme needs to  be developed that ensures that
+inserts  are both reasonably  fast  and   make  efficient use  of  the
+available space. Also, we have a restriction on  the nature of updates
+that are  possible on records. Use  of forwarding pointers can get rid
+of this restriction. <p>
+
+During  the recovery phase, the  recovery manager loads the pages into
+memory  and    restores  the   before     images for   the     aborted
+transaction.  This causes a  problem in the case of  space map and the
+header  pages. These pages are stored   in shared memory  by the space
+manager and  not in the  buffer pool.  Thus  changes  by the  recovery
+manager to these  pages do  no get  reflected in the  space manager. A
+possible solution is that the recovery manager treats these pages in a
+special manner. It can be given access  to the shared memory structure
+maintained by the  space  manager and  thus, all the  changes are made
+there and not in the buffer pool.
+<p>
+<hr>
+<h2>Appendix</h2>
+
+The code for the space manager and heapfile components is  in 
+<i>~nsriram/public/cs764/code</i> directory.
+
+<BR><BR>
+<HR>
+<BR>
+<I> Ravi Murthy</I><BR>
+<I> Sriram Narasimhan </I><BR><BR>
+<IMG SRC="uwlogo.gif"><BR>
+
+</body>
+</html>
+

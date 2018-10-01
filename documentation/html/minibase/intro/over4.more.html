@@ -1,0 +1,60 @@
+<BODY BGCOLOR="#FFDDDD">
+<HTML>
+<HEAD>
+<TITLE>Nested Loops Join Trace</TITLE>
+</HEAD>
+
+<BODY>
+
+<H1>Nested Loops Join Trace</H1>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+
+<B>Nested Loops Join</B>
+<I>nested_loops_join::nested_loops_join</I> - called by <I>interpret</I><BR>
+The two input iterators, the tuple information about the types of the 
+tuples of the input iterators, and the ouput tuple information must 
+be passed to the constructor.
+<I>nested_loops_join.get_next</I><BR>
+<FileScanIter.get_next</I>
+<P>
+
+<B>FileScanIter::get_next</B><BR>
+Sets up tuple information<BR>
+<I>HeapFile::HeapFile</I><BR>
+<I>HeapFile::openScan</I><BR>
+<I>FileScanIter::get_next</I><BR>
+<I>Scan::getNext</I><BR>
+<I>Project</I><BR>
+<I>Eval</I> - selection<BR>
+<P>
+
+<B>HeapFile::HeapFile</B><BR>
+<I>DB::get_file_entry</I> - see if HeapFile already exists<BR>
+<I>BufMgr::newPage</I> - create a header page for the HeapFile<BR>
+<I>DB::add_file_entry</I><BR>
+set up header page<BR>
+<I>BM::pinPage</I> - pin header page until HeapFile is closed <BR>
+<P>
+
+<B>Scan::getNext</I><BR>
+<I>BM::pinPage</I> - pin current page where next record is<BR>
+<I>HFPage::firstRecord - gets page / slot info about where record is</I><BR>
+<I>HFPage::getNextPage - if new page is needed</I><BR>
+<I>HFPage::nextRecord  - gets page / slot info about where record is</I><BR>
+<I>HFPage::getRecord</I><BR>
+
+
+
+<P>
+<A HREF="../intro/overview3.html"><B>Back to the Overview</B></A><BR>
+<A HREF="../minibase.html">Click here to go the Minibase Home Page</A>
+
+
+</BODY>
+
+</HTML>
+
+
+

@@ -1,0 +1,24 @@
+//*****************************************************
+// Class definition of Page
+//*****************************************************
+
+typedef int PageId;
+
+const int PAGESIZE = 1024;              // size of a data page
+const int LOGHEADER = sizeof( lsn_t );
+
+class Page
+{
+public:
+    Page();
+    ~Page();
+
+    lsn_t get_page_lsn();
+    Status set_page_lsn(lsn_t pagelsn);
+
+private:
+	char data[PAGESIZE - LOGHEADER];
+	lsn_t lsn;
+};
+
+//****************************************************************

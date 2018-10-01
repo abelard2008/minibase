@@ -1,0 +1,44 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!Converted with LaTeX2HTML 95 (Thu Jan 19 1995) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds >
+<HEAD>
+<TITLE>6 Testing</TITLE>
+</HEAD>
+<BODY>
+<meta name="description" value="6 Testing">
+<meta name="keywords" value="main">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+<P>
+ <BR> <HR><A NAME=tex2html282 HREF="node23.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html280 HREF="main.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html274 HREF="node21.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html283 HREF="node23.html">7 Future Work</A>
+<B>Up:</B> <A NAME=tex2html281 HREF="main.html">An ARIES Log Manager </A>
+<B> Previous:</B> <A NAME=tex2html275 HREF="node21.html">5.4.8  log::flush and  log::bufmgr_flush</A>
+<BR> <HR> <P>
+<H1><A NAME=SECTION00060000000000000000>6 Testing</A></H1>
+<P>
+<A NAME=sectiontesting>&#160;</A>
+<P>
+As and when a class was implemented, unit testing was done on it to
+determine whether its methods worked in isolation.  Then, the classes
+implemented so far were integrated and integration testing was
+performed to ensure that the classes worked together.  Each time a bug
+was found and a fix applied, regression testing was done with previous
+test cases to ensure that the bug fix did not break any other part of
+the code.  Finally, after the whole log manager was put together, we
+wrote a test driver to test the entire code.  The recovery manager and
+the buffer manager calls were faked so that a problem could not be the
+result of code that we did not develop.  We had the additional benefit
+that we started from scratch and did not have to use any existing code
+base.  The test cases developed for this driver exercised most paths
+of the log manager implementation including several special cases and
+boundary conditions.  Quite a few problems were exposed and fixed.
+<P>
+	Unfortunately, space constraints prevent us from describing
+the various test cases.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+ajitk@cs.wisc.edu, cjin@cs.wisc.edu
+</ADDRESS>
+</BODY>

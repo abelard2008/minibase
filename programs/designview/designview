@@ -1,0 +1,21 @@
+#!/bin/sh
+
+#
+# If the DBNPATH environment variable is defined, then use it to locate
+# the wish interpreter. Otherwise find the dbnorm directory by
+# referencing via the MINIBASE_ROOT env variable.
+# 
+if test -z "$DBNPATH"
+then
+    DBNPATH=$MINIBASE_ROOT/programs/designview
+fi
+
+TCL_LIBRARY=$MINIBASE_ROOT/packages/tcl/$PLATFORM/lib/tcl7.4
+TK_LIBRARY=$MINIBASE_ROOT/packages/tcl/$PLATFORM/lib/tk4.0
+export TCL_LIBRARY TK_LIBRARY
+
+
+#
+# Now run the wish interpreter
+#
+exec $DBNPATH/bin/fdwish $DBNPATH/lib/main.tcl

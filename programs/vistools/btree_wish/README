@@ -1,0 +1,6 @@
+The buffer manager and B-tree visualization tools use a modified
+"treesh" that has been renamed "btree_wish".  This directory contains
+the one file changed from tree-4.0.1, tkAppInit.c, and the one new
+file that has been added.  To run the two tools, you must build
+"treesh" using these two files and the libminibase.a library, and
+rename it to "btree_wish".

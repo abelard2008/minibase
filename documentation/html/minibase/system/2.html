@@ -1,0 +1,43 @@
+<BODY BGCOLOR="#FFDDDD">
+
+<HTML>
+<HEAD>
+<TITLE>Introduction</TITLE>
+</HEAD>
+
+<BODY>
+
+
+
+
+<H1>Starting Point</H1>
+
+<H2>Design Features</H2>
+	Several important design features were inherited from the previous Minirel project.  The Minirel II would consist of three data types, integeers, real numbers (C++ floats), and character strings up to a maximum of 255 characters.  Minirel was structured as a single UNIX file, with Page Files implemented on top of it, providing the base class for the Heap and Access Method layers.  The Minirel II project did away with Page Files and implemented Heap Files and Access Methods on top of the disk space / data base manager, while keeping to the single UNIX file.  The abstraction of a record does not exist in Minirel and was kept to a minimum in the Minirel II project.
+	<P>
+
+<H2>Code</H2>
+	
+The Minirel project had an intact buffer manager, heap file structure, 
+and front end.  The Minirel II project did away with the Minirel front end 
+and took parser and optimizer from the minibase project.  The buffer manager 
+was reworked to adapt to the multi-user environment, providing such features 
+as allocating runs of pages.  The change from a Page file structure and the 
+introduction of an improved disk space manager required additional changes 
+to both the buffer manager and the heap file layer.
+<P>	
+The catalog code was completely reworked to reflect changes in almost every 
+level of the Minirel II project.  Instead of two entries in the catalogs 
+(information about relations and information about individual attributes), 
+a third set was introduced containing index information.  A new catalog 
+interface was established as well, so that catalog accesses are now easier 
+than before.  
+<P>
+
+
+
+
+
+</BODY>
+</HTML>
+

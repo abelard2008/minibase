@@ -1,0 +1,83 @@
+<HTML>
+<HEAD>
+<TITLE>Error Reporting</TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+
+<H1>Error Reporting</H1>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+
+
+A layered approach is used to error reporting, but 
+the path that error discovery takes may be confusing at times
+since the calling sequence between layers can be complex
+(e.g., DB->BufMgr->DSM).  
+<P>
+Each layer of the database has associated with it a list of errors that
+can occur. Character strings with messages corresponding to these errors
+are stored in arrays.  These arrays are regisered to the global error
+object <tt>minirel_error</tt> by calling on the <tt>registerErrorMsgs</tt>
+member.   Each layer is responsible for establishing and registering it's
+error string array. (example:
+<tt>minirel_error->registerErrorMsgs(BufErrorMsgs, BUFMGR);</tt> )
+<P>
+A global error class is used to log errors as they occur.
+When an error is discovered, the following actions are performed:
+<OL>
+<LI> Push the name of the layer in which the execution is currently in.
+     For example, suppose the error was discovered by the buffer manager
+     after a call to a function of the DB manager, the buffer manager
+     pushes <i>BufMgr</i> on the error stack.
+<LI> Push the offset into the array (for that class) of error messages.
+<LI> Push a string with some context sensitive information about the error.
+     This information includes the name of the file and the line number
+     in the file where this error discovery has occured.
+
+</OL>
+
+This elaborate protocol allows the user to see where the error was first
+discovered and to see how the error caused various functions to fail.
+Error correction can also be done if desired by popping errors from the
+stack and correcting the error.
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+<H2>Design Decisions </H2> 
+Macros disguise the details of this protocol. MINIBASE_FIRST_ERROR is called
+to register the "first" error. For example, if the buffer manager detects that
+the buffer pool is too full to complete a certain operation, it posts a
+BUFFEREXCEEDED error as : <P>
+MINIBASE_FIRST_ERROR( BUFMGR, BUFFEREXCEEDED );
+<p>
+The MINIBASE_CHAIN_ERROR macro is called for "chained" error.
+For example, if the buffer manager calls on the database manager to write 
+a page to disk, and that operation fails, the buffer manager adds an error 
+that records the fact that the execution path that failed went through it:
+<p>
+status = MINIBASE_DB->write_page( ... ); <br>
+if ( status != OK ) <br>
+    return MINIBASE_CHAIN_ERROR( BUFMGR, status ); <br>
+<p>
+Sometimes, you wish to post a different error message, but still acknowledge
+that the error resulted from a prior error.  This is a combination of the
+above situations.  For this, use the MINIBASE_RESULTING_ERROR macro:
+<p>
+status = MINIBASE_DB->write_page( ... );<br>
+if ( status != OK ) <br>
+	 return MINIBASE_RESULTING_ERROR( BUFMGR, status, BUFFEREXCEEDED )<br>
+<p>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+Click here for the <B><A HREF="new_error.h">error interface</A></B>.
+(Includes extensive in-line documentation.)
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+<A HREF="../project.html">Back to the List of Components</A><BR>
+<A HREF="../minibase.html">Back to the Minibase Home Page</A><BR>
+</BODY>
+</HTML>

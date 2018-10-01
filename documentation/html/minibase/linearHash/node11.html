@@ -1,0 +1,48 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> LinearHashingScan</TITLE>
+<meta name="description" value=" LinearHashingScan">
+<meta name="keywords" value="report">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html166 HREF="node12.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A> <A NAME=tex2html164 HREF="node2.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A> <A NAME=tex2html158 HREF="node10.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html167 HREF="node12.html"> &#126;LinearHashingScan()</A>
+<B>Up:</B> <A NAME=tex2html165 HREF="node2.html"> External Interface</A>
+<B> Previous:</B> <A NAME=tex2html159 HREF="node10.html"> void PrintHeader()void PrintBucket()void </A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00022000000000000000> LinearHashingScan</A></H2>
+<P>
+Here is the public interfaces of <b>LinearHashingScan</b>. Notice that the
+constructor for <b>LinearHashingScan</b> is not public. A scan can only be
+created by calling <b>LinearHashingFile::new_scan</b>.
+<P>
+<PRE> 
+class LinearHashingScan : public IndexFileScan {
+public:
+    // get the next record 
+    Status get_next(RID &amp; rid);
+
+    // delete the record currently scanned
+    Status delete_current();
+
+    // destructor
+    ~LinearHashingScan();
+};</PRE>
+<P>
+<BR> <HR>
+<UL> 
+<LI> <A NAME=tex2html168 HREF="node12.html#SECTION00022100000000000000"> &#126;LinearHashingScan()</A>
+<LI> <A NAME=tex2html169 HREF="node13.html#SECTION00022200000000000000"> Status get_next(RID&amp; rid)</A>
+<LI> <A NAME=tex2html170 HREF="node14.html#SECTION00022300000000000000"> Status delete_current()</A>
+</UL>
+<BR> <HR>
+<P><ADDRESS>
+<I> Weiqing Huang <BR>
+Sun May 14 16:22:27 CDT 1995</I>
+</ADDRESS>
+</BODY>

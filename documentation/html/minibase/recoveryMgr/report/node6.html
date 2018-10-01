@@ -1,0 +1,73 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> Accomplishments:</TITLE>
+<meta name="description" value=" Accomplishments:">
+<meta name="keywords" value="rec">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html76 HREF="node7.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A> <A NAME=tex2html74 HREF="rec.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A> <A NAME=tex2html68 HREF="node5.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html77 HREF="node7.html"> Testing:</A>
+<B>Up:</B> <A NAME=tex2html75 HREF="rec.html">MINIREL : Recovery Manager
+<P>
+</A>
+<B> Previous:</B> <A NAME=tex2html69 HREF="node5.html"> Internal Data Structures </A>
+<BR> <HR> <P>
+<H1><A NAME=SECTION00040000000000000000> Accomplishments:</A></H1>
+ <A NAME=secacc>&#160;</A>
+The Recovery Manager is dependent on several other  subsystems for its
+proper functioning. Our implementation of the algorithm would be of little
+use if it could not be appropriately tested.  We thus had to build 
+simple prototypes of
+all other subsystems we were interacting with - i.e. a Log Manager, 
+Buffer Manager, Space Manager and the Transaction Manager. We also had to
+design a suitable testing tool - preferably one where tests were not hard
+coded and one which was easy to manipulate.  
+The Log and Space Managers are built on top of UNIX files. Our
+Buffer Manager is an 'in-memory' data structure which uses the clock
+replacement algorithm for page replacement. We also built a
+parser that accepts commands to perform various actions on the system.
+The parser accepts the following commands:
+<UL><LI>  T1 tbegin &amp; T1 commit : Begin and Commit transaction T1.
+<LI>  T1 write &lt;pgid&gt; &lt;offset&gt; &lt;data&gt; 
+       &amp; T1 read &lt;pgid&gt; &lt;offset&gt; : Write to and Read
+       from a specified page at a specified offset.
+<LI>  T1 abort : Abort transaction T1.
+<LI>  tprint &amp; dprint : Print current transaction table, dirty page table.
+<LI>  pgflush &lt;pgid&gt; &amp; bflush : Flush the 
+       specified page to disk, flush the
+       buffer pool to disk.
+<LI>  checkpoint : Take a checkpoint.
+<LI>  restart &amp; restart_crash &lt;crash point&gt; : 
+       Restart the system , Restart
+       the system but crash at a specified point.
+<LI>  crash : Crash the system.
+<LI>  texit : A clean exit.
+</UL>
+The parser's driver executes appropriate routines on recognizing the command.
+We simulate multi-process execution by starting several transactions. 
+Each transaction may be assumed to belong to a different process. 
+In effect, the input to the system is a low level schedule of database
+actions.
+The next task was to build the Recovery Manager. As the other subsystems
+were ready, our task was limited to getting the algorithm right. To a good
+extent the pseudo-code in <A HREF="node9.html#aries">[MHL+90]</A> helped us with the coding.  There were
+several changes as we did not implement partial rollbacks or savepoints.
+<P>
+<BR> <HR><A NAME=tex2html76 HREF="node7.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A> <A NAME=tex2html74 HREF="rec.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A> <A NAME=tex2html68 HREF="node5.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html77 HREF="node7.html"> Testing:</A>
+<B>Up:</B> <A NAME=tex2html75 HREF="rec.html">MINIREL : Recovery Manager
+<P>
+</A>
+<B> Previous:</B> <A NAME=tex2html69 HREF="node5.html"> Internal Data Structures </A>
+<BR> <HR> <P>
+<BR> <HR>
+<P><ADDRESS>
+<I> ranjani ramamurthy <BR>
+Sat May 13 16:56:49 CDT 1995</I>
+</ADDRESS>
+</BODY>

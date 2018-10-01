@@ -1,0 +1,664 @@
+# -*- tcl -*-
+
+import add ::qbe
+
+# Swiped the original version of these test functions from the iwidgets
+# test library.
+# It was: Copyright (c) 1994 Sun Microsystems, Inc.
+proc print_verbose {test_name test_description contents_of_test code answer} {
+    puts stdout "\n"
+    puts stdout "==== $test_name $test_description"
+    puts stdout "==== Contents of test case:"
+    puts stdout "$contents_of_test"
+    if {$code != 0} {
+	if {$code == 1} {
+	    puts stdout "==== Test generated error:"
+	    puts stdout $answer
+	} elseif {$code == 2} {
+	    puts stdout "==== Test generated return exception;  result was:"
+	    puts stdout $answer
+	} elseif {$code == 3} {
+	    puts stdout "==== Test generated break exception"
+	} elseif {$code == 4} {
+	    puts stdout "==== Test generated continue exception"
+	} else {
+	    puts stdout "==== Test generated exception $code;  message was:"
+	    puts stdout $answer
+	}
+    } else {
+	puts stdout "==== Result was:"
+	puts stdout "$answer"
+    }
+}
+
+proc test {test_name test_description contents_of_test passing_results} {
+    set code [catch {uplevel $contents_of_test} answer]
+    if {$code != 0} {
+	print_verbose $test_name $test_description $contents_of_test \
+		$code $answer
+    } elseif {[string compare $answer $passing_results] != 0} { 
+	print_verbose $test_name $test_description $contents_of_test \
+		$code $answer 
+	puts stdout "---- Result should have been:"
+	puts stdout "$passing_results"
+	puts stdout "---- $test_name FAILED" 
+	set code 1
+    }
+    set code
+}
+
+
+# The rest is all mine...
+set num_tests 0
+set num_failures 0
+puts -nonewline "Running tests"; flush stdout
+
+proc test_query {test_name test_description query_init expected_sql} {
+    global num_tests num_failures
+    incr num_tests
+    Query tq "setComment [list $test_description]" $query_init
+    if {[test $test_name $test_description {tq sql} $expected_sql]} {
+	incr num_failures
+	puts "==== Inconsistencies reported:"
+	set attrs [tq inconsistentColumns]
+	foreach a $attrs {puts [$a inconsistency]}
+    }
+    delete object tq
+    puts -nonewline .; flush stdout
+}
+
+
+# section 11.2
+test_query example-11.2-1 {Simple selection} {
+    addRelationTable Sailors sid {sname p._n} rating {age p._a}
+} {SELECT   t1.sname,
+         t1.age
+FROM     Sailors t1}
+
+test_query example-11.2-2 {Select *} {
+    addRelationTable {Sailors P.} sid sname {rating 10} age
+} {SELECT   t1.sid,
+         t1.sname,
+         t1.rating,
+         t1.age
+FROM     Sailors t1
+WHERE    (t1.rating = 10)}
+
+# section 11.2.1
+test_query example-11.2.1-1 {Order by} {
+    addRelationTable Sailors sid {sname p.} {rating p.} {age p.ao.}
+} {SELECT   t1.sname,
+         t1.rating,
+         t1.age
+FROM     Sailors t1
+ORDER BY t1.age asc}
+
+test_query example-11.2.1-2 {Order by two attributes} {
+    addRelationTable Sailors sid {sname p.} {rating p.ao(2).} {age p.ao(1).}
+} {SELECT   t1.sname,
+         t1.rating,
+         t1.age
+FROM     Sailors t1
+ORDER BY t1.age asc, t1.rating asc}
+
+# section 11.2.2 (quite different)
+test_query example-11.2.2-1-altered {Original used two rows.  Same result with expanded condition syntax.} {
+    addRelationTable Sailors sid {sname p.} rating {age {> 30 or _ < 20}}
+} {SELECT   t1.sname
+FROM     Sailors t1
+WHERE    (t1.age > 30 or t1.age < 20)}
+
+test_query example-11.2.2-2-altered {Original used two rows.  Same result, different technique.} {
+    addRelationTable Sailors sid {sname p.} rating {age {BETWEEN 20 AND 30}}
+} {SELECT   t1.sname
+FROM     Sailors t1
+WHERE    (t1.age between 20 and 30)}
+
+test_query example-11.2.2-3 {Attribute conditions} {
+    addRelationTable Sailors sid {sname p.} {rating >=4} {age <30}
+} {SELECT   t1.sname
+FROM     Sailors t1
+WHERE    (t1.rating >= 4)
+  AND    (t1.age < 30)}
+
+# section 11.2.3
+test_query example-11.2.3-1 {Distinct} {
+    addRelationTable {Sailors unq.} sid {sname p.} rating {age p.}
+} {SELECT DISTINCT
+         t1.sname,
+         t1.age
+FROM     Sailors t1}
+
+# section 11.3
+test_query example-11.3-1 {Simple join} {
+    addRelationTable Sailors {sid _Id} {sname P._S} rating age
+    addRelationTable Reserves {sid _Id} bid date
+} {SELECT   t1.sname
+FROM     Sailors t1,
+         Reserves t2
+WHERE    (t2.sid = t1.sid)}
+
+test_query example-11.3-2 {Join plus conditions} {
+    addRelationTable Sailors {sid _Id} {sname P._S} rating {age >25}
+    addRelationTable Reserves {sid _Id} bid {date {"8/24/96"}}
+} {SELECT   t1.sname
+FROM     Sailors t1,
+         Reserves t2
+WHERE    (t1.age > 25)
+  AND    (t2.sid = t1.sid)
+  AND    (t2.date = "8/24/96")}
+
+  test_query example-11.3-3 {Three relations} {
+    addRelationTable Sailors {sid _Id} sname rating {age >25}
+    addRelationTable Reserves {sid _Id} {bid _B} {date {"8/24/96"}}
+    addRelationTable Boats {bid _B} {bname Interlake} {color p.}
+} {SELECT   t3.color
+FROM     Sailors t1,
+         Reserves t2,
+         Boats t3
+WHERE    (t1.age > 25)
+  AND    (t2.sid = t1.sid)
+  AND    (t2.date = "8/24/96")
+  AND    (t3.bid = t2.bid)
+  AND    (t3.bname = "Interlake")}
+
+  test_query example-11.3-4-altered {(Original used two rows in same table.)  Same relation repeated.} {
+    addRelationTable Sailors {sid _Id} {sname P._S} rating age
+    addRelationTable Reserves {sid _Id} {bid _B} date
+    addRelationTable Reserves {sid 22} {bid _B} date
+} {SELECT   t1.sname
+FROM     Sailors t1,
+         Reserves t2,
+         Reserves t3
+WHERE    (t2.sid = t1.sid)
+  AND    (t3.sid = 22)
+  AND    (t3.bid = t2.bid)}
+
+# section 11.4
+test_query example-11.4-1 {Negated table} {
+    addRelationTable Sailors {sid _Id} {sname P._S} rating age
+    addRelationTable {Reserves ~} {sid _Id} bid date
+} {SELECT   t1.sname
+FROM     Sailors t1
+WHERE    (not exists (SELECT * FROM Reserves t2
+                      WHERE (t2.sid = t1.sid)))}
+
+test_query example-11.4-2 {Negated table with conditions} {
+    addRelationTable Sailors {sid _Id} {sname P._S} rating age
+    addRelationTable {Sailors not} {sid _Id} sname {rating >4} {age <30}
+} {SELECT   t1.sname
+FROM     Sailors t1
+WHERE    (not exists (SELECT * FROM Sailors t2
+                      WHERE (t2.sid = t1.sid)
+                        AND (t2.rating > 4)
+                        AND (t2.age < 30)))}
+
+# section 11.5
+test_query example-11.5-1 {Calc column} {
+    addRelationTable Sailors sid {sname p.} {rating _R} {age _A} {{} {P._R / _A}}
+} {SELECT   t1.sname,
+         t1.rating / t1.age
+FROM     Sailors t1}
+
+test_query example-11.5-2 {Calc column for printing from second table} {
+    addRelationTable Sailors {sid _Id} {sname P.} rating age {{} p._D}
+    addRelationTable Reserves {sid _Id} bid {date _D}
+} {SELECT   t1.sname,
+         t2.date
+FROM     Sailors t1,
+         Reserves t2
+WHERE    (t2.sid = t1.sid)}
+
+test_query example-11.5-2-alternative {Print from second table without calc column} {
+    addRelationTable Sailors {sid _Id} {sname P.} rating age
+    addRelationTable Reserves {sid _Id} bid {date p.}
+} {SELECT   t1.sname,
+         t2.date
+FROM     Sailors t1,
+         Reserves t2
+WHERE    (t2.sid = t1.sid)}
+
+# section 11.6
+test_query example-11.6-1 {Aggregate function over whole relation} {
+    addRelationTable Sailors sid sname rating {age _A} {{} P.AVG._A}
+} {SELECT   avg(t1.age)
+FROM     Sailors t1}
+
+test_query example-11.6-2 {Aggregation by group} {
+    addRelationTable Sailors sid sname {rating g.p.} {age _A} {{} P.AVG._A}
+} {SELECT   t1.rating,
+         avg(t1.age)
+FROM     Sailors t1
+GROUP BY t1.rating}
+
+# section 11.7
+test_query example-11.7-1 {Conditions box for complex conditions} {
+    addRelationTable Sailors sid sname {rating g.p.} {age _A}
+    addConditionsBox {avg._a > 30}
+} {SELECT   t1.rating
+FROM     Sailors t1
+GROUP BY t1.rating
+HAVING   (avg(t1.age) > 30)}
+
+test_query example-11.7-1-alternative {We allow complex conditions in attribute columns} {
+    addRelationTable Sailors sid sname {rating g.p.} {age {(avg._ > 30)}}
+} {SELECT   t1.rating
+FROM     Sailors t1
+GROUP BY t1.rating
+HAVING   ((avg(t1.age) > 30))}
+
+test_query example-11.7-2 {Conditions box, complex aggregation} {
+    addRelationTable Sailors {sid p.g._id} sname rating age
+    addRelationTable Reserves {sid _id} {bid _b1} date
+    addRelationTable Reserves sid {bid _b2} date
+    addConditionsBox {count._b1 = cnt._b2}
+} {SELECT   t1.sid
+FROM     Sailors t1,
+         Reserves t2,
+         Reserves t3
+WHERE    (t2.sid = t1.sid)
+GROUP BY t1.sid
+HAVING   (count(distinct t2.bid) = count(distinct t3.bid))}
+
+# This one fails...
+#test_query example-11.7-3 {Try to print an unaggregated attribute} {
+#    addRelationTable Sailors {sid p.g._id} {sname p.} rating age
+#    addRelationTable Reserves {sid _id} {bid _b1} date
+#    addRelationTable Reserves sid {bid _b2} date
+#    addConditionsBox {count._b1 = cnt._b2}
+#} {}
+
+
+# ... This corrects it.
+test_query example-11.7-3-corrected {Extend the aggregation to include the desired attribute} {
+    addRelationTable Sailors {sid p.g._id} {sname g.p.} rating age
+    addRelationTable Reserves {sid _id} {bid _b1} date
+    addRelationTable Reserves sid {bid _b2} date
+    addConditionsBox {count._b1 = cnt._b2}
+} {SELECT   t1.sid,
+         t1.sname
+FROM     Sailors t1,
+         Reserves t2,
+         Reserves t3
+WHERE    (t2.sid = t1.sid)
+GROUP BY t1.sid, t1.sname
+HAVING   (count(distinct t2.bid) = count(distinct t3.bid))}
+
+test_query example-11.7-4 {Complex conditions in a conditions box} {
+    addRelationTable Sailors sid {sname p.} rating {age _a}
+    addConditionsBox {20> _a or _a < 30}
+} {SELECT   t1.sname
+FROM     Sailors t1
+WHERE    (20 > t1.age or t1.age < 30)}
+
+
+# Exercises 11.1
+test_query exercise-11.1-1 {All emps who work on the 10th floor and make less than 50K} {
+    addRelationTable {Emp unq.} {eid _e} {ename p.} {salary {< 50000.0}}
+    addRelationTable Works {eid _e} {did _d}
+    addRelationTable Dept {did _d} dname managerid {floornum 10}
+} {SELECT DISTINCT
+         t1.ename
+FROM     Emp t1,
+         Works t2,
+         Dept t3
+WHERE    (t1.salary < 50000.0)
+  AND    (t2.eid = t1.eid)
+  AND    (t3.did = t2.did)
+  AND    (t3.floornum = 10)}
+
+test_query exercise-11.1-2 {All mgrs who manage 3 or more depts on the same floor} {
+    addRelationTable {Emp unq.} {eid _e} {ename g.p.} salary
+    addRelationTable Dept {did _d} dname {managerid g._e} {floornum g.}
+    addConditionsBox {count._d >= 3}
+} {SELECT DISTINCT
+         t1.ename
+FROM     Emp t1,
+         Dept t2
+WHERE    (t1.eid = t2.managerid)
+GROUP BY t1.ename, t2.managerid, t2.floornum
+HAVING   (count(distinct t2.did) >= 3)}
+
+test_query exercise-11.1-4 {All depts that Santa works in} {
+    addRelationTable Emp {eid _e} {ename Santa} salary
+    addRelationTable Works {eid _e} {did _d}
+    addRelationTable Dept {did _d} {dname p.} managerid floornum
+} {SELECT   t3.dname
+FROM     Emp t1,
+         Works t2,
+         Dept t3
+WHERE    (t1.ename = "Santa")
+  AND    (t2.eid = t1.eid)
+  AND    (t3.did = t2.did)}
+
+test_query exercise-11.1-5 {Emps who work in both Toy and Candy depts} {
+    addRelationTable Emp {eid _e} {ename p.} {salary p.}
+    addRelationTable Works {eid _e} {did _toy}
+    addRelationTable Dept {did _toy} {dname Toy} managerid floornum
+    addRelationTable Works {eid _e} {did _candy}
+    addRelationTable Dept {did _candy} {dname Candy} managerid floornum
+} {SELECT   t1.ename,
+         t1.salary
+FROM     Emp t1,
+         Works t2,
+         Dept t3,
+         Works t4,
+         Dept t5
+WHERE    (t2.eid = t1.eid)
+  AND    (t3.did = t2.did)
+  AND    (t3.dname = "Toy")
+  AND    (t4.eid = t1.eid)
+  AND    (t5.did = t4.did)
+  AND    (t5.dname = "Candy")}
+
+test_query exercise-11.1-6 {Emps with extreme salaries} {
+    addRelationTable Emp eid {ename p.} {salary _s}
+    addConditionsBox {_s < 10000.00 or _s > 100000.00}
+} {SELECT   t1.ename
+FROM     Emp t1
+WHERE    (t1.salary < 10000.00 or t1.salary > 100000.00)}
+
+test_query exercise-11.1-7 {Coworkers of Santa} {
+    addRelationTable {Emp p.} {eid _e} ename salary
+    addRelationTable Emp {eid _santa} {ename Santa} salary
+    addRelationTable Works {eid _e} {did _d}
+    addRelationTable Works {eid _santa} {did _d}
+} {SELECT   t1.eid,
+         t1.ename,
+         t1.salary
+FROM     Emp t1,
+         Emp t2,
+         Works t3,
+         Works t4
+WHERE    (t2.ename = "Santa")
+  AND    (t3.eid = t1.eid)
+  AND    (t4.eid = t2.eid)
+  AND    (t4.did = t3.did)}
+
+test_query exercise-11.1-9 {Emps making over 20K who work in Video or Toy depts} {
+    addRelationTable {Emp unq.} {eid _e} {ename p.} {salary {p. > 20000}}
+    addRelationTable Works {eid _e} {did _d}
+    addRelationTable Dept {did _d} {dname _n} managerid floornum
+    addConditionsBox {_n = Video or _n = Toy}
+} {SELECT DISTINCT
+         t1.ename,
+         t1.salary
+FROM     Emp t1,
+         Works t2,
+         Dept t3
+WHERE    (t1.salary > 20000)
+  AND    (t2.eid = t1.eid)
+  AND    (t3.did = t2.did)
+  AND    (t3.dname = "Video" or t3.dname = "Toy")}
+
+test_query exercise-11.1-10 {Jane's floormates} {
+    addRelationTable Emp {eid _e} {ename p.} salary
+    addRelationTable Works {eid _e} {did _d}
+    addRelationTable Dept {did _d} dname managerid {floornum _f}
+    addRelationTable Emp {eid _jane} {ename {"Jane Dodecahedron"}} salary
+    addRelationTable Works {eid _jane} {did _jdept}
+    addRelationTable Dept {did _jdept} dname managerid {floornum _f}
+} {SELECT   t1.ename
+FROM     Emp t1,
+         Works t2,
+         Dept t3,
+         Emp t4,
+         Works t5,
+         Dept t6
+WHERE    (t2.eid = t1.eid)
+  AND    (t3.did = t2.did)
+  AND    (t4.ename = "Jane Dodecahedron")
+  AND    (t5.eid = t4.eid)
+  AND    (t6.did = t5.did)
+  AND    (t6.floornum = t3.floornum)}
+
+test_query exercise-11.1-11 {Overpaid emps} {
+    addRelationTable {Emp unq.} {eid _e} {ename p.} {salary _es}
+    addRelationTable Emp {eid _m} ename {salary _ms}
+    addRelationTable Works {eid _e} {did _d}
+    addRelationTable Dept {did _d} dname {managerid _m} floornum
+    addConditionsBox {_es > _ms}
+} {SELECT DISTINCT
+         t1.ename
+FROM     Emp t1,
+         Emp t2,
+         Works t3,
+         Dept t4
+WHERE    (t3.eid = t1.eid)
+  AND    (t4.did = t3.did)
+  AND    (t4.managerid = t2.eid)
+  AND    (t1.salary > t2.salary)}
+
+test_query exercise-11.1-12 {Depts with underpaid mgrs having a strange last name} {
+    addRelationTable Dept {did _d} {dname p.g.} {managerid _m} floornum
+    addRelationTable Emp {eid _m} {ename {like "% Psmith"}} {salary g._ms}
+    addRelationTable Emp {eid _e} ename {salary _es}
+    addRelationTable Works {eid _e} {did _d}
+    addConditionsBox {_ms < max._es and _ms > min._es}
+} {SELECT   t1.dname
+FROM     Dept t1,
+         Emp t2,
+         Emp t3,
+         Works t4
+WHERE    (t2.eid = t1.managerid)
+  AND    (t2.ename like "% Psmith")
+  AND    (t4.eid = t3.eid)
+  AND    (t4.did = t1.did)
+GROUP BY t1.dname, t2.salary
+HAVING   (t2.salary < max(t3.salary) and t2.salary > min(t3.salary))}
+
+
+# Exercise 11.2
+test_query exercise-11.2-1 {Suppliers who have supplied lots of a bunch of parts} {
+    addRelationTable Suppliers {sid _s} {sname p.} {city p.}
+    addRelationTable Parts {pid _p1} {pname gear} {color blue}
+    addRelationTable Orders {sid _s} {pid _p1} {quantity >150}
+    addRelationTable Parts {pid _p2} {pname crankshaft} {color red}
+    addRelationTable Orders {sid _s} {pid _p2} {quantity >150}
+    addRelationTable Parts {pid _p3} {pname bumper} {color {"yellow"}}
+    addRelationTable Orders {sid _s} {pid _p3} {quantity >150}
+} {SELECT   t1.sname,
+         t1.city
+FROM     Suppliers t1,
+         Parts t2,
+         Orders t3,
+         Parts t4,
+         Orders t5,
+         Parts t6,
+         Orders t7
+WHERE    (t2.pname = "gear")
+  AND    (t2.color = "blue")
+  AND    (t3.sid = t1.sid)
+  AND    (t3.pid = t2.pid)
+  AND    (t3.quantity > 150)
+  AND    (t4.pname = "crankshaft")
+  AND    (t4.color = "red")
+  AND    (t5.sid = t1.sid)
+  AND    (t5.pid = t4.pid)
+  AND    (t5.quantity > 150)
+  AND    (t6.pname = "bumper")
+  AND    (t6.color = "yellow")
+  AND    (t7.sid = t1.sid)
+  AND    (t7.pid = t6.pid)
+  AND    (t7.quantity > 150)}
+
+test_query exercise-11.2-2 {Purple parts from select cities} {
+    addRelationTable {Parts unq.} {pid _p} {pname p.} {color purple}
+    addRelationTable Orders {sid _s} {pid _p} quantity
+    addRelationTable Suppliers {sid _s} sname {city {in("Madison", "Milwaukee", "Waukesha")}}
+} {SELECT DISTINCT
+         t1.pname
+FROM     Parts t1,
+         Orders t2,
+         Suppliers t3
+WHERE    (t1.color = "purple")
+  AND    (t2.pid = t1.pid)
+  AND    (t3.sid = t2.sid)
+  AND    (t3.city in("Madison", "Milwaukee", "Waukesha"))}
+
+test_query exercise-11.2-3 {Suppliers of large quantities of gaudy parts} {
+    addRelationTable {Suppliers unq.} {sid _s} {sname p.} {city p.}
+    addRelationTable Parts {pid _p} pname {color in(yellow,purple)}
+    addRelationTable Orders {sid _s} {pid _p} {quantity >150}
+} {SELECT DISTINCT
+         t1.sname,
+         t1.city
+FROM     Suppliers t1,
+         Parts t2,
+         Orders t3
+WHERE    (t2.color in("yellow", "purple"))
+  AND    (t3.sid = t1.sid)
+  AND    (t3.pid = t2.pid)
+  AND    (t3.quantity > 150)}
+
+test_query exercise-11.2-4 {Un-American parts} {
+    addRelationTable Parts {pid p._p} pname color
+    addRelationTable Orders {sid _am} {pid _p} {quantity _amq}
+    addRelationTable Suppliers {sid _am} {sname American} city
+    addRelationTable Orders {sid _nam} {pid _p} {quantity _namq}
+    addRelationTable Suppliers {sid _nam} {sname {not American}} city
+    addConditionsBox {_namq >= _amq + 100}
+} {SELECT   t1.pid
+FROM     Parts t1,
+         Orders t2,
+         Suppliers t3,
+         Orders t4,
+         Suppliers t5
+WHERE    (t2.pid = t1.pid)
+  AND    (t3.sid = t2.sid)
+  AND    (t3.sname = "American")
+  AND    (t4.pid = t1.pid)
+  AND    (t5.sid = t4.sid)
+  AND    (t5.sname <> "American")
+  AND    (t4.quantity >= t2.quantity + 100)}
+
+test_query exercise-11.2-5 {Suppliers in Madison} {
+    addRelationTable Suppliers sid {sname p.} {city Madison}
+} {SELECT   t1.sname
+FROM     Suppliers t1
+WHERE    (t1.city = "Madison")}
+
+test_query exercise-11.2-6 {Suppliers of green parts} {
+    addRelationTable {Suppliers unq.p.} {sid _s} sname city
+    addRelationTable Parts {pid _p} pname {color green}
+    addRelationTable Orders {sid _s} {pid _p} quantity
+} {SELECT DISTINCT
+         t1.sid,
+         t1.sname,
+         t1.city
+FROM     Suppliers t1,
+         Parts t2,
+         Orders t3
+WHERE    (t2.color = "green")
+  AND    (t3.sid = t1.sid)
+  AND    (t3.pid = t2.pid)}
+
+test_query exercise-11.2-7 {Orders of red parts} {
+    addRelationTable Orders sid {pid _pid} {quantity p.} {{} p._pname}
+    addRelationTable Parts {pid _pid} {pname _pname} {color red}
+} {SELECT   t1.quantity,
+         t2.pname
+FROM     Orders t1,
+         Parts t2
+WHERE    (t2.pid = t1.pid)
+  AND    (t2.color = "red")}
+
+test_query exercise-11.2-7-alternative {Orders of red parts, without a calc column} {
+    addRelationTable Orders sid {pid _pid} {quantity p.}
+    addRelationTable Parts {pid _pid} {pname p.} {color red}
+} {SELECT   t1.quantity,
+         t2.pname
+FROM     Orders t1,
+         Parts t2
+WHERE    (t2.pid = t1.pid)
+  AND    (t2.color = "red")}
+
+test_query exercise-11.2-8 {Parts that come in blue and green} {
+    addRelationTable Parts pid {pname p._n} {color blue}
+    addRelationTable Parts pid {pname _n} {color green}
+} {SELECT   t1.pname
+FROM     Parts t1,
+         Parts t2
+WHERE    (t1.color = "blue")
+  AND    (t2.pname = t1.pname)
+  AND    (t2.color = "green")}
+
+test_query exercise-11.2-9 {Parts from CS meccas} {
+    addRelationTable Parts {pid _p} {pname p.ao.} color
+    addRelationTable Orders {sid _s1} {pid _p} quantity
+    addRelationTable Suppliers {sid _s1} sname {city Madison}
+    addRelationTable Orders {sid _s2} {pid _p} quantity
+    addRelationTable Suppliers {sid _s2} sname {city Berkeley}
+} {SELECT   t1.pname
+FROM     Parts t1,
+         Orders t2,
+         Suppliers t3,
+         Orders t4,
+         Suppliers t5
+WHERE    (t2.pid = t1.pid)
+  AND    (t3.sid = t2.sid)
+  AND    (t3.city = "Madison")
+  AND    (t4.pid = t1.pid)
+  AND    (t5.sid = t4.sid)
+  AND    (t5.city = "Berkeley")
+ORDER BY t1.pname asc}
+
+test_query exercise-11.2-10 {Parts from Madison but not Berkeley} {
+    addRelationTable Parts {pid _p} {pname p.} color
+    addRelationTable Orders {sid _s1} {pid _p} quantity
+    addRelationTable Suppliers {sid _s1} sname {city Madison}
+    addRelationTable Orders {sid _s2} {pid _p} quantity
+    addRelationTable {Suppliers ~} {sid _s2} sname {city Berkeley}
+} {SELECT   t1.pname
+FROM     Parts t1,
+         Orders t2,
+         Suppliers t3,
+         Orders t4
+WHERE    (t2.pid = t1.pid)
+  AND    (t3.sid = t2.sid)
+  AND    (t3.city = "Madison")
+  AND    (t4.pid = t1.pid)
+  AND    (not exists (SELECT * FROM Suppliers t5
+                      WHERE (t5.sid = t4.sid)
+                        AND (t5.city = "Berkeley")))}
+
+test_query exercise-11.2-12 {Biggest order for each bulk supplier} {
+    addRelationTable Suppliers {sid g._s} sname city {{} {p.max._q}}
+    addRelationTable Orders {sid _s} pid {quantity _q}
+    addConditionsBox {min._q > 100}
+} {SELECT   max(t2.quantity)
+FROM     Suppliers t1,
+         Orders t2
+WHERE    (t2.sid = t1.sid)
+GROUP BY t1.sid
+HAVING   (min(t2.quantity) > 100)}
+
+test_query exercise-11.2-13 {Average number of red parts ordered} {
+    addRelationTable Orders sid {pid _p} {quantity _q} {{} p.avg._q}
+    addRelationTable Parts {pid _p} pname {color red}
+} {SELECT   avg(t1.quantity)
+FROM     Orders t1,
+         Parts t2
+WHERE    (t2.pid = t1.pid)
+  AND    (t2.color = "red")}
+
+test_query exercise-11.2-14 {Suppliers of all parts} {
+    addRelationTable Suppliers {sid p.g._s} sname city
+    addRelationTable Orders {sid _s} {pid _p1} quantity
+    addRelationTable Parts {pid _p2} pname color
+    addConditionsBox {cnt._p1 = cnt._p2}
+} {SELECT   t1.sid
+FROM     Suppliers t1,
+         Orders t2,
+         Parts t3
+WHERE    (t2.sid = t1.sid)
+GROUP BY t1.sid
+HAVING   (count(distinct t2.pid) = count(distinct t3.pid))}
+
+
+puts ""
+if {$num_failures > 0} {
+    puts "***** $num_failures TESTS FAILED out of $num_tests *****"
+} else {
+    puts "!!! All $num_tests tests succeeded !!!"
+}

@@ -1,0 +1,4 @@
+setComment {All depts that Santa works in}
+addRelationTable {Emp {}} {eid _e} {ename Santa} {salary {}}
+addRelationTable {Works {}} {eid _e} {did _d}
+addRelationTable {Dept {}} {did _d} {dname p.} {managerid {}} {floornum {}}

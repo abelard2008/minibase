@@ -1,0 +1,58 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!Converted with LaTeX2HTML 95 (Thu Jan 19 1995) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds >
+<HEAD>
+<TITLE>4.4 The Log Manager</TITLE>
+</HEAD>
+<BODY>
+<meta name="description" value="4.4 The Log Manager">
+<meta name="keywords" value="main">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+<P>
+ <BR> <HR><A NAME=tex2html126 HREF="node9.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html124 HREF="node4.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html120 HREF="node7.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html127 HREF="node9.html">5 Implementation</A>
+<B>Up:</B> <A NAME=tex2html125 HREF="node4.html">4 Log Manager Interface</A>
+<B> Previous:</B> <A NAME=tex2html121 HREF="node7.html">4.3 Shared Memory Structure</A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00044000000000000000>4.4 The Log Manager</A></H2>
+<P>
+<A NAME=subsectioninterfacelogmgr>&#160;</A>
+<P>
+The log manager is defined in <tt> class log</tt>.  Every <em> Minirel</em>
+process will instantiate a global object of this class.  <tt> Class
+log</tt> includes methods to
+<P>
+<OL><LI> Read a log record given its LSN.
+<P>
+	<LI> Read the log record that immediately follows the log
+record with the supplied LSN.
+<P>
+	<LI> Read the log record that immediately follows the
+supplied log record.
+<P>
+	<LI> Append a log record to the end of the log.
+<P>
+	<LI> Flush the log tail to disk.  Anyone who wants the log
+tail flushed (except the buffer manager) will call <tt> log::flush</tt>.
+The buffer manager [<A HREF="node32.html#bufmgr">Qiu &amp; Su 95</A>] will call <tt> log::bufmgr_flush</tt>.
+When <tt> log::flush</tt> is invoked, it will flush the log tail and
+inform the buffer manager of the last LSN that made it to disk.  The
+buffer manager can use this information to enforce WAL efficiently.
+If the buffer manager wishes the log tail to be flushed, it calls <tt>
+log::bufmgr_flush</tt> which will flush the log tail and return the last
+LSN that made it.
+<P>
+	<LI> Return the LSN that will be assigned to the next log
+record written.
+<P>
+	<LI> Read/write access to the master log record.
+<P>
+</OL>
+<tt> Class log</tt> is also used to create and initialize new log files.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+ajitk@cs.wisc.edu, cjin@cs.wisc.edu
+</ADDRESS>
+</BODY>

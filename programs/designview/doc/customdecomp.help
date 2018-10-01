@@ -1,0 +1,36 @@
+
+dbnorm Help: Creating a Custom Decomposition
+=============================================
+
+The Custom Decomposition window allows you to define a new
+decomposition for a relation that is in violation of BCNF or 3NF. At
+the top of this window is a list of all attributes in the original
+relation. The bottom half of the window contains a set of attribute
+lists, one for each relation that is part of the new
+decomposition. The new relations that are being built will be referred
+to as the "child" relations. When the window first appears there will
+always be two children below the original relation, but you can add a
+child by selecting "Add Child" from the Decompose menu. Children are
+deleted by highlighting a child frame and selecting "Delete Child"
+from the Decompose menu.
+
+The process of defining a decomposition involves copying a subset of
+the parent's attributes into each child's attribute list, and defining
+a name for each child relation. Attribute copying is done by
+highlighting a set of attributes in the parent list, then clicking on
+the Add button in one of the child frames. To delete attributes from a
+child frame, highlight the attributes to be deleted in the child's
+attribute list, then click on that child's Delete button. You can name
+a child relation by clicking somewhere in that child's name entry box,
+and typing or editing a new name.
+
+A valid decomposition must have the following properties.
+
+* Each attribute in the parent must appear in at least one child
+  relation.
+
+* No child can contain all of the parent's attributes.
+
+* Every child relation must have a unique name.
+
+

@@ -1,0 +1,5 @@
+setComment {Coworkers of Santa}
+addRelationTable {Emp p.} {eid _e} {ename {}} {salary {}}
+addRelationTable {Emp {}} {eid _santa} {ename Santa} {salary {}}
+addRelationTable {Works {}} {eid _e} {did _d}
+addRelationTable {Works {}} {eid _santa} {did _d}

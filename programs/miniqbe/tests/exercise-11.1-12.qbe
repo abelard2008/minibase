@@ -1,0 +1,6 @@
+setComment {Depts with underpaid mgrs having a strange last name}
+addRelationTable {Dept {}} {did _d} {dname p.g.} {managerid _m} {floornum {}}
+addRelationTable {Emp {}} {eid _m} {ename {like "% Psmith"}} {salary g._ms}
+addRelationTable {Emp {}} {eid _e} {ename {}} {salary _es}
+addRelationTable {Works {}} {eid _e} {did _d}
+addConditionsBox {_ms < max._es and _ms > min._es}

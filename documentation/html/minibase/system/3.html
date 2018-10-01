@@ -1,0 +1,78 @@
+<BODY BGCOLOR="#FFDDDD">
+
+<HTML>
+<HEAD>
+<TITLE>Introduction</TITLE>
+</HEAD>
+
+<BODY>
+
+<H1>Overview of Minirel II</H1>
+
+<H2>Single-User</H2>
+	At the top level is an SQL parser and query optimizer.  A graphical
+front end is being finished as well which will allow easy access to
+an expanded suite of utility functions, such as loading relations from
+a file into the database and creating indicies and relations.  Underneath 
+the optimizer is a runtime planner.  When the user enters an SQL query,
+the parser constructs a plan tree.  It consults the <EM>catalogs</EM> as
+it does so in order to do type checking.  The optimizers uses various 
+heuristics (pushing selects, checking for indicies) and prepares the tree 
+for the runtime planner.  The optimizer decides how to join the various 
+relations specified in the query.
+<P>
+	The runtime planner in turn creates the appropriate join methods
+and iterators to produce tuples to the (currently unfinished) front end.
+<P>
+	The next layer is the relational operators layer.  File scans, 
+sorting, and joins, all fall into this layer.  These operations in turn
+access the access methods (indicies) on the system.  
+<P>
+	In Minirel II, all tuples are stored in heap files, which can be
+scanned sequentially, or accessed through one of two indicies: BTrees and
+linear hash.  
+<P>
+	The buffer manager maintains the buffer pool for the DBMS.
+
+
+<H2>Concurrency</H2>
+	At the base of Minirel II is the Operating System layer.  Managers 
+in shared memory handle all aspects of concurrency in Minirel II, including 
+locking, logging, recovery, and page replacement and allocation.  Upon 
+startup, if the managers exist in shared memory, the process attaches 
+its pointers to the different managers.  If the shared memory segments do 
+not exist, then the managers are instantiated and the first process proceeds 
+normally.  Semaphores are used to restrict access to critical sections of 
+these managers, such as the lock table, since these managers reside in 
+shared memory, it is important that only one process be active in certain 
+sections at once.
+<P>
+	ARIES recovery was implemented into the Minirel II project.  An 
+additional UNIX file, the log, was introduced.  A log tail exists for every 
+UNIX process.  The log / recovery / buffer management systems all work so 
+that WAL is enforced.  Every page contains an LSN, so that the system can 
+enforce proper recovery.  The recovery system conforms to ARIES.  There is 
+an analysis phase, where the first LSN is discovered, and where the earliest 
+checkpoint is discovered.  Redo and undo are performed as well.  
+<P>
+	Locking is done at the Page level to prevent dirty writes and other
+concurrency problems that arise in a multi-process system.  
+
+<P>
+
+
+<H2>Some Details of the System</H2>
+
+<B>Records:</B> They are often treated as just a raw number of bytes, but 
+relational operators cast them as <EM>tuples</EM>.  Some padding is done 
+internally so that attributes are aligned properly.
+<P>
+<B>Record Storage:</B> There are no clustered inicies in Minirel II.  All records
+are stored in heap files.
+<P>
+<B>Data Types:</B> Attributes of these types are supported. strings (max size of 
+255 characters), real numbers (C floats), and integers.
+<P>
+
+</BODY>
+</HTML>

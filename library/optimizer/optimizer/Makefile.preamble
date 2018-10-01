@@ -1,0 +1,17 @@
+SUB_OPTIMIZER_SRCS := \
+	hashjoin.C \
+	joinmeth.C \
+	merge.C \
+	nestloop.C \
+	opt_globals.C \
+	optimizer.C \
+	planner.C \
+	query.C \
+	sol_tbl.C \
+	sortmerge.C
+
+# No headers here...
+SUB_OPTIMIZER_HDRS :=
+
+SUB_OPTIMIZER_OBJS := $(SUB_OPTIMIZER_SRCS:.C=.o)
+

@@ -1,0 +1,6 @@
+This tool used to be able to use different bitmaps for visited and
+splitted nodes. The current version is not able to do this. Looks like
+the bitmaps are lost (or invalid). (I tried to change the bitmaps'
+values in config_file but it didn't work.)  
+
+Weiqing Huang (whuang@cs.wisc.edu), Fri May 10 14:15:42 1996 CDT

@@ -1,0 +1,40 @@
+<BODY BGCOLOR="#FFDDDD">
+<HTML>
+<HEAD>
+<TITLE>Parser Page</TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+
+<H1>Parser Page</H1>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+
+<H2>Introduction</H2>
+The parser takes SQL queries and creates a tree that is then
+optimized and executed by the Minibase planner.  
+<P>
+Ideally, type checking of attributes / relations should be done
+here, but since the catalog structure was changing while this was
+developed, type checking is done in the optimizer.
+
+<H3>Bugs in the Parser</H3>
+<UL>
+ <LI>Inserts and Deletes are not supported through the parser
+<! <LI>It can't handle:  VAL op attrName. However, it can do this=> attrName op VAL>
+</UL>
+
+<P>
+
+<IMG SRC="../pics/hline.gif">
+<BR>
+
+<B><A HREF="../project.html">Back to the Components Page</A></B><BR>
+<B><A HREF="../minibase.html">Back to the Minibase Home Page</A></B><BR>
+
+
+
+</BODY>
+</HTML>

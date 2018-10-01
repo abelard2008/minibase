@@ -1,0 +1,81 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!Converted with LaTeX2HTML 95 (Thu Jan 19 1995) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds >
+<HEAD>
+<TITLE>5.4.5  log::write</TITLE>
+</HEAD>
+<BODY>
+<meta name="description" value="5.4.5  log::write">
+<meta name="keywords" value="main">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+<P>
+ <BR> <HR><A NAME=tex2html244 HREF="node19.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html242 HREF="node13.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html236 HREF="node17.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html245 HREF="node19.html">5.4.6  log::read</A>
+<B>Up:</B> <A NAME=tex2html243 HREF="node13.html">5.4  class log</A>
+<B> Previous:</B> <A NAME=tex2html237 HREF="node17.html">5.4.4  log::~log</A>
+<BR> <HR> <P>
+<H3><A NAME=SECTION00054500000000000000>5.4.5  log::write</A></H3>
+<P>
+<A NAME=subsubsectionimpllogwrite>&#160;</A>
+<P>
+The <tt> write</tt> method first checks if the log record supplied is
+beyond the maximum size allowed.  If not, it executes <tt>
+global_shm_log_ptr-&gt;lock()</tt> because it extensively accesses and
+modifies the shared memory structure.  It then computes the total
+number of pages that the log record would need<A NAME=tex2html6 HREF="footnode.html#314"><IMG ALIGN=BOTTOM ALT="gif" SRC="http://www.cs.wisc.edu/latex2html//foot_motif.gif"></A> and the number of pages available in the
+log.  The current size of the log is defined as the number of pages
+between the first LSN (<tt> global_shm_log_ptr-&gt;sl_firstlan</tt>) and
+the current last LSN (<tt> global_shm_log_ptr-&gt;sl_nextlsn</tt>)
+inclusive.  For normal log writes [those writes that do not correspond
+to transaction aborts (CLRs)] a check is made to verify that writing
+the log record will not cause the log size to exceed half its maximum
+size.  For CLRs, a check if made against the maximum size of the log.
+That way, if a transaction decides to abort, there will be enough
+log space to write out all the CLRs.
+<P>
+	If the check for log size fails, the recovery manager is
+called to compute a more optimistic value of first LSN and the check
+is repeated.  If it fails this time, the log write is failed.
+<P>
+	It is now known that the log record will fit into the log.
+Therefore, it is assigned an LSN.  The LSN of the log record is the
+current value of <tt> global_shm_log_ptr-&gt;sl_nextlsn</tt>.
+<P>
+	Normally, a small log record will fit into the log tail.  This
+is the simplest case.  The log record is copied into the log tail and
+the last LSN is updated.  If the log record is too big to fit a page,
+then whatever fits is copied into the log tail, the log tail is
+flushed, and the remaining portion is written in a similar manner.
+Thus, the <tt> write</tt> method will work for log records that span many
+pages.
+<P>
+	Unfortunately, the procedure outlined above is not foolproof.
+Suppose a log record spans more than a page.  Assume that the first
+write and flush succeeded.  Suppose that during the second write, a
+power failure occurred.  Now the log is left inconsistent.  During
+restart, the end of log will not be detected properly (see
+Section <A HREF="node19.html#subsubsectionimpllogread">5.4.6</A>) and the <tt> read</tt> may
+return incorrect data.  One way of detecting corruption is to end
+every log record with a magic number.  If we do not detect the magic
+number at the end of the record read, we know for sure that the
+corresponding <tt> write</tt> failed midway.  However, if we do detect the
+magic number, we still cannot be sure that there was no corruption.
+Hence, using this method of detecting corruption is not guaranteed
+to work.
+<P>
+	When the entire log record is written, <tt> write</tt> executes
+<tt> global_shm_log_ptr-&gt;unlock()</tt> and returns.  The log record
+that was supplied as a parameter to <tt> write</tt> will now contain the
+LSN field filled in.
+<P>
+<BR> <HR><A NAME=tex2html244 HREF="node19.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html242 HREF="node13.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html236 HREF="node17.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html245 HREF="node19.html">5.4.6  log::read</A>
+<B>Up:</B> <A NAME=tex2html243 HREF="node13.html">5.4  class log</A>
+<B> Previous:</B> <A NAME=tex2html237 HREF="node17.html">5.4.4  log::~log</A>
+<BR> <HR> <P>
+<BR> <HR>
+<P><ADDRESS>
+ajitk@cs.wisc.edu, cjin@cs.wisc.edu
+</ADDRESS>
+</BODY>

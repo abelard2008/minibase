@@ -1,0 +1,203 @@
+<BODY BGCOLOR="#FFDDDD">
+<HTML>
+<HEAD>
+<TITLE> External Interface </TITLE>
+</HEAD>
+
+<BODY>
+
+
+<H1> External Interface </H1>
+
+<HR>
+Interpreter is implemented as just another method of the 
+<tt>PlanNode</tt>. <tt>PlanNode</tt> is the class name for the node of the
+tree produced by the optimizer. Here is the interface:
+<PRE>
+  Iterator* PlanNode::interpret(AttributeList& attrs, Status& status);
+</PRE>
+Only input to the <tt> interpret</tt> is the implicit argument, the plan node
+on which it is being called. Both <tt>attrs</tt> and <tt>status</tt> are
+the output. <tt>status</tt> indicates whether the interpretation was
+successfully completed while the <tt>attrs</tt> gives the list of attributes
+of the tuple that will be returned by the output stream of the 
+<tt>iterator</tt>.
+Now that we had mention tuples, we should say more about it since it was
+implemented by our group. Tuples are the structures that are returned
+by the <tt>Iterator::get_next()</tt>function.
+Here is the superclass of all the iterators:
+
+<PRE>
+class Iterator {
+
+// All the relational operators and access methods are iterators.
+
+public:
+	virtual Status get_next(Tuple*& tuple) = 0;
+   virtual ~Iterator(){};
+};
+</PRE>
+
+This does not need much of explanation, all the iterators can do is return
+the next tuple. Therefore we will present the <tt>Tuple</tt> interface.
+
+<PRE>
+class Tuple {
+
+   // Tuples (or Records) will be typeless, i.e. we could not say what is
+   // in tuple just by looking at it.
+   // This means that whenever the tuples are passed around, additional
+   // type information should be given separately.
+   // Tuple is able to return stored data provided we ask for 
+   // specific type.
+   // To create the Tuple you WILL NOT use the constructor but
+   // something like this:
+   //
+   //   Tuple* tuple = (Tuple*) new char[Tuple::max_size];
+   //
+   // Where int Tuple::max_size is defined globally.
+   // Begining of the tuple MUST BE ON THE 4 BYTE BOUNDARY.
+
+public:
+
+   Tuple(){cerr << "Tuple constructor should never be called! \n";};
+
+   int getFld(int fldNo, int& val);   // Convert this field into integer   
+   
+   float getFld(int fldNo, float& val); // Convert this field into float   
+
+   char* getFld(int fldNo, char*& val); //Convert this field into string   
+
+   char* getFld(int fldNo);      // Just return a char * pointer to the data
+
+   Tuple* setFld(int fldNo, int val); // Set this field to integer value
+
+   Tuple* setFld(int fldNo, float val); // Set this field to float value
+
+   Tuple* setFld(int fldNo, char* val); // Set this field to string value
+
+   static int max_size;   // Maximum size of any tuple 
+
+   Status setHdr(short numFlds, AttrType types[], short strSizes[] = 0); 
+   
+   // setHdr will set the header of this tuple. If there is enough
+   // space available returned status will be OK. 
+   // Array strSizes contains the sizes of the strings 
+   // (excluding trailing \0)
+   // Array types contains the types that will be in this tuple.
+
+   short size();      // Returns size of this tuple in bytes
+
+   short noOfFlds();   // Returns number of fields in this tuple
+   
+   void print(AttrType type[], ostream& out = cout); 
+
+   // Print this tuple to stream out, by default cout; 
+</PRE>
+
+Class <tt>Tuple</tt> is a very simple one. It should be stressed that the
+data inside the tuple is aligned and therefore it is crucial that the
+begining of the tuple is aligned too. 
+<P>
+Tuple is considered to be the
+stream of bytes (untyped object) that can be interpreted only by the
+functions that actually use it. Public interface is well commented and
+there is no much that can be said in addition. Tuples are never created,
+only the array of characters is mapped into tuple structure.
+Tuple structure is set by the <tt>setHdr</tt> function. Actual data is set
+by the appropriate <tt>setFld</tt> functions and data is retreived by the
+appropriate <tt>getFld</tt> function. 
+<P>
+We should mention that the <tt>getFld</tt> function returns the appropriate
+value at the two places. (as the function return and among the arguments).
+This is confusing design but was implemented by popular demand.
+<P>
+There is one more interface implemented by us and that one transforms
+various data representation from the optimizer form into the one agreed
+to be used in this project. (Remeber, optimizer is the "foreign" body).
+Therefore this class, which we called <tt>Converter</tt> is mainly used
+by our group and is therefore semipublic, but it might be used by the
+GUI interface and we are going to present it here.
+<P>
+Before we go on to presenting <tt>Converter</tt> let's briefly mention
+which structures are used to describe fields and filters in the minirel.
+The corresponding structure for the optimizer should be described in
+the optimizer description.
+We describe fields by telling to which relation they belong and what is
+their sequential number. This all refers to the single iterator.
+Here is the structure <tt>FldSpec</tt>:
+
+<PRE>
+enum RelSpec {outer, inner}; // Relation can be inner or outer
+
+struct FldSpec {	// Field is specified by RelSpec and offset in the tuple
+	RelSpec relation;
+	int offset;
+};
+</PRE>
+In the case of the unary iterator the relation designator is <tt>outer</tt>
+by convention.
+<P>
+Filters, on the other hand are presented in the BCNF normal forms.
+It means that the top level of conditions are logically connected with
+AND operator while the lower level is connected by the OR operators.
+Lower level is described by the linked list of the struct <tt>CondExpr</tt>.
+Here is the format of <tt>CondExpr</tt>:
+
+<PRE>
+struct CondExpr {
+
+// This structure will hold single select condition
+// It is an element of linked list which is logically connected by OR operators
+
+	AttrOperator op;	// Operator like "<"
+	AttrType type1;
+	AttrType type2;	// Types of operands 
+
+	// Null AttrType means that operand is not a literal but an attribute name
+
+	union {	// Operands can be any members of this union
+		FldSpec symbol;
+		char* string;
+		int integer;
+		float real;
+	} operand1, operand2;
+
+	CondExpr* next;	// Pointer to the next element in linked list
+};
+</PRE>
+
+To conclude, we can describe arbitrarily complex boolean expressinon
+by passing array of the pointers to the <tt>CondExpr</tt> (which are actually
+pointers to linked list).
+<P>
+We now return to the <tt>Converter</tt> class that creates all these 
+structures.
+Note: This is <em>not</em> the complete interface for the <tt>Converter</tt>
+since it is rather long and is
+irelevant to other groups. I will present the rest of it in the
+"internal design" section.
+
+<PRE>
+
+const int MAX_ATTR_LIST = 100;    // Maximum length of attribute list
+
+class Converter {
+
+// Converts various data structures that contains Attributes into the
+// analagous structures that contain field specification. 
+
+public:
+
+   Converter(PlanNode* plan, AttributeList al);
+   // Converter constructor takes PlanNode on which this conversion is to be
+   // done and the attribute list of the CHILD node (this is unary converter).
+
+   int convert(AttrType types[], short* strLens, RelSpec rel = outer);
+   // This will return array of types and the string lengths for the
+   // Attribute list given in constructor.
+}
+
+<HR>
+</BODY>
+</HTML>

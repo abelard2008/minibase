@@ -1,0 +1,46 @@
+<HTML>
+<HEAD>
+<TITLE>Linear Hash Indexes</TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+<H1>Linear Hash Indexes</H1>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+<H2>Introduction</H2>
+Linear Hash indexes are one of the <A HREF= "../AM/am.html">access methods</A> that
+are available in Minibase.
+(Not tested in the current release!)
+<P>
+<IMG SRC="../pics/hline.gif">
+
+<H2>Design Decisions</H2>
+Chaining is used to accomodate overflow buckets.  On deletion, entries are
+removed; empty pages are de-allocated.  Nothing is done to reduce the
+directory size.
+<P>
+The <B>LinearHashingFile</B> class is derived from <B>IndexFile</B>,
+and scans are objects of the <B>LinearHashingScan</B> class.
+There are several kinds of pages, with <B>BucketPage</B>, containing
+index entries, and <B>DirPage</B>, holding directory entries,
+being the most important.
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+Click here for the <A HREF="public.txt"><B>public interface</B></A>.
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+
+<A HREF="../project.html">Back to the List of Components</A><BR>
+<A HREF="../minibase.html">Back to the Minibase Home Page</A><BR>
+<!A HREF="report.html">
+<!764 Report</A>
+<P>
+
+</BODY>
+</HTML>
+
+

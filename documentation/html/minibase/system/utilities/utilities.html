@@ -1,0 +1,58 @@
+<HTML>
+<HEAD>
+<TITLE>Utilities</TITLE>
+</HEAD>
+<body background = "../../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+<H1>Utilities</H1>
+<P>
+<IMG SRC="../../pics/hline.gif">
+<P>
+Each utility has a corresponding (C++) function that is wrapped by a Minirel
+transaction (necessary for recovery).  The utilities that are currently
+supported are described below.
+<P>
+<IMG SRC="../../pics/hline.gif">
+
+<H2>Insert</H2>
+To insert a tuple into a relation, the relation name must be passed, and the 
+number and values of attributes must be passed.
+The values are type checked (with the needed Catalog calls taking place).
+The tuple is created, then inserted into the HeapFile and any indexes that
+exist.
+<P>
+<IMG SRC="../../pics/hline.gif">
+
+<H2>Delete</H2>
+All tuples that match a given selection will be deleted from a relation.
+For example:
+<P>
+delete       <BR>
+from Relation R    <BR>
+where name = "bob"  <P>
+Everyone named bob will be deleted.  Multiple attributes cannot be checked.
+Indexes are updated as needed.
+<P>
+<IMG SRC="../../pics/hline.gif">
+
+<H2>Load</H2>
+It is often convenient to enter many tuples at a time.  The load utility
+allows this.  Only a relation name and a filename are needed.
+Indexes are updated as needed.
+<P>
+<IMG SRC="../../pics/hline.gif">
+<P>
+Click here for the <B><A HREF="utility.public.txt">interface</A></B>.
+
+<P>
+<IMG SRC="../../pics/hline.gif">
+<P>
+<A HREF="../../project.html">Back to the List of Components</A><BR>
+<A HREF="../../minibase.html">Back to the Minibase Home Page</A><BR>
+
+
+
+</BODY>
+</HTML>
+

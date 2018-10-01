@@ -1,0 +1,93 @@
+8
+emp1 5 40000 50 2000
+	empid 1 I 10001 60000 4 0 1
+		Hash 675 R 1 0 40000 1 1 emp1-Hash-empid
+	ename 2 T Aaronson Zywronski 30 4 1
+		B_Index 2700 A 1 0 39000 2 2 emp1-B_Index-ename
+	jno 3 I 1 2500 4 38 1
+		B_Index 640 A 1 0 2000 2 2 emp1-B_Index-jno
+	dno 4 I 1001 4000 4 34 1
+		Hash 650 R 1 0 3000 1 1 emp1-Hash-dno
+	sal 5 R 15000 500000 8 42 2
+		B_Index 1000 A 1 0 5000 2 2 emp1-B_Index-sal
+		FileScan 2000 R 0
+emp2 5 40000 50 2000
+	empid 1 I 10001 60000 4 0 1
+		Hash 675 R 1 0 40000 1 1 emp2-Hash-empid
+	ename 2 T Aaronson Zywronski 30 4 1
+		B_Index 2700 A 1 0 39000 2 2 emp2-B_Index-ename
+	jno 3 I 1 2500 4 38 1
+		B_Index 640 A 1 0 2000 2 2 emp2-B_Index-jno
+	dno 4 I 1001 4000 4 34 1
+		B_Index 650 A 1 0 2000 1 1 emp2-Hash-dno
+	sal 5 R 15000 500000 8 42 2
+		B_Index 1000 A 1 0 5000 2 2 emp2-B_Index-sal
+		FileScan 2000 R 0
+emp3 5 40000 50 2000
+	empid 1 I 10001 60000 4 0 1
+		Hash 675 R 1 0 40000 1 1 emp3-Hash-empid
+	ename 2 T Aaronson Zywronski 30 4 1
+		B_Index 2700 A 1 0 39000 2 2 emp3-B_Index-ename
+	jno 3 I 1 2500 4 38 1
+		B_Index 640 A 1 0 2000 2 2 emp3-B_Index-jno
+	dno 4 I 1001 4000 4 34 1
+		Hash 650 R 1 1 3000 1 1 emp3-Hash-dno
+	sal 5 R 15000 500000 8 42 2
+		B_Index 1000 A 1 0 5000 2 2 emp3-B_Index-sal
+		FileScan 2000 R 0
+emp4 5 40000 50 2000
+	empid 1 I 10001 60000 4 0 1
+		Hash 675 R 1 0 40000 1 1 emp4-Hash-empid
+	ename 2 T Aaronson Zywronski 30 4 1
+		B_Index 2700 A 1 0 39000 2 2 emp4-B_Index-ename
+	jno 3 I 1 2500 4 38 1
+		B_Index 640 A 1 0 2000 2 2 emp4-B_Index-jno
+	dno 4 I 1001 4000 4 34 1
+		B_Index 650 A 1 1 2000 1 1 emp4-Hash-dno
+	sal 5 R 15000 500000 8 42 2
+		B_Index 1000 A 1 0 5000 2 2 emp4-B_Index-sal
+		FileScan 2000 R 0
+emp5 5 40000 50 2000
+	empid 1 I 10001 60000 4 0 1
+		Hash 675 R 1 0 40000 1 1 emp5-Hash-empid
+	ename 2 T Aaronson Zywronski 30 4 1
+		B_Index 2700 A 1 0 39000 2 2 emp5-B_Index-ename
+	jno 3 I 1 2500 4 38 1
+		B_Index 640 A 1 0 2000 2 2 emp5-B_Index-jno
+	dno 4 I 1001 4000 4 34 1
+		B_Index 650 A 1 0 2000 1 1 emp5-Hash-dno % sal %
+	sal 5 R 15000 500000 8 42 1
+		FileScan 2000 R 0
+emp6 5 40000 50 2000
+	empid 1 I 10001 60000 4 0 1
+		Hash 675 R 1 0 40000 1 1 emp6-Hash-empid
+	ename 2 T Aaronson Zywronski 30 4 1
+		B_Index 2700 A 1 0 39000 2 2 emp6-B_Index-ename
+	jno 3 I 1 2500 4 38 1
+		B_Index 640 A 1 0 2000 2 2 emp6-B_Index-jno
+	dno 4 I 1001 4000 4 34 0
+	sal 5 R 15000 500000 8 42 2
+		B_Index 1000 A 1 0 5000 2 2 emp6-B_Index-sal % dno %
+		FileScan 2000 R 0
+emp7 5 40000 50 2000
+	empid 1 I 10001 60000 4 0 1
+		Hash 675 R 1 0 40000 1 1 emp7-Hash-empid
+	ename 2 T Aaronson Zywronski 30 4 1
+		B_Index 2700 A 1 0 39000 2 2 emp7-B_Index-ename
+	jno 3 I 1 2500 4 38 1
+		B_Index 640 A 1 0 2000 2 2 emp7-B_Index-jno
+	dno 4 I 1001 4000 4 34 1
+		Hash 650 R 1 0 2000 1 1 emp7-Hash-dno % sal %
+	sal 5 R 15000 500000 8 42 1
+		FileScan 2000 R 0
+emp8 5 40000 50 2000
+	empid 1 I 10001 60000 4 0 1
+		Hash 675 R 1 0 40000 1 1 emp8-Hash-empid
+	ename 2 T Aaronson Zywronski 30 4 1
+		B_Index 2700 A 1 0 39000 2 2 emp8-B_Index-ename
+	jno 3 I 1 2500 4 38 1
+		B_Index 640 A 1 0 2000 2 2 emp8-B_Index-jno
+	dno 4 I 1001 4000 4 34 0
+	sal 5 R 15000 500000 8 42 2
+		Hash 1000 R 1 0 5000 2 2 emp8-B_Index-sal % dno %
+		FileScan 2000 R 0

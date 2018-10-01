@@ -1,0 +1,48 @@
+<BODY BGCOLOR="#FFDDDD">
+<HTML>
+<HEAD>
+<TITLE>Lock Manager Home Page</TITLE>
+</HEAD>
+
+<BODY>
+
+<H1>Lock Manager</H1>
+Francis Salmon (salmon@cs) & Gary Zipfel (zipfel@cs)<BR>
+
+<HR>
+
+<H3>General Description of goals & responsibilities</H3>
+<UL>
+ <LI> support page level locking
+ <LI> lock page class supports lock_page, unlock_page, unlock_all_pages,and  upgrade_lock 
+ <LI> Support IS,IX,S,X lock modes
+ <LI> Detect deadlocks and return and an error code Restart if we have been killed because of a deadlock. It is the transactions responsibility to abort itself on receiving a Restart error from any of the lock manager functions.
+</UL>
+
+
+<P>
+<H3>Meeting Summaries</H3>
+<UL>
+ <LI><A HREF="Mar23.html">March 23</A>
+</UL>
+
+<P>
+<H3>Project Report</H3>
+<UL>
+ <LI><A HREF="Project.html">Project</A>
+</UL>
+<P>
+<H3>External Interfaces</H3>
+ <UL>
+  <LI><A HREF="lock_manager.html">Our current .h interface.</A>
+ </UL>
+
+<HR>
+
+</BODY>
+
+</HTML>
+
+
+
+

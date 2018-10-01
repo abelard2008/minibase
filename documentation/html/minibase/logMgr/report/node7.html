@@ -1,0 +1,63 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!Converted with LaTeX2HTML 95 (Thu Jan 19 1995) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds >
+<HEAD>
+<TITLE>4.3 Shared Memory Structure</TITLE>
+</HEAD>
+<BODY>
+<meta name="description" value="4.3 Shared Memory Structure">
+<meta name="keywords" value="main">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+<P>
+ <BR> <HR><A NAME=tex2html118 HREF="node8.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html116 HREF="node4.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html110 HREF="node6.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html119 HREF="node8.html">4.4 The Log Manager</A>
+<B>Up:</B> <A NAME=tex2html117 HREF="node4.html">4 Log Manager Interface</A>
+<B> Previous:</B> <A NAME=tex2html111 HREF="node6.html">4.2 Log records</A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00043000000000000000>4.3 Shared Memory Structure</A></H2>
+<P>
+<A NAME=subsectioninterfaceshm>&#160;</A>
+<P>
+The <em> Minirel</em> system consists of several processes, each trying to
+access and update a single database.  Thus, some form of sharing is
+required between processes to access common data structures.  One
+example of a shared data structure is the log tail.  This section
+describes the data structure maintained by the log manager in shared
+memory.
+<P>
+	The data structure maintained in shared memory is an object of
+<tt> class shm_log</tt> (header file: <tt> logshm.h</tt>).  It contains the
+following fields:
+<P>
+<OL><LI> The log tail.  This is used to write log records into
+the log.  When the log tail is full, it is flushed to disk.
+<P>
+	<LI> The first LSN.  This is the LSN of the earliest log
+record that the recovery subsystem is interested in.  Log records with
+LSNs before this will never be used for a future restart.
+<P>
+	<LI> The next LSN<A NAME=tex2html4 HREF="footnode.html#124"><IMG ALIGN=BOTTOM ALT="gif" SRC="http://www.cs.wisc.edu/latex2html//foot_motif.gif"></A>.  This is the LSN
+that will be assigned to the next log record that is written.
+<P>
+	<LI> The log file header.  This contains the master log
+record, the maximum size of the log (in pages), and the log tail size
+(in pages).  Currently, the log tail size is fixed at 1 page.
+<P>
+	<LI> The number of transactions that are currently sharing
+this shared memory structure.
+<P>
+	<LI> A semaphore to mutually exclude log opens from one
+another.
+<P>
+</OL>
+Only <tt> class log</tt> accesses the shared memory structure.  However,
+its definition must be made public so that the OS infrastructure group
+can declare a shared memory segment of suitable size and assign the
+global pointer <tt> global_shm_log_ptr</tt> to the correct address.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+ajitk@cs.wisc.edu, cjin@cs.wisc.edu
+</ADDRESS>
+</BODY>

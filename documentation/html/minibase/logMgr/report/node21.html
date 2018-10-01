@@ -1,0 +1,45 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!Converted with LaTeX2HTML 95 (Thu Jan 19 1995) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds >
+<HEAD>
+<TITLE>5.4.8  log::flush and  log::bufmgr_flush</TITLE>
+</HEAD>
+<BODY>
+<meta name="description" value="5.4.8  log::flush and  log::bufmgr_flush">
+<meta name="keywords" value="main">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+<P>
+ <BR> <HR><A NAME=tex2html272 HREF="node22.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html270 HREF="node13.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html266 HREF="node20.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html273 HREF="node22.html">6 Testing</A>
+<B>Up:</B> <A NAME=tex2html271 HREF="node13.html">5.4  class log</A>
+<B> Previous:</B> <A NAME=tex2html267 HREF="node20.html">5.4.7  log::read_next_logrec</A>
+<BR> <HR> <P>
+<H3><A NAME=SECTION00054800000000000000>5.4.8  log::flush and  log::bufmgr_flush</A></H3>
+<P>
+<A NAME=subsubsectionimpllogflush>&#160;</A>
+<P>
+The flush methods write the log tail to the corresponding page on
+disk.  An issue is to compute the last LSN that made it to disk when
+this write succeeds.  Since LSNs determine positions and LSNs can be
+compared using <tt> <b>&lt;</b></tt>, <tt> <b>&gt;</b></tt>, etc., we return the last LSN
+flushed as one less than <tt> global_shm_log_ptr-&gt;sl_nextlsn</tt>.
+This works because we are not interested in the LSN of the last log
+record that made it to disk but an LSN that can be used to enforce
+WAL.  The <tt> private</tt> method <tt> next_lsn_less_1</tt> computes this.
+<P>
+	The flush methods do nothing if the log is empty.
+<P>
+	Much of the functionality in these two methods are common.
+The common part is in <tt> internal_flush</tt>.  This is called by both
+methods to do all the work.
+<P>
+ This concludes our discussion of the implementation
+details of the log manager.  Additional details can be found in the
+documentation in the code itself.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+ajitk@cs.wisc.edu, cjin@cs.wisc.edu
+</ADDRESS>
+</BODY>

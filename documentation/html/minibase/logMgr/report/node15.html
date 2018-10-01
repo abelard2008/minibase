@@ -1,0 +1,47 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!Converted with LaTeX2HTML 95 (Thu Jan 19 1995) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds >
+<HEAD>
+<TITLE>5.4.2  log::log (The Create Constructor)</TITLE>
+</HEAD>
+<BODY>
+<meta name="description" value="5.4.2  log::log (The Create Constructor)">
+<meta name="keywords" value="main">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+<P>
+ <BR> <HR><A NAME=tex2html214 HREF="node16.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html212 HREF="node13.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html206 HREF="node14.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html215 HREF="node16.html">5.4.3  log::log (The Open </A>
+<B>Up:</B> <A NAME=tex2html213 HREF="node13.html">5.4  class log</A>
+<B> Previous:</B> <A NAME=tex2html207 HREF="node14.html">5.4.1  class Rawfile</A>
+<BR> <HR> <P>
+<H3><A NAME=SECTION00054200000000000000>5.4.2  log::log (The Create Constructor)</A></H3>
+<P>
+<A NAME=subsubsectionimpllogcreate>&#160;</A>
+<P>
+The create constructor is invoked by a special utility which creates a
+database.  This utility does not run transactions.  Also, transactions
+do not use the database being created until the create utility
+successfully completes.  Therefore, the create constructor does not
+need to provide the full functionality of an open (see
+Section <A HREF="node16.html#subsubsectionimpllogopen">5.4.3</A>).  It does not create a
+shared memory structure or attach to it, and does not allow any of the
+<tt> log</tt> methods to be invoked.  It simply creates a log file (a <tt>
+Rawfile</tt>) of the appropriate size and initializes it.  Initialization
+involves writing the header page (in page 0) which contains a master
+log record, the size of the log file, and the size of the log tail.
+This is used in future opens to allocate and initialize the
+appropriate data structures.  The size of the log tail is one page in
+the current implementation.  The master log record contains the LSN of
+the last checkpoint record that made it to disk.  For a new log, there
+is no checkpoint record.  This field, therefore, is set to <tt>
+invalid_lsn</tt>.
+<P>
+	The create constructor then closes the <tt> Rawfile</tt>.  The log
+is now ready for future use.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+ajitk@cs.wisc.edu, cjin@cs.wisc.edu
+</ADDRESS>
+</BODY>

@@ -1,0 +1,7 @@
+setComment {Jane's floormates}
+addRelationTable {Emp {}} {eid _e} {ename p.} {salary {}}
+addRelationTable {Works {}} {eid _e} {did _d}
+addRelationTable {Dept {}} {did _d} {dname {}} {managerid {}} {floornum _f}
+addRelationTable {Emp {}} {eid _jane} {ename {"Jane Dodecahedron"}} {salary {}}
+addRelationTable {Works {}} {eid _jane} {did _jdept}
+addRelationTable {Dept {}} {did _jdept} {dname {}} {managerid {}} {floornum _f}

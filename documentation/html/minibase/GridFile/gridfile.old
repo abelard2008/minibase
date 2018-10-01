@@ -1,0 +1,25 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0 plus SQ/ICADD Tables//EN" "html.dtd"
+>
+<HTML>
+<HEAD>
+<TITLE>Grid File Secondary Index Access Method</TITLE>
+</HEAD>
+<BODY><H1>Grid File Secondary Index Access Method</H1> Maryan Stubbs 
+mstubbs@cs.wisc.edu<BR>
+<HR>
+<H3>General Description of goals & responsibilities</H3>   Implement
+the grid file multi-key retrieval method as a secondary index.<P></P><H3>
+Meeting Summaries</H3>
+<UL>
+<LI>Meeting April 21.<A href=april21.txt> Meeting Notes</A></LI>
+</UL><P></P><H3>External Interfaces</H3>  <UL>
+ 
+<LI>Our .h interface as of <A href=gridfile5.h> April 20</A></LI>
+<LI>Our .h interface as of <A href=gridfile4.h> April 12</A></LI>
+<LI>Our .h interface as of <A href=gridfv3.txt> April 10</A></LI>
+<LI>Our .h interface as of <A href=gridfv2.txt> April  6</A></LI>
+<LI>Our .h interface as of <A href=http://www.cs.wisc.edu/~mstubbs/gridfv1.htm> April  2</A></LI> 
+
+</UL><HR>
+</BODY>
+</HTML>   

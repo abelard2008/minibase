@@ -1,0 +1,3 @@
+setComment {Average number of red parts ordered}
+addRelationTable {Orders {}} {sid {}} {pid _p} {quantity _q} {{} p.avg._q}
+addRelationTable {Parts {}} {pid _p} {pname {}} {color red}

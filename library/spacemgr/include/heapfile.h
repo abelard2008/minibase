@@ -1,0 +1,106 @@
+/* -*- C++ -*- */
+/* 
+ * heapfile.h -  class HeapFile
+ *
+ * Johannes Gehrke & Gideon Glass  950920  CS564  UW-Madison
+ *
+ * Modified by Michael Lee, 1995
+ */
+
+#ifndef _HEAPFILE_H
+#define _HEAPFILE_H
+
+#include "minirel.h"
+#include "page.h"
+
+/*
+   Our implementation is directory based.  We maintain a directory of
+   info on data pages (which of course are of type HFPage when loaded into
+   memory).  The directory itself is also an HFPage list, each record being
+   of type DataPageInfo as defined below.
+
+   This allows for fast inserts since our directory page(s)
+   will most likely be in memory.  (The first directory page is in effect
+   the header page for the entire database; it is the one to which our
+   filename is mapped by the DB.) We can store roughly 
+   pagesize/sizeof(DataPageInfo) records per directory page; most likely,
+   for any given HeapFile insertion, at least one of those referenced
+   data pages will have enough space to satisfy the request.
+   */
+
+
+/*
+ * DataPageInfo: the type of records stored on a directory page:
+ */
+ struct DataPageInfo {
+  int availspace;  // HFPage returns int for avail space, se we use int here
+  int recct;  // for efficient implementation of HeapFile::getRecCnt();
+  PageId pageId;  // obvious: id of this particular data page (a HFPage)
+};
+
+class HFPage;
+
+
+class HeapFile 
+{
+public:
+
+      // Initialize.  A null name produces a temporary heapfile which will be
+      // deleted by the destructor.  If the name already denotes a file, the
+      // file is opened; otherwise, a new empty file is created.
+  HeapFile( std::string name, Status& returnStatus ); 
+
+    ~HeapFile();                        // destructor
+
+      // return number of records in file
+    int getRecCnt();
+    
+      // insert record into file
+    Status insertRecord(char* recPtr, int recLen, RID& outRid); 
+    
+      // delete record from file
+    Status deleteRecord(const RID& rid); 
+
+      // updates the specified record in the heapfile.
+    Status updateRecord(const RID& rid, char* recPtr, int reclen);
+
+      // read record from file, returning pointer and length
+    Status getRecord(const RID& rid, char* const recPtr, int& recLen); 
+
+      // initiate a sequential scan
+    class Scan* openScan(Status& status);
+
+      // delete the file from the database
+    Status deleteFile();
+
+
+      // Error codes for HEAPFILE.
+    enum {
+        BADRID,
+        BADRECPTR,
+        HFILEEOF,
+        INVALIDUPDATE,
+        NOSPACE,
+        NORECORDS,
+        ENDOFPAGE,
+        INVALIDSLOTNO,
+        ALREADY_DELETED,
+    };
+
+private:
+    friend class Scan;
+    enum Filetype { TEMP, ORDINARY };
+
+    PageId      _firstDirPageId;   // page number of header page
+    Filetype    _ftype;
+    bool        _file_deleted;
+    char*       _fileName;
+
+    HFPage* _newDatapage(DataPageInfo *dpinfop);
+    Status  _findDataPage(const RID& rid,
+                        PageId& dirPageId, HFPage *& dirpage,
+                        PageId& dataPageId, HFPage *& datapage, RID& dataPageRid);
+};
+
+
+#endif

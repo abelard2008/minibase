@@ -1,0 +1,2 @@
+setComment {Calc column}
+addRelationTable {Sailors {}} {sid {}} {sname p.} {rating _R} {age _A} {{} {P._R / _A}}

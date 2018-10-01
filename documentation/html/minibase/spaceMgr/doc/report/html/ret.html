@@ -1,0 +1,88 @@
+<html>
+<head>
+<title>Retrospective </title>
+
+<body>
+<h1> Retrospective </h1>
+
+Our close  association with this  project from the beginning  of  the
+design phase has shown us the difficulty in designing a system of this
+kind. We have learned about tradeoffs that need to be made and the near
+impossibility of getting  everything right in  the first attempt.  The
+following comments express our feelings about the future directions in
+which Minirel can evolve and the improvements that can be made. We are
+not sure if they are feasible,  or how they  affect other parts of the
+system.
+<p>
+<h2> Limitations and Future Enhancements </h2>
+
+Currently,  there are several restrictions  about the use of databases
+within a  process and also  among processes. Support  for several open
+databases   in  a transaction might  be  useful.  Also, processes with
+different open databases should be permitted to  share the same buffer
+pool.
+<p>
+
+The  current structure  requires that the   higher layers talk to  the
+buffer manager <i>most of the time</i>. However,  they need to call the
+DB  methods  for accessing the directory service. It
+might be better if  a common interface that  provides all the features
+is developed.
+<p>
+
+The shared memory implementation handles only allocation of memory but
+does  not  support  deallocation. The  users   should write  their own
+mechanism for     managing the deallocated space.   In   a system like
+Minirel, where several components use shared  memory and are developed
+separately,  this  would  lead to a lot of redundancy   of
+code. Every  component has its own  free  list implementation and some
+components require the maintenance of several lists. It would be nice
+if  the shared region class  also supported deallocation  of memory in
+some clean way.
+<p>
+
+Only   page level locks are   supported.  This severely restricts  the
+amount of concurrency  possible.  For instance,  a change to   a single
+record on  a heapfile page  causes the  entire  page to be  locked  in
+exclusive mode. No other  transaction  can access  this page  till the
+previous    one  committed or   aborted.   Having locks with different
+granularities and support for a richer variety of locks would aid high
+concurrency.
+<p>
+
+Byte level logging causes high overhead while logging changes to a few
+bits on the space map. We are not aware of any scheme that avoids this
+overhead.
+<p>
+
+As regards our implementation, there is  some scope for improvement in
+the   way inserts on  heapfiles  are  handled. We  are  not sure  that
+maintaining  a  list of  pages  with some free space  on  it is a good
+solution.  Some better scheme needs to  be developed that ensures that
+inserts  are both reasonably  fast  and   make  efficient use  of  the
+available space. Also, we have a restriction on  the nature of updates
+that are  possible on records. Use  of forwarding pointers can get rid
+of this restriction. <p>
+
+During  the recovery phase, the  recovery manager loads the pages into
+memory  and    restores  the  <i>before</i> images for   the     aborted
+transaction.  This causes a  problem in the case of  space map and the
+header  pages. These pages are stored   in shared memory  by the space
+manager and  not in the  buffer pool.  Thus  changes  by the  recovery
+manager to these  pages do  no get  reflected in the  space manager. A
+possible solution is that the recovery manager treats these pages in a
+special manner. It can be given access  to the shared memory structure
+maintained by the  space  manager and  thus, all the  changes are made
+there and not in the buffer pool.  Another possible solution, maybe 
+cleaner, but one which would cause substantial redesign, would be to
+treat the Space Management information as a part of the buffer pool.
+<p>
+<HR>
+<BR>
+<I> Ravi Murthy</I><BR>
+<I> Sriram Narasimhan </I><BR><BR>
+<IMG SRC="uwlogo.gif"><BR>
+
+</body>
+</html>
+

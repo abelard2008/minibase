@@ -1,0 +1,4 @@
+setComment {Purple parts from select cities}
+addRelationTable {Parts unq.} {pid _p} {pname p.} {color purple}
+addRelationTable {Orders {}} {sid _s} {pid _p} {quantity {}}
+addRelationTable {Suppliers {}} {sid _s} {sname {}} {city {in("Madison", "Milwaukee", "Waukesha")}}

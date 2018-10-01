@@ -1,0 +1,3 @@
+setComment {Complex conditions in a conditions box}
+addRelationTable {Sailors {}} {sid {}} {sname p.} {rating {}} {age _a}
+addConditionsBox {20> _a or _a < 30}

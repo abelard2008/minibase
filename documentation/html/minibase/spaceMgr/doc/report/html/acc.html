@@ -1,0 +1,46 @@
+<html>
+<head>
+<title>	Accomplishments</title>
+
+<body>
+<h1> Accomplishments</h1>
+
+We  implemented   the <i>space  manager</i>   and  the <i>heapfile</i>
+components of minirel.  The space   manager comprises of the   classes
+</i>DB, DSM  and Page</i>.  These had  to  be implemented from scratch
+since the    notion of a database  was   entirely different   from the
+previous version of  minirel. The  DB and  DSM classes were  initially
+implemented   to support   a  very   general use   of   databases.  In
+particular, it supported multiple open  databases within a process and
+several different databases being  opened by different processes.  The
+change in the  design to permit  only one open  database and only  one
+database across all processes resulted  in us going  back to the  code
+and removing all   the generality from   it.  Further, the   bit level
+manipulations that  are necessary for maintaining  the  space map were
+typically hard and   required exhaustive   testing  to ensure    their
+correctness.  <p>
+
+The  heapfile component consists of  the  <i>HeapFile, HFPage and Scan
+</i> classes. Of these, the HFPage code could  be re-used in large part
+from  the earlier version   of minirel.   However, since  the heapfile
+itself  is now  built on top  of  totally different interface, most of
+HeapFile code had to be  written afresh. An  entire new class Scan was
+implemented to support sequential scans.  <p>
+
+The development of the multiuser versions of the  above required us to
+modify   some  of  the single  user  code  to    now  deal with shared
+memory. Further, locking and logging for concurrency control and crash
+recovery ensured    that   we had a    complete   understanding of the
+primitives offered, their limitations and  means of obtaining the best
+results with them.
+<p>
+
+<HR>
+<BR>
+<I> Ravi Murthy</I><BR>
+<I> Sriram Narasimhan </I><BR><BR>
+<IMG SRC="uwlogo.gif"><BR>
+
+</body>
+</html>
+

@@ -1,0 +1,2 @@
+setComment {Aggregate function over whole relation}
+addRelationTable {Sailors {}} {sid {}} {sname {}} {rating {}} {age _A} {{} P.AVG._A}

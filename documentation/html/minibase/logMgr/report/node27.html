@@ -1,0 +1,73 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!Converted with LaTeX2HTML 95 (Thu Jan 19 1995) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds >
+<HEAD>
+<TITLE>8.1 Revised Error Protocol</TITLE>
+</HEAD>
+<BODY>
+<meta name="description" value="8.1 Revised Error Protocol">
+<meta name="keywords" value="main">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+<P>
+ <BR> <HR><A NAME=tex2html336 HREF="node28.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html334 HREF="node26.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html328 HREF="node26.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html337 HREF="node28.html">8.2 Crash Assumptions</A>
+<B>Up:</B> <A NAME=tex2html335 HREF="node26.html">8 Enhancements to  Minirel</A>
+<B> Previous:</B> <A NAME=tex2html329 HREF="node26.html">8 Enhancements to  Minirel</A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00081000000000000000>8.1 Revised Error Protocol</A></H2>
+<P>
+<A NAME=subsectionfutureerrors>&#160;</A>
+<P>
+The current error protocol within <em> Minirel</em>, using which each layer
+informs the layer above about problems it detected is very simplistic.
+Higher layers can only display all the errors that occurred and not
+deal with them in any meaningful way.  This section proposes an
+alternate error protocol.
+<P>
+	The entire error protocol is based on a base <tt> class
+Error</tt>.  Every layer derives a <tt> class</tt> from <tt> class Error</tt>.
+<tt> Class Error</tt> provides virtual functions to display itself, set
+its error level and error code, and return the level and code.  Each
+layer will overload the methods to provide meaningful information
+about itself.  In this context, an error level indicates the
+seriousness of the error: the error is fatal, the error will cause the
+current operation to fail, the error is a warning of impending
+problems, or the ``error'' is simply a message to the higher layer.
+Higher layers can inspect the errors returned by lower layers, display
+them if necessary, and take appropriate action.  Error codes are
+defined by each layer and understood by the layer immediately above.
+<P>
+	Globally, there will exist an object of <tt> class Errorlist</tt>
+which will store error objects of each layer (there will be a fixed
+number of layers -- an array of pointers to <tt> Error</tt> objects would
+suffice).  This object can be asked to display the whole hierarchy of
+errors or it can be asked to return the error code that a particular
+layer set, etc.  <tt> Class Errorlist</tt> will also provide a method to
+clear out the errors in case a fresh start is to be made.
+Figure <A HREF="node27.html#figureerrors">4</A> illustrates an example object of <tt> class
+Errorlist</tt>.
+<P>
+<P><A NAME=413>&#160;</A><A NAME=figureerrors>&#160;</A><IMG  ALIGN=BOTTOM ALT="" SRC="img56.gif">
+<BR><STRONG>Figure 4:</STRONG> The <tt> Errorlist</tt> object.  It maintains pointers to <tt>
+Error</tt> derived objects for each layer.  If this object is asked to
+display the entire hierarchy of errors, for example, it will walk
+through the array and call the display method of each object.<BR>
+<P>
+<P>
+	This enhancement will complicate the code of the layers
+slightly because they have to set the appropriate object and indicate
+the error level and the error code.  However, the overall design will
+be much cleaner if a revised error protocol like the one outlined
+above is used.
+<P>
+<BR> <HR><A NAME=tex2html336 HREF="node28.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html334 HREF="node26.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html328 HREF="node26.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html337 HREF="node28.html">8.2 Crash Assumptions</A>
+<B>Up:</B> <A NAME=tex2html335 HREF="node26.html">8 Enhancements to  Minirel</A>
+<B> Previous:</B> <A NAME=tex2html329 HREF="node26.html">8 Enhancements to  Minirel</A>
+<BR> <HR> <P>
+<BR> <HR>
+<P><ADDRESS>
+ajitk@cs.wisc.edu, cjin@cs.wisc.edu
+</ADDRESS>
+</BODY>

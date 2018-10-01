@@ -1,0 +1,54 @@
+
+<HTML>
+<HEAD>
+<TITLE>Victim Data Structures</TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+
+<H1>Why the Victim Data Structures Exist (Can Ignore this for Single-User Minibase)</H1>
+A transaction requests a page through the 
+<A HREF="public.txt"><B>pinPage </B></A> command. The Buffer Manager
+needs to first select a frame in which to read in the required page.
+While selecting a frame, a latch is taken on the hash
+table to ensure that no other process accesses the same frame concurrently.
+The frame may contain a page that is dirty and needs to be
+written to disk.  Nonetheless,
+once a frame is picked, the latch on the hash table is released, even before
+the dirty page (if any) in the frame is written to disk. We do this because
+no lock need be held on the hash table during I/O. 
+<p>
+Consider what would happen if a different process were to now ask for the
+same page that was just picked as the victim. The victim page is yet to
+be written to disk. This new process will read the page off disk, which
+is an older image, and thus there will be a version mismatch.
+<p>
+One easy solution to the problem would be to only release the latch on
+the hash table after the dirty victim page has been written to disk.
+This, however decreases concurrent access to the buffer pool. The victim
+data structures offer an alternative solution to the problem. 
+<p>
+As soon as we find that a victim page (i.e., 
+a page chosen for replacement) is dirty, we put it into
+a <i>victim_list</i>, which is a list of  pages that have been evicted 
+from the buffer pool and are dirty and waiting to be written to disk.
+A semaphore guards access to this list.
+When a process comes in and asks for
+a page, and does not find it in the hash table, 
+it first checks the victim_list before reading the page in from disk.
+If the required page is found in the victim_list, the process requests
+a frame and copies the required page into the selected frame.
+<P> <br>
+<IMG SRC="../pics/hline.gif">
+<P>
+<A HREF="bufMgr.html">Back to the Buffer Manager Page</A><BR>
+<A HREF="../minibase.html">Back to the Minibase Home Page</A><BR>
+<P>
+
+</body>
+</html>
+

@@ -1,0 +1,82 @@
+
+dbnorm Help: Introduction to dbnorm
+====================================
+
+dbnorm is a tool for analysing and refining relational database
+schemas.  By analysing functional dependencies that hold over the
+attributes of a database, dbnorm can guide a user in creating
+decompositions that both make sense and adhere to some normal form,
+for example BCNF or 3NF.
+
+dbnorm allows users to specify relations and functional dependencies
+for a database either by creating an ASCII dbnorm input file, or
+through a graphical user interface (See the "Input File Format" and
+"Creating a New Database" help files for more information). dbnorm can
+also import a database description directly from an
+Entity-Relationship diagram created in Opossum, a schema design tool
+(see the "Using Opossum" help file).
+
+Once a database is opened in dbnorm, the user is not free to modify
+the database attributes and functional dependencies, but can begin the
+process of schema refinement.  You can perform operations such as
+testing to see if a relation is in BCNF or 3NF, or having dbnorm show
+you all the BCNF violations for a relation, and then decompose the
+relation to remove a specific violation.  While dbnorm provides
+automatic decompositions into BCNF and 3NF, these decompositions may
+not capture the essence of what the user is trying to represent in the
+schema.  Thus by using the tool in an interactive fashion the power of
+its normalization algorithms can harnesed in a sensible manner.
+
+Once schema refinement is complete, dbnorm can generate SQL "CREATE
+TABLE" statements for all base relations so that the refined schema
+can be implemented in a relational DBMS.
+
+The dbnorm user interface is written in Tcl/Tk, and it runs over a
+custom wish interpreter containing C++ implementations of the
+normalization and decomposition algorithms.  Opossum is a schema
+design tool developed as part of the Zoo Desktop Experiment Management
+Environment.
+
+
+Naming Conventions
+-------------------
+dbnorm uses its own internal names to identify relations and
+decomposition sessions. The names you assign to relations and sessions
+therefore do not have to be globally unique. However, attribute names
+are defined over an entire database, and all references to a specific
+attribute name are assumed to refer to the same attribute. This
+attribute naming convention is important to keep in mind when you are
+creating a new dbnorm database, either within dbnorm or by generating
+an ER diagram with Opossum.
+
+
+What is a session?
+-------------------
+
+In dbnorm, you can experiment with various decompositions of any given
+relation. Decompositions can be saved and named, are are referred to
+as "sessions" throughout all of the dbnorm documentation and its user
+interface. Within a single session you can break down a relation into
+smaller relations if that relation happens to be in violation of BCNF
+or 3NF. A series of such operations yields a "session tree" with the
+initial relation at the root, a set of base relations at the leaf
+nodes, and possibly some internal nodes. Each leaf node can be linked
+to another session, and these session links are followed when you
+enumerate all base relations over the entire database.
+
+
+Enumerating Base Relations
+---------------------------
+
+The process of enumerating all base relations in the database works as
+follows:
+
+For each source relation, if no default decomposition exists, then the
+source relation is considered a base relation. Otherwise, enumerate
+all leaf nodes in the default session, and any leaf relations not
+linked to another session are considered base relations. For all of
+the other leaves, follow the session link into another session and
+continue searching for base relations (session leaves that are not
+linked to another session) until you cannot go any deeper through the
+session trees.
+

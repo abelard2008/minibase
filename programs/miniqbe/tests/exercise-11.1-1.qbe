@@ -1,0 +1,4 @@
+setComment {All emps who work on the 10th floor and make less than 50K}
+addRelationTable {Emp unq.} {eid _e} {ename p.} {salary {< 50000.0}}
+addRelationTable {Works {}} {eid _e} {did _d}
+addRelationTable {Dept {}} {did _d} {dname {}} {managerid {}} {floornum 10}

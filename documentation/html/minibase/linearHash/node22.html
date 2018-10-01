@@ -1,0 +1,37 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> Insert records</TITLE>
+<meta name="description" value=" Insert records">
+<meta name="keywords" value="report">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html287 HREF="node23.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A> <A NAME=tex2html285 HREF="node16.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A> <A NAME=tex2html279 HREF="node21.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html288 HREF="node23.html"> Delete records</A>
+<B>Up:</B> <A NAME=tex2html286 HREF="node16.html"> Internal Design</A>
+<B> Previous:</B> <A NAME=tex2html280 HREF="node21.html"> Directory handling</A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00036000000000000000> Insert records</A></H2>
+<P>
+When a record is inserted, it's first hashed to a bucket number.
+The primary page of that bucket is
+brought in and the overflow page number on that page is checked. If
+there is an overflow page, it's brought in and the overflow page is
+checked again until the last page is brought in. Since all bucket
+pages are compact, the  record will be inserted to the last slot on
+the last page.  However, if the last page is full, then a new page is
+allocated to store the new record and a split is triggered. <BR>When a split is triggered, two new bucket pages are allocated. All the
+records in the <em>next</em> bucket are redistributed to the 2 new buckets
+and overflow pages are allocated if necessary. Then the old bucket is
+deallocated and the corresponding header information is updated.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+<I> Weiqing Huang <BR>
+Sun May 14 16:22:27 CDT 1995</I>
+</ADDRESS>
+</BODY>

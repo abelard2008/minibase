@@ -1,0 +1,9 @@
+TEMPORARY_SRCS := \
+	boguscatalogs.C \
+	ioroutines.C 
+ 
+# No public headers.
+TEMPORARY_HDRS :=
+
+TEMPORARY_OBJS := $(TEMPORARY_SRCS:.C=.o)
+ 

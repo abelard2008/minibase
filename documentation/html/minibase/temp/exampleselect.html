@@ -1,0 +1,112 @@
+<HTML>
+<HEAD>
+<TITLE>Minibase Example Plans</TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+
+<H1>Minibase Example Plans</H1>
+<P>
+<IMG SRC="../pics/hline.gif">
+
+<P>Here are some example queries and plans to demonstrate some of the
+different points of the Minibase optimizer.  In the examples given, we
+have four different joins available: tuple-oriented nested loops,
+page-oriented nested loops, index nested loops, and sort-merge.  The
+catalog used contains the following two tables:
+
+<PRE>
+emp 5 2000 36 50
+	empid 1 I 0 999999999 4 0 1
+		B_Index 23 A 1 0 2000 1 2 emp-B_Index-empid
+	ename 2 T A Z 20 4 1
+		Hash 1 R 1 0 2000 1 1 emp-Hash-ename
+	dno 3 I 0 999999999 4 24 1
+		Hash 1 R 1 0 2000 1 1 emp-Hash-dno
+	jno 4 I 0 999999999 4 28 1
+		B_Index 23 A 1 0 2000 1 2 emp-B_Index-jno
+	sal 5 I 0 999999999 4 32 2
+		B_Index 23 A 1 0 2000 1 2 emp-B_Index-sal
+		FileScan 50 R 0
+dept 2 2000 24 50
+	dno 1 I 0 999999999 4 0 1
+		Hash 1 R 1 0 2000 1 1 dept-Hash-dno
+	dname 2 T A Z 20 4 1
+		FileScan 50 R 0
+</PRE>
+<P>
+<IMG SRC="../pics/hline.gif">
+
+<H2>Single Table Selects</H2>
+
+<IMG SRC="query1.gif" ALT="Query Image" ALIGN=RIGHT>
+<P><B><CODE>select sal<BR> from emp<BR> where sal &gt; 20000 and dno &gt; 5</CODE></B>
+
+<P>If you want more details:
+<BR><A HREF="out1.txt">Minibase Optimizer output</A>
+<BR>
+<A HREF="selects1.gif">Click here for the iterator tree</A>
+
+<P>Since almost all of the relation is returned, a simple file scan is best.
+
+<BR CLEAR=RIGHT>
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+<IMG SRC="query2.gif" ALT="Query Image" ALIGN=RIGHT>
+<P><B><CODE>select sal<BR>from emp<BR>where sal &gt; 20000</CODE></B>
+
+<P>If you want more details:
+<BR><A HREF="out2.txt">Minibase Optimizer output</A>
+<BR>
+<A HREF="selects2.gif">Click here for the iterator tree</A>
+
+<P>Even though most of the tuples should match the selection, because
+an index is present on emp.sal, and it is the only attribute we need,
+an index-only scan is the best.
+
+<BR CLEAR=RIGHT>
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+<IMG SRC="query3.gif" ALT="Query Image" ALIGN=RIGHT>
+<P>   <B><CODE>select distinct ename<BR> from emp</CODE></B>
+
+<P>Note that there is an additional expense to sort.  If index-only
+scans on hash indexes were considered, the index would be used instead.
+
+<P>If you want more details:
+<BR><A HREF="out3.txt">Minibase Optimizer output</A>
+<BR CLEAR=RIGHT>
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+<IMG SRC="query4.gif" ALT="Query Image" ALIGN=RIGHT>
+
+<B><CODE>select dno, count(*)<BR>from emp<BR>group by dno</CODE></B>
+
+<P>If you want more details:
+<BR><A HREF="out4.txt">Minibase Optimizer output</A>
+
+<P>If we supported full index scans on hash indexes, the access
+method would be the hash index (with an index-only scan).
+
+<P><B>Note that although the Minibase optimizer can deal with
+SQL queries containing Group By, Having, Order By and aggregate
+operations, the runtime system cannot execute queries with these
+features.</B>
+
+<BR CLEAR=RIGHT>
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+
+<A HREF="examplejoin.html">Some Example Joins</A>
+
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+<A HREF="../project.html">Back to the List of Components</A><BR>
+<A HREF="../minibase.html">Back to the Minibase Home Page</A><BR>
+</BODY>
+</HTML>

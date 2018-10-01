@@ -1,0 +1,3 @@
+setComment {Print from second table without calc column}
+addRelationTable {Sailors {}} {sid _Id} {sname P.} {rating {}} {age {}}
+addRelationTable {Reserves {}} {sid _Id} {bid {}} {date p.}

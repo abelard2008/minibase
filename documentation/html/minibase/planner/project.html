@@ -1,0 +1,43 @@
+<BODY BGCOLOR="#FFDDDD">
+<HTML>
+<HEAD>
+<TITLE> RUNTIME PLAN INTERPRETER </TITLE>
+</HEAD>
+
+<BODY>
+
+<H1> RUNTIME PLAN INTERPRETER </H1>
+Donko Donjerkovic, donjerko@cs.wisc.edu <BR>
+
+<HR>
+
+<H3> Plan Interpreter Description </H3>
+
+Task of the runtime plan interpreter is to walk the optimizer's plan tree
+recursively and constructs the appropriate objects that will 
+execute the query. Objects to construct are iterating over their input
+tuples and produce output tuple which in turn might be the input for 
+another iteration.
+In this sence, all the relational operators and access methods are
+special cases of iterators.
+
+<H3>Project Report</H3>
+ <UL>
+  <LI> <A HREF="report.html"> Project Report </A>
+ </UL>
+
+<H3>External Interfaces</H3>
+ <UL>
+  <LI> <A HREF="tuple.html"> Tuple Class, version of April 7 </A>
+  <LI> <A HREF="iterator.h"> iterator.h interface </A>
+ </UL>
+
+<HR>
+
+</BODY>
+
+</HTML>
+
+
+
+

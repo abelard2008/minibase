@@ -1,0 +1,44 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> Directory handling</TITLE>
+<meta name="description" value=" Directory handling">
+<meta name="keywords" value="report">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html277 HREF="node22.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A> <A NAME=tex2html275 HREF="node16.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A> <A NAME=tex2html269 HREF="node20.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html278 HREF="node22.html"> Insert records</A>
+<B>Up:</B> <A NAME=tex2html276 HREF="node16.html"> Internal Design</A>
+<B> Previous:</B> <A NAME=tex2html270 HREF="node20.html"> Destroy index</A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00035000000000000000> Directory handling</A></H2>
+<P>
+Every bucket's primary page's PageId is stored in some DirPage. 
+The PageId's of all the DirPage's  are consecutive
+thanks to the method <em>BufMgr::newPage</em> which can allocate a
+run of pages. When the index is created, the number of the DirPage's
+initially needed is computed and a run of that number of pages is
+allocated. The PageId of the first page of this
+run is stored in the header page. As the file gets expanded, 
+the directory may become full. Then its capacity is
+doubled by allocating a new run of pages which has twice 
+number of pages of the old directory. All the information in the old
+directory is copied to the new directory and the old directory is
+destroyed. Conversely, if only half of the directory is used, then the
+capacity is reduced by one half in the similar way. The directory
+looks like a dynamic array in this way. The advantage of
+this design is that we only need to pin the DirPage that's used and
+only the PageId of the first DirPage needs to be stored in the header
+page. Since the expansion and contraction of directory  rarely
+happen, the overhead is very limited.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+<I> Weiqing Huang <BR>
+Sun May 14 16:22:27 CDT 1995</I>
+</ADDRESS>
+</BODY>

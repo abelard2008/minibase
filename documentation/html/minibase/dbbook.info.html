@@ -1,0 +1,187 @@
+
+
+<HTML>
+<HEAD>
+<TITLE>Database Management Systems</TITLE>
+</HEAD>
+
+<body background = "pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link
+ = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+
+<P>
+<IMG SRC="pics/hline.gif">
+<P>
+
+<H1>Choice of Topics in ``Database Management Systems''</H1>
+
+The main pedagogical objective of this book is to
+provide clear and thorough discussions of the topics covered,
+while limiting the number of topics to maintain focus
+on fundamental issues.
+Throughout, a quantitative approach is used with detailed examples.
+<I> An important feature of the book is the extensive set of
+exercises, with a strong emphasis on problem-solving. </I>
+The choice of material has been influenced by these considerations: 
+<P>
+(1)  To concentrate on issues central to the <I>design, tuning and implementation
+of relational database applications</I>.  Many of the issues discussed
+(e.g., buffering and access methods) are not specific to relational
+systems, but in general, I have concentrated on relational systems.
+<P>
+(2)  To provide adequate coverage of implementation topics to support a
+concurrent laboratory section or course project.  For example, implementation of
+relational operations has been covered in more detail than is
+necessary in a first course.  However, the variety of alternative
+implementation techniques allows for a wide choice of project
+assignments:  an instructor who wishes to assign
+implementation of Sort-Merge Join might cover that topic in depth, whereas
+another might choose to emphasize Index Nested Loops Join.
+<P>
+
+
+<IMG SRC="pics/hline.gif">
+<P>
+
+<H1>Chapter Organization</H1>
+
+The material can be divided into roughly six parts, as indicated in 
+the figure, which also shows the dependencies between chapters.
+An arrow from Chapter A to Chapter B means that A depends on
+material in B.  The broken arrows indicate a weak dependency, which can
+be ignored at the instructor's discretion.  
+The first two chapters cover material that is basic to the rest of the book,
+and we assume that they are covered first.
+Each of the remaining five parts is described below, along with its dependence,
+if any, on the other four parts.
+
+<P>
+<CENTER>
+<A HREF="dbbook.chaporg.gif"><IMG SRC="dbbook.chaporg.gif"></A>
+</CENTER>
+
+<P>
+<B>1. Part A:  Query Languages</B>  Relational
+algebra and calculus, QBE and SQL.  It is worth noting that the coverage
+of SQL, following the SQL-92 standard,
+is quite extensive; in addition to the data retrieval features of SQL, many
+important concepts, such as authorization, views and referential
+integrity, are discussed in the context of SQL.
+<P>
+<B>2. Part B:  File Organizations</B>  File organizations and indexes.
+This part depends only on Chapter 3, and this is only
+to the extent that implementing a file organization requires an
+understanding of file and record formats.
+<P>
+<B>3. Part C:  Query Optimization and Evaluation</B>  Disks, buffer management, 
+implementation of relational operators and generation of query plans.  
+An understanding of sorting techniques is useful but not essential;
+sorting can be treated as a basic operation in the discussion of
+relational operator implementations.
+<P>
+<B>4. Part D:  Database Design</B>  Conceptual design,
+normalization, physical design and performance tuning.
+The discussion of how to translate an ER diagram into
+a collection of SQL table definitions assumes an understanding of the integrity
+constraint features of SQL-92.  A basic knowledge of views is useful
+in discussing conceptual database design.  Other than this, the chapter on
+the ER model
+is independent of Part A.  The discussion of physical design and tuning
+assumes a good understanding of query optimization, and in particular,
+of the use of indexes.
+<P>
+<B>5. Part E:  Advanced Topics</B>  Concurrency control and recovery are covered with
+an emphasis on locking and logging techniques.
+The discussion of concurrency control in tree indexes depends upon a knowledge
+of tree indexes, and the discussion of query optimization in parallel and
+distributed databases assumes an understanding of query optimization in
+a centralized DBMS.  In general, the chapters in Part E should be covered
+after material from the other parts has been covered.
+Chapters on Object Databases, Rule-Based Extensions to Relational Databases and
+Additional Topics are not included in this beta edition, but
+will be there in the first regular edition.
+<P>
+In an important sense, the first three parts of the book lead up 
+to the material on
+database design and tuning.  I discuss these topics
+from a very practical perspective, with several examples.  A reader who
+studies this material carefully will quickly realize that a thorough 
+understanding of several basic issues is essential for good design.
+The goal is to ensure that the earlier chapters provide the reader with the
+necessary foundation.
+
+<P>
+
+<IMG SRC="pics/hline.gif"> <P>
+
+<H1>Order of Presentation</H1>
+
+The material in the text is presented in the order that I usually cover
+it, and is influenced by the order of the accompanying
+programming assignments, and by my preference for covering all
+database design topics together <I>after</I> covering all optimization
+related material.  It is likely that other instructors will want to
+cover some topics in a different order, based on the needs of their
+courses.  For example, some instructors will want to cover SQL,
+and perhaps get students to use a relational database,
+before discussing file organizations or indexing.
+In a course that emphasizes database design, many of the 
+implementation-oriented chapters might well be skipped altogether.
+The book has therefore been designed to be flexible with respect to the
+ordering of material, and inter-chapter dependencies have been kept to
+a minimum.  In particular, Parts A through D, regarded as units,
+can be covered in pretty much any order, although it is probably a
+good idea to cover Part B before part C, and to cover Part B before
+discussing physical design and tuning.  The remaining inter-part dependencies are minor.
+<P>
+Some additional points to note:
+<P>
+Several section headings contain an asterisk.  This does not necessarily
+indicate a higher level of difficulty.  Rather, omitting all asterisked
+sections leaves about the right amount of material in Chapters 1 through 19 
+for a broad introductory
+one-quarter or one-semester course (depending on the
+depth at which the remaining material is discussed and the nature of
+the course assignments).
+<P>
+It is not necessary to cover all the alternatives for a given operator
+in order to cover query optimization adequately.
+<P>
+The material on SQL queries can be taught without first covering relational algebra and calculus.
+This may be desirable if an instructor wishes to assign SQL assignments
+early.  However, an understanding of algebra and calculus will enable students
+to appreciate the foundations of SQL.
+Similarly, QBE can be taught without a prior discussion of DRC, but briefly covering
+DRC first is recommended.
+<P>
+An instructor who wishes to cover the ER model before SQL can do so
+by deferring a discussion of ER diagram to SQL table translation.
+Indeed, the ER model can be covered before the relational model
+by exercising some care in the discussion
+of integrity constraints.
+<P>
+The book contains more material than can be  
+covered in a one semester course.  
+It can be used in several kinds of introductory or second
+courses by choosing topics appropriately,  
+or in a two-course sequence by supplementing the material with some
+advanced readings in the second course.
+
+<P>
+<IMG SRC="pics/hline.gif">
+<P>
+<I>July 12, 1996</I>
+<P>
+
+<ADDRESS>
+<a HREF="http://www.cs.wisc.edu/~raghu/raghu.html"> Raghu Ramakrishnan</a>
+<A HREF="http://www.cs.wisc.edu/cgi-bin/finger?raghu@cs.wisc.edu">
+[raghu@cs.wisc.edu]</A>
+<BR>
+</ADDRESS>
+
+
+</BODY>
+
+</HTML>
+

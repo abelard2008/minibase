@@ -1,0 +1,85 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!Converted with LaTeX2HTML 95 (Thu Jan 19 1995) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds >
+<HEAD>
+<TITLE>An ARIES Log Manager for  Minirel  
+        CS 764 -- Project Report</TITLE>
+</HEAD>
+<BODY>
+<meta name="description" value="An ARIES Log Manager for  Minirel  
+        CS 764 -- Project Report">
+<meta name="keywords" value="main">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+<P>
+ <BR> <HR><A NAME=tex2html11 HREF="node1.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A HREF="http://www.cs.wisc.edu/~ajitk/cs764/index.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif_gr.gif">         <BR>
+<B> Next:</B> <A NAME=tex2html12 HREF="node1.html">1 Introduction</A> <B> Up:</B> <A HREF="http://www.cs.wisc.edu/~ajitk/cs764/index.html">Project Page</A>
+<BR> <HR> <P>
+ <H1>An ARIES Log Manager for  Minirel  
+        CS 764 -- Project Report</H1>
+<P><STRONG>Ajitkumar Natarajan (<tt>ajitk</tt>)  -  Cjin Pheow Lee (<tt>cjin</tt>)</STRONG><P>
+<P>
+<H3>Abstract:</H3>
+<EM>Log management is an integral part of the recovery subsystem of any
+RDBMS.  An ARIES based log manager for a simple, multi-user RDBMS --
+<em> Minirel</em> -- has been designed and implemented.  The interface
+consists of four <tt> class</tt>es: <tt> lsn_t</tt>, <tt> logrecord</tt>, <tt>
+shm_log</tt>, and <tt> log</tt>.  The implementation is based on a one page
+log tail maintained in shared memory.  Log reads and writes are
+completely mutually excluded from one another.  Extensive testing of
+the implementation has been done.  Limitations of the log manager
+include low concurrency, simplistic crash assumptions, and use of a
+single Unix file to maintain the log.
+<P>
+</EM><P>
+<BR> <HR>
+<UL> 
+<LI> <A NAME=tex2html13 HREF="node1.html#SECTION00010000000000000000">1 Introduction</A>
+<LI> <A NAME=tex2html14 HREF="node2.html#SECTION00020000000000000000">2 ARIES Recovery</A>
+<LI> <A NAME=tex2html15 HREF="node3.html#SECTION00030000000000000000">3 The  Minirel RDBMS</A>
+<LI> <A NAME=tex2html16 HREF="node4.html#SECTION00040000000000000000">4 Log Manager Interface</A>
+<UL> 
+<LI> <A NAME=tex2html17 HREF="node5.html#SECTION00041000000000000000">4.1 Log Sequence Numbers</A>
+<LI> <A NAME=tex2html18 HREF="node6.html#SECTION00042000000000000000">4.2 Log records</A>
+<LI> <A NAME=tex2html19 HREF="node7.html#SECTION00043000000000000000">4.3 Shared Memory Structure</A>
+<LI> <A NAME=tex2html20 HREF="node8.html#SECTION00044000000000000000">4.4 The Log Manager</A>
+</UL> 
+<LI> <A NAME=tex2html21 HREF="node9.html#SECTION00050000000000000000">5 Implementation</A>
+<UL> 
+<LI> <A NAME=tex2html22 HREF="node10.html#SECTION00051000000000000000">5.1  class lsn_t</A>
+<LI> <A NAME=tex2html23 HREF="node11.html#SECTION00052000000000000000">5.2  class logrecord</A>
+<LI> <A NAME=tex2html24 HREF="node12.html#SECTION00053000000000000000">5.3  class shm_log</A>
+<LI> <A NAME=tex2html25 HREF="node13.html#SECTION00054000000000000000">5.4  class log</A>
+<UL> 
+<LI> <A NAME=tex2html26 HREF="node14.html#SECTION00054100000000000000">5.4.1  class Rawfile</A>
+<LI> <A NAME=tex2html27 HREF="node15.html#SECTION00054200000000000000">5.4.2  log::log (The Create Constructor)</A>
+<LI> <A NAME=tex2html28 HREF="node16.html#SECTION00054300000000000000">5.4.3  log::log (The Open Constructor)</A>
+<LI> <A NAME=tex2html29 HREF="node17.html#SECTION00054400000000000000">5.4.4  log::~log</A>
+<LI> <A NAME=tex2html30 HREF="node18.html#SECTION00054500000000000000">5.4.5  log::write</A>
+<LI> <A NAME=tex2html31 HREF="node19.html#SECTION00054600000000000000">5.4.6  log::read</A>
+<LI> <A NAME=tex2html32 HREF="node20.html#SECTION00054700000000000000">5.4.7  log::read_next_logrec</A>
+<LI> <A NAME=tex2html33 HREF="node21.html#SECTION00054800000000000000">5.4.8  log::flush and  log::bufmgr_flush</A>
+</UL> 
+</UL> 
+<LI> <A NAME=tex2html34 HREF="node22.html#SECTION00060000000000000000">6 Testing</A>
+<LI> <A NAME=tex2html35 HREF="node23.html#SECTION00070000000000000000">7 Future Work</A>
+<UL> 
+<LI> <A NAME=tex2html36 HREF="node24.html#SECTION00071000000000000000">7.1 Duplex-Disks and Raw Disk Interfaces</A>
+<LI> <A NAME=tex2html37 HREF="node25.html#SECTION00072000000000000000">7.2 Allowing More Concurrency</A>
+</UL> 
+<LI> <A NAME=tex2html38 HREF="node26.html#SECTION00080000000000000000">8 Enhancements to  Minirel</A>
+<UL> 
+<LI> <A NAME=tex2html39 HREF="node27.html#SECTION00081000000000000000">8.1 Revised Error Protocol</A>
+<LI> <A NAME=tex2html40 HREF="node28.html#SECTION00082000000000000000">8.2 Crash Assumptions</A>
+<LI> <A NAME=tex2html41 HREF="node29.html#SECTION00083000000000000000">8.3 Multiple Databases</A>
+<LI> <A NAME=tex2html42 HREF="node30.html#SECTION00084000000000000000">8.4 A Networked RDBMS</A>
+</UL> 
+<LI> <A NAME=tex2html43 HREF="node31.html#SECTION00090000000000000000">9 Summary and Conclusions</A>
+<LI> <A NAME=tex2html44 HREF="node32.html#SECTION000100000000000000000">References</A>
+<LI> <A NAME=tex2html45 HREF="node33.html#SECTION000110000000000000000">   About this document ... </A>
+</UL>
+<BR> <HR>
+<P><ADDRESS>
+ajitk@cs.wisc.edu, cjin@cs.wisc.edu
+</ADDRESS>
+</BODY>

@@ -1,0 +1,31 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> Destroy index</TITLE>
+<meta name="description" value=" Destroy index">
+<meta name="keywords" value="report">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html267 HREF="node21.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A> <A NAME=tex2html265 HREF="node16.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A> <A NAME=tex2html259 HREF="node19.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html268 HREF="node21.html"> Directory handling</A>
+<B>Up:</B> <A NAME=tex2html266 HREF="node16.html"> Internal Design</A>
+<B> Previous:</B> <A NAME=tex2html260 HREF="node19.html"> Create/Open index</A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00034000000000000000> Destroy index</A></H2>
+<P>
+When an index is destroyed, the whole index is traversed from top to
+the bottom and all pages are destroyed. After that, the <em>db</em> will
+be told to delete the file entry and a <em>destroyed</em> flag in the
+index object is set to true so that any subsequent operations on this
+index through this index object will be denied.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+<I> Weiqing Huang <BR>
+Sun May 14 16:22:27 CDT 1995</I>
+</ADDRESS>
+</BODY>

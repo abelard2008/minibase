@@ -1,0 +1,224 @@
+<BODY BGCOLOR="#FFDDDD">
+
+<HTML>
+<HEAD>
+<TITLE> Testing </TITLE>
+</HEAD>
+
+<BODY>
+
+<H1> Testing </H1>
+<HR>
+
+We have done extensive testing during the developement of our code.
+In this section we presents couple of typical queries that ilustrate
+most of challinges the interpreter has to deal with.
+Catalog shema that we are using is this one:
+<PRE>
+relation dept(dname: string(50), dno: int);
+relation emp(jno: int, dno: int, ename: string(50), empid:int);
+relation job(jname: string(50), jno: int);
+</PRE>
+
+Our first example is the very simple join.
+Using the following query as a test:
+<PRE>
+select emp.ename, dept.dname
+from emp, dept
+where emp.dno = dept.dno;
+</PRE>
+Optimizer will select the following plan:
+
+<ul>
+	<li> <a href = "q1.ps"> query1.ps </a>
+</ul>
+
+and the plan interpreter output is this:
+
+<PRE>
+FileScanIter 0x101ae0  called
+  relName: dept
+  types (2): string(50) int
+  projects (2): {outer, 2} {outer, 1}
+  selects:
+
+FileScanIter 0x102ef0  called
+  relName: emp
+  types (4): int int string(50) int
+  projects (2): {outer, 3} {outer, 2}
+  selects:
+
+sort_merge 0x102d38  called
+  memory available: 100 pages
+  resulting order: Ascending
+  outer iterator 0x101ae0
+  inner iterator 0x102ef0
+  outer join column and field length: 1, 4
+  inner join column and field length: 2, 4
+  outer rel sorted: 0
+  inner rel sorted: 0
+  inner types (2): string(50) int
+  outer types (2): int string(50)
+  final projects (2): {inner, 1} {outer, 2}
+  final selects:
+
+get_next called on top iterator
+Transaction commited
+</PRE>
+
+There were couple of things tested here. First, notice that the iterators
+are correctly linked to each other (according to the plan picture).
+This is indicated by printing "this" pointers upon any iterator invocation.
+Also, notice how the fields offsets for the same attribute is changing
+depending on the position in the tree.
+<P>
+For example, <tt>emp.ename</tt> had the offset 3 in the original relation and
+that is how it is being referenced in the <tt>FileScan</tt> iterator.
+On the other hand, in the final project in the <tt>sort_merge</tt> it
+is referenced as field number 1.
+<P>
+Our next test is the 3-way join query:
+<PRE>
+select emp.ename, dept.dname, job.jname
+from emp, dept, job
+where emp.dno = dept.dno and emp.jno = job.jno;
+</PRE>
+Picture of the optimizer tree produced is given as query2.ps.
+<ul>
+<li> <a href = "query2.ps"> query2.ps </a>
+</ul>
+
+Here is the plan iterpreter output:
+
+<PRE>
+
+IndexScanIter 0x105de8  called
+  index: B_Index
+  relName: job
+  indName: jjhash.index
+  types (2): string(50) int 
+  projects (2): {outer, 2} {outer, 1} 
+  selects: 
+
+nested_loops_join 0x1082e0  called
+  memory available: 100 pages
+  inner rel name: dept
+  inner types (2): string(50) int 
+  inner selects: 
+  outer iterator 0x105de8
+  outer types (2): int string(50) 
+  final projects (4): {inner, 1} {inner, 2} {outer, 2} {outer, 1} 
+  final selects: 
+
+IndexScanIter 0x10a3a8  called
+  index: B_Index
+  relName: emp
+  indName: ejnob.index
+  types (4): int int string(50) int 
+  projects (3): {outer, 3} {outer, 2} {outer, 1} 
+  selects: 
+
+sort_merge 0x107548  called
+  memory available: 100 pages
+  resulting order: Descending
+  outer iterator 0x1082e0
+  inner iterator 0x10a3a8
+  outer join column and field length: 4, 4
+  inner join column and field length: 3, 4
+  outer rel sorted: 1
+  inner rel sorted: 0
+  inner types (3): string(50) int int 
+  outer types (4): string(50) int string(50) int 
+  final projects (3): {inner, 1} {outer, 3} {outer, 1} 
+  final selects: 
+	{inner, 2} = {outer, 2};
+
+get_next called on top iterator
+Transaction commited
+</PRE>
+
+This 3-way join illustrates how various types of iterators are called
+appropriately. In the example we have invocation of <tt>sort_merge</tt>
+and <tt> nested_loops_join </tt> joins and the <tt>B_tree</tt> indexed access
+method. Also, notice that the interpreter has correctly identified 
+whether inner or outer relations are sorted with respect to primary
+join condition. It should be mentioned that the optimizer considers
+tuples comming out of top iterator to be in random order in this case.
+It is correct,
+since the order is on <tt>job.jno</tt> and that attribute is missing
+in the final projection. 
+
+<p>
+Our last example is the join that includes the single relation.
+This complicated selection condition is designed to confuse the interpreter.
+However, it's not easy to confuse this one.
+Here is the query:
+<PRE>
+select A.ename, B.ename
+from emp A, emp B
+where A.dno = B.dno or (A.jno < A.empid and B.empid <> A.empid);
+</PRE>
+
+Here is the optimizer output:
+<ul>
+<li> <a href = "query3.ps"> query3.ps </a>
+</ul>
+And here is the plan interpreter output:
+
+<PRE>
+
+FileScanIter 0x10a0b0  called
+  relName: emp
+  types (4): int int string(50) int 
+  projects (3): {outer, 4} {outer, 3} {outer, 2} 
+  selects: 
+
+nested_loops_join 0x10c4d8  called
+  memory available: 100 pages
+  inner rel name: emp
+  inner types (4): int int string(50) int 
+  inner selects: 
+  outer iterator 0x10a0b0
+  outer types (3): int string(50) int 
+  final projects (2): {inner, 3} {outer, 2} 
+  final selects: 
+	{inner, 2} = {outer, 3}, {outer, 1} != {inner, 4};
+	{inner, 2} = {outer, 3}, {inner, 1} < {inner, 4};
+
+get_next called on top iterator
+Transaction commited
+</PRE>
+Notice that the relation name of both relation <tt>A</tt> and 
+<tt>B</tt> is correctly interpreted
+as <tt>emp</tt>
+<P>
+For the end lets see how the planner will recover from the error.
+We have the option to provoke the error by setting the environment
+variable <tt>error</tt>:
+<PRE>
+setenv error set
+</PRE>
+Here is the interpreter output of the same query.
+
+<PRE>
+
+FileScanIter 0x10a0b0  called
+  relName: emp
+  types (4): int int string(50) int
+  projects (3): {outer, 4} {outer, 3} {outer, 2}
+  selects:
+
+****************************************
+Env var error = set; Error set on purpose
+****************************************
+First error occurred in the Error occurred: in the: Planner and was received by
+Parser
+
+Transaction aborted
+</PRE>
+
+Notice that the interpreter has aborted this transaction.
+
+<HR>
+</BODY>
+</HTML>

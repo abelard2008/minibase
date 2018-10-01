@@ -1,0 +1,309 @@
+<HTML>
+<HEAD>
+<TITLE>Optimizer Costs</TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<H1>Optimizer Costs</H1>
+
+<P>
+<IMG SRC="../pics/hline.gif">
+
+<H2>Variable Definitions</H2>
+<TABLE BORDER>
+<TR><TH>Variable Name<TH>Description
+<TR><TH><TT>
+NTuples</TT><TD>Tuples
+<TR><TH><TT>NKeys</TT><TD> Number of Distinct Key
+<TR><TH><TT>IHeight</TT><TD> height of btree,
+<TR><TH><TT>ICost</TT><TD># of pages required for hash look up a tuple
+<TR><TH><TT>INPages</TT><TD> Number of Index Leaf Pages (width of btree, # of hash table pages)
+<TR><TH><TT>BPR</TT><TD> Buffer Pool Pages Required; how many pages are
+required in the buffer pool in order for this query to run.
+<TR><TH><TT>NPages</TT><TD> Number of Relation Pages
+<TR><TH><TT>NTuples</TT><TD>Number of Tuples
+<TR><TH><TT>PSize</TT><TD> Page Size
+<TR><TH><TT>RF(Primary)</TT><TD> Primary Predicate Reduction Factor
+<TR><TH><TT>NPages</TT><TD> Result Number of Pages
+<TR><TH><TT>RF</TT><TD>  Reduction Factors(all predicates for this node)
+<TR><TH><TT>TSize</TT><TD> Result Tuple Sizes
+</TABLE>
+
+<P>
+<IMG SRC="../pics/hline.gif">
+
+<H2>Reduction Factors</H2>
+With only minor alterations, this comes right from "Access Path Selection
+in a Relational Database Management System" by Selinger et al.
+
+<TABLE BORDER>
+<TR><TD ROWSPAN=2> column = value <TD> <tt>RF = 1 / NKeys</tt> if index on column
+<TR>                              <TD> <tt>RF = 1/10</tt> otherwise
+<TR><TD ROWSPAN=3> column1 = column2 <TD> <tt> RF = 1 / MAX (1.NKeys,
+2.NKeys) <tt> if index on columns 1 and 2 
+<TR>                                    <TD> <tt> RF = 1 / I.NKeys
+</tt> if only one index on column i.  
+<TR>	                            <TD> <TT> RF = 1/10</TT> otherwise
+<TR><TD ROWSPAN=2> column != value <TD> <tt>RF = 1 - 1 / NKeys</tt> if index on column
+<TR>                              <TD> <tt>RF = 1 - 1/10</tt> otherwise
+<TR><TD ROWSPAN=3> column1 != column2 <TD> <tt> RF = 1 - 1 / MAX (1.NKeys,
+2.NKeys) <tt> if index on columns 1 and 2 
+<TR>                                    <TD> <tt> RF = 1 - 1 / I.NKeys
+</tt> if only one index on column i.  
+<TR>	                            <TD> <TT> RF = 1 - 1/10</TT> otherwise
+<TR><TD ROWSPAN= 3> value1 < col < value2 <TD> (note: for our purposes, no
+real point in distinguishing between < and <= with regard to RF)
+<TR><TD> <tt> RF = (value2 - value1) / (high key value - low key value) </tt> if
+int or real
+<TR><TD> <tt> 1/4 </tt> otherwise
+<TR><TD ROWSPAN = 3> value < column <TD> (or any other open-ended
+comparison -- the formula is similar)
+<TR><TD><TT> RF = (high key value - value) / (high key value - low key
+value)</TT> if numeric
+<TR><TD><TT> RF = .3 </TT>
+<TR><TD ROWSPAN> column1 < column2 <TD> <TT> RF = .3 </TT>
+<TR><TD>A AND B <TD> RF = RF(A) * RF(B)
+<TR><TD>A OR B <TD> RF = RF(A) + RF(B) - RF(A) * RF(B)
+</TABLE>
+
+<P>
+<IMG SRC="../pics/hline.gif">
+
+<H2>Access Method Costs</H2>
+
+<P> If all attributes used in either the selection or
+projection in a plan node can be supplied by
+the index, that node will be marked as being an index-only plan.
+In such a plan, the indexed relation need not be accessed, and this
+is reflected in the following costs.
+<TABLE BORDER>
+<TR><TH>Access Method<TH>Description
+<TR><TH>File Scan<TD>
+<TT>
+	NPages
+</TT>
+<TR><TH ROWSPAN=2>
+File Scan, file is sorted
+<TD>
+<TT>
+	log(NPages) + (NPages * RF(Primary))
+</TT>
+<TR><TD>We can use a binary search to find the correct first page, and then we only
+need to read in as many pages that match the condition based on the sorted
+attribute.
+<TR><TH ROWSPAN=2>
+Hash Index-Only Scan
+<TD>
+<TT>
+	INPages
+</TT>
+<TR><TD>We can read through all of the pages of the hash index instead of
+going to the base relation.
+<TR><TH ROWSPAN=2>
+Clustered Hash Scan
+<TD>
+<TT>
+	ICost + (NPages * RF(Primary))
+</TT>
+<TR><TD>The cost to get to the appropriate pages (ICost), plus the number of
+pages that contain records (since clustered, we know they are all together).
+<TR><TH ROWSPAN=2>
+Unclustered Hash Scan
+<TD>
+<TT>
+	ICost + NTuples(Fetched) 
+</TT>
+<TR><TD>The cost to get to the appropriate pages (ICost), plus one page IO for
+each matching tuple (since each could be on a different page).
+<TR><TH ROWSPAN=2>
+Index-Only BTree Index
+<TD> 
+<TT>
+	IHeight + (INPages * RF(Primary))
+</TT>
+<TR><TD>The depth of the btree, plus the number of index leaves we have to look
+at.  We don't have to go to the base relation.
+<TR><TH ROWSPAN=2>
+Clustered BTree Index	
+<TD>
+<TT>
+	IHeight + (INPages * RF(Primary)) + (NPages * RF(Primary))	
+</TT>
+<TR><TD>The depth of the btree, plus the number of index leaves we have to look
+at,  plus the number of
+pages that contain records (since clustered, we know they are all together)
+
+
+<TR><TH ROWSPAN=2>
+Unclustered B Tree Index
+<TD>
+<TT>
+	IHeight + (INPages * RF(Primary)) + NTuples(Fetched)
+</TT>
+<TR><TD>In this case, each record could be on a different page.
+</TABLE>
+
+<P>
+<IMG SRC="../pics/hline.gif">
+
+<H2> Joins</H2>
+
+In general, we assume all joins are pipelined; that is, the results of one
+join are directly fed into the next.
+
+
+<H3>Index Nested Loops</H3>
+<P>   The optimizer never considers whether the left plan was already
+ordered or not.   If we could make a guess on how many keys are entering in
+the left hand side, we could then use the L.NKeys instead of L.NTuples in
+the formulas, which could be cheaper.
+
+<P>  The cost estimate is computed using the following formula for 
+joining plan R and plan L, where R is the right subplan and L is the 
+left:
+<PRE>
+      L.TotalCost + (L.Cardinality * R.Access)
+</PRE>
+
+<P>Where R.Access is the cost to get one tuple.  Note, that RF(Primary) is the
+selectivity of the join, so the selectivity for just one probe should be (RF(Primary) /
+L.NTuples) if we have L.NTuples probes.  So, what I did was grab the cost for R.Access
+from the access-method level lookups & then did some algebra to simplify it
+up a little bit.  This would be a high estimate if the left plan was sorted
+& the index is clustered.  (Note, that these will work in non-equijoin joins
+if the index supports equijoins)
+
+<TABLE BORDER>
+<TR><TH>Right Relation Sorted<TD>
+<TT>
+(not strictly an index, but close)
+       
+L.Total + L.NTuples * ( log(R.NPages) + R.NPages * RF(Primary) / L.NTuples )
+<TT>
+
+<TR><TH>(Clustered or Unclustered) Index-Only Hash Index<TD>
+<TT>
+L.Total + L.NTuples * R.ICost
+</TT>
+
+<TR><TH>Clustered Hash Index<TD>
+
+<TT>
+L.Total + L.NTuples * ( R.ICost + R.NPages * RF(Primary) / L.NTuples)
+</TT>
+
+<TR><TH ROWSPAN=3>Unclustered Hash Index<TD>
+ R.ICost is cost to use index once
+<TR><TD><TT>L.Total + L.NTuples * ( R.ICost + NTuples(Fetched) / L.NTuples + R.ICost)</TT>
+                                               
+<TR><TD> Note that <TT>NTuples(Fetched) = NTuples(Input) * RF(Primary),
+         or NTuples(Fetched) = L.NTuples * R.NTuples * RF(Primary)
+</TT>
+<TR><TH>
+Index-Only BTree Index
+<TD>
+<TT>
+L.Total + L.NTuples * ( R.IHeight + R.INPages * RF(Primary)/L.NTuples)
+</TT>
+<TR><TH>
+Clustered BTree Index
+<TD>
+<TT>
+      
+L.Total + L.NTuples * ( R.IHeight + R.INPages * RF(Primary)/L.NTuples + R.NPages * RF(Primary)/L.NTuples)
+</TT>
+
+<TR><TH ROWSPAN=2>
+Unclustered BTree Index
+<TD>
+ <TT>
+L.Total + L.NTuples * ( R.IHeight + R.INPages * RF(Primary)/L.NTuples + NTuples(Fetched)/L.NTuples)</TT>
+<TR><TD><TT>
+(note that NTuples(Fetched) = NTuples(Input) * RF(Primary) = L.NTuples * R.NTuples * RF(Primary))
+</TT>
+</TABLE>
+<H3>Sort Merge</H3>
+
+<P>Hash indexes are not allowed. 
+
+<P>In general, the cost is the cost to sort one or both incoming relations,
+if necessary, plus the cost to access each one once.  (If there is an index,
+it will include the cost to use the index)
+
+<P>We also assume we can always sort in two runs (not always reasonable)
+
+<P>Note; we assume that sort-merge is done in two distinct steps -- a sort
+step, and a merge step.  It assumes (like the current version of minibase)
+that merging is not done at the same time as the last sort run.
+
+<TABLE BORDER>
+<TR><TH>Both relations unsorted
+<TD><TT> 4L.NPages + 4R.NPages + L.TotalCost + R.NPages</TT>
+<TR><TH>Left relation sorted, right unsorted <em>after access method</em>, no b-tree index on right
+<TD><TT> 4R.NPages + L.TotalCost + R.NPages </TT>
+<TR><TH>Left relation unsorted, right sorted <em>after access method</em>, no b-tree index on right
+<TD><TT> 4L.NPages + L.TotalCost + R.NPages </TT>
+<TR><TH>Left relation unsorted, right sorted <em>after access method</em>,
+clustered b-tree index on right
+<TD><TT> 4L.NPages + L.TotalCost + R.IHeight + R.INPages + R.NPages</TT>
+<TR><TH>Left relation unsorted, right sorted <em>after access method</em>,
+unclustered b-tree index on right
+<TD><TT> 4L.NPages + L.TotalCost + R.IHeight + R.INPages + R.NTuples</TT>
+<TR><TH>Both relations sorted <em>after access method</em>, no b-tree index on
+right
+<TD><TT> L.TotalCost + R.NPages</TT>
+<TR><TH>Both relations sorted <em>after access method</em>, clustered b-tree index
+on right
+<TD><TT> L.TotalCost + R.IHeight + R.INPages + R.NPages</TT>
+<TR><TH>Both relations sorted <em>after access method</em>, unclustered b-tree
+index on right
+<TD><TT> L.TotalCost + R.IHeight + R.INPages + R.NTuples</TT>
+</TABLE>
+
+<H3>Other Join Methods</H3>
+
+<TABLE BORDER>
+<TR><TH>Tuple Nested Loops
+<TD><TT>(L.NTuples * R.NPages) + L.Total</TT>
+<TR><TH>Page Nested Loops
+<TD><TT>(L.NPages * R.NPages) + L.Total</TT>
+<TR><TH>Hash Join
+<TD><TT>L.TotalCost + 2L.NPages + 2R.NPages + R.NPages</TT>
+</TABLE>
+
+<P>
+<IMG SRC="../pics/hline.gif">
+
+<H2>Order By, Group By, Distinct, and Aggregates</H3>
+
+<P>Aggregates are `free'.  If all aggregates can be computed using some index,
+and index-only plan is produced.  (However, all the aggregates must be
+computable from the same index.  It could be cheaper to instead scan two
+different indexes and join them together, but the optimizer isn't smart
+enough to consider this currently.)
+
+<P>Order By and Group By: Group by and distinct are done by sorting the
+relation and then stepping through the different groups; after this point
+they are not significantly different as far as the optimizer is concerned
+from a similar order by clause.
+
+<P>If the plan is
+already in the order desired, 
+there is no additional cost.  Otherwise, <tt>4 * NP</tt> is added to the cost
+of the plan to sort the relation.   
+
+
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+
+Click here for the public interface to the <A HREF="planner.h">planner</A><br>
+<A HREF="../minibase.html">Back to the Minibase Home Page</A><BR>
+<A HREF="../project.html">Back to the Components Home Page</A><BR>
+<P>
+
+
+
+
+
+

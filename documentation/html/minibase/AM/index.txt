@@ -1,0 +1,40 @@
+
+typedef enum {
+  NewScan,
+  ScanRunning,
+  ScanComplete
+} ScanState;
+
+class IndexFileScan;
+
+class IndexFile {
+  friend IndexFileScan;
+
+  public:
+    virtual ~IndexFile();      // will close file, not destroy it
+
+    virtual Status insert(const void* data, const RID rid) = 0;
+    virtual Status delete(const void* data, const RID rid) = 0;
+    virtual Status destroy() = 0; // Each AM must keep track of the pages
+				  // that it allocates and deallocate them
+				  // when destroy is called
+
+    // virtual IndexFileScan *new_scan() = 0;  // 
+
+}
+
+
+class IndexFileScan {
+   public:
+     virtual ~IndexFileScan() = 0;  // will close scan
+
+     virtual Status get_next(RID &rid) = 0;
+     virtual Status delete_current() = 0;
+
+   private:
+     // IndexFile* fileptr;
+
+}
+
+
+

@@ -1,0 +1,10 @@
+PARSERINTERFACE_SRCS := \
+	ii_convertparsetree.C \
+	ii_minibasesystemcatalogs.C \
+	ii_systemcatalogs.C
+ 
+# No public headers.
+PARSERINTERFACE_HDRS :=
+
+PARSERINTERFACE_OBJS := $(PARSERINTERFACE_SRCS:.C=.o)
+

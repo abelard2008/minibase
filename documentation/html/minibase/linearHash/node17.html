@@ -1,0 +1,45 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> Algorithm</TITLE>
+<meta name="description" value=" Algorithm">
+<meta name="keywords" value="report">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html237 HREF="node18.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A> <A NAME=tex2html235 HREF="node16.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A> <A NAME=tex2html229 HREF="node16.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html238 HREF="node18.html"> Data Structure</A>
+<B>Up:</B> <A NAME=tex2html236 HREF="node16.html"> Internal Design</A>
+<B> Previous:</B> <A NAME=tex2html230 HREF="node16.html"> Internal Design</A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00031000000000000000> Algorithm</A></H2>
+<P>
+In linear hashing, we have a family of hash functions <IMG ALIGN=BOTTOM SRC="_2017_tex2html_wrap420.gif"> with the property that each function's range is twice that of
+the predecessor. 
+We keep track of two values: <em>next</em> and <em>level</em>. Each
+record is first hashed using hash function <IMG ALIGN=BOTTOM SRC="_2017_tex2html_wrap422.gif">. If the value
+returned is less than <em>next</em>, then the function <IMG ALIGN=BOTTOM SRC="_2017_tex2html_wrap424.gif"> is
+used to compute the hash value. For insertion, the record is  inserted
+to the corresponding bucket. Overflow page is allocated if
+necessary. For deletion,  the corresponding bucket is
+searched. If the record is found, then it's deleted. If an empty
+overflow page
+occurs, it's deallocated.<BR>A split is triggered when an overflow page is allocated. The <em>next</em> bucket is split into two buckets and the records in that
+bucket are redistributed to two buckets. The value of <em>next</em> is
+incremented by 1 after the split. If the number of original buckets
+has been doubled, we start a new round with <em>level</em> incremented by
+1 and <em>next</em> set to 0. <BR>A merge is triggered when an overflow page is deallocated. The last
+bucket is merged with its image bucket. If The value of <em>next</em> is
+not equal to 1, then it's decremented by 1 after the merge. Otherwise,
+the value of <em>level</em> is decremented by 1 and <em>next</em> is set to
+the last bucket.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+<I> Weiqing Huang <BR>
+Sun May 14 16:22:27 CDT 1995</I>
+</ADDRESS>
+</BODY>

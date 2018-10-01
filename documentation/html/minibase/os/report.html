@@ -1,0 +1,134 @@
+<HTML>
+<HEAD>
+<TITLE>Shared Memory Manager</TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<H1>Shared Memory Manager</H1>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+The Shared Memory manager is the core that is required to convert
+Minibase from a single user to a multi-user system. It provides the
+operating systems support that is required sharing of resources,
+communication between processes and the utilities required to
+achieve sychronized access to the shared resources.
+<p>
+The Shared Memory manager provides the following: <br>
+* Semaphores: These are are the latches that are used for mutual exclusion
+among processes.<br>
+* Shared Region base class: This includes a semaphore as a private member
+of its class. Classes like the Lock Table and the Log Tail are derived from
+this class. A semaphore thus protects the derived structures and ensures
+synchronous access to them.<br>
+* Classes required to create and manipulate the shared memory. 
+
+<p>
+<IMG SRC="../pics/hline.gif">
+<h2>The Semaphore class  </h2><p>
+In the Minibase multi-user system, a pool of semaphores are created in
+shared memory at server startup, using UNIX system calls. This class contains
+an array of the available semaphores alongside some book keeping information
+which keeps track of the semaphores as they are requested/released by the
+system.A user ( Minibase client process ) requiring a semaphore, on
+declaring a new Semaphore object, receives one from the pool that was
+created at server startup. The Semaphores and shared memory code has been
+currently written for SunOS, and may require a small amount of work to port
+it to HP-UX or other UNIX systems.
+<pre>class Semaphore{
+
+Semaphore(int init=1, int flag = 0); 
+      // constructor :  If flag == 0, a binary semaphore
+      // initialized to a value given by init
+
+void 	operator delete(void *p);    
+      // To delete semaphore object. 
+
+int 	up();
+      // Unlock.
+
+int  	down(); 		
+      // lock.
+
+void    remove();	   
+      // return semaphore to the system pool.
+}</pre>
+
+<p>
+<IMG SRC="../pics/hline.gif">
+<h2>The SharedRegion class </h2>  <p>
+<p>
+The base SharedRegion class contains a semaphore as a private member of
+its class.
+ If a class is derived from
+ this base class, it thus contains a semaphore and can call the 'lock'
+ and 'unlock' methods provided for semaphores. Each method of the derived
+ class may be sandwiched between a 'lock' and an 'unlock' call. It is
+ therefore appropriate for a class to be derived from the base SharedRegion
+ when the methods of the derived class are naturally formed units
+ of mutual exclusion. The Lock Table, BufDesc (that which defines a frame
+ in the buffer pool) and Log tail classes are examples of derived classes
+ of the base SharedRegion class.
+<p>
+<pre>
+class SharedRegion {
+	void 	lock(); 
+	   // Enter, set semaphore
+	void 	unlock(); 
+	   // Exit region, unlock semaphore
+};</pre>
+<p>
+<IMG SRC="../pics/hline.gif">
+<h2>Classes to manipulate shared memory : The SharedMemory class</h2> <p>
+<p>
+Minibase has a globally defined key, called the 'SHM_KEY' which ensures that
+all systems connect to the same chunk of the system's shared memory.
+This chunk is mapped to the process space of every Minibase client.
+<p>
+<pre>
+class SharedMemory{
+	
+	SharedMemory(int size); 
+	   // Size of shared memory to be created, in kilobytes 
+	
+	char* begin_shmadd(); 	    
+	   // The beginning address of shared memory
+	
+	char* malloc(int size);	    
+	   // Overloaded malloc.. Returns the address.
+	
+	void 	lock();
+	void 	unlock(); 
+}</pre>
+
+<p>
+<IMG SRC="../pics/hline.gif">
+<h2>Classes to manipulate shared memory : The ShMemMgr class</h2>
+<p>
+This class manages the shared memory. It is called only once and only
+by the Minibase server. It contains a pointer to the SharedMemory class,
+which is where the actual shared memory is created. 
+Since a fixed amount of shared memory is pre-allocated, the 
+Shared Memory manager maintains some variables which keep track of current
+utilization levels in the system. A point to be noted is that there is
+no mechanism to expand the size of shared memory once the server has
+been started i.e. once the preallocated chunk has been allocated to the
+minibase clients, the system cannot dynamically increase the amount of
+shared memory.
+<p>
+Minibase has a global shared pointer to this class.
+<p>
+<pre>
+class ShMemMgr{
+	
+	ShMemMgr(int size = 20);	// Default 20K bytes
+	char* malloc(int size);		// Overloaded malloc for shared 
+					// memory management
+}</pre>
+<p>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+<B><A HREF="../project.html">Back to the List of Components</A></B><BR>
+<B><A HREF="../minibase.html">Back to the Minibase Home Page</A></B><BR>
+</body></html>

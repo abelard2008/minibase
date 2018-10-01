@@ -1,0 +1,126 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!Converted with LaTeX2HTML 95 (Thu Jan 19 1995) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds >
+<HEAD>
+<TITLE>2 ARIES Recovery</TITLE>
+</HEAD>
+<BODY>
+<meta name="description" value="2 ARIES Recovery">
+<meta name="keywords" value="main">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+<P>
+ <BR> <HR><A NAME=tex2html64 HREF="node3.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html62 HREF="main.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html56 HREF="node1.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html65 HREF="node3.html">3 The  Minirel RDBMS</A>
+<B>Up:</B> <A NAME=tex2html63 HREF="main.html">An ARIES Log Manager </A>
+<B> Previous:</B> <A NAME=tex2html57 HREF="node1.html">1 Introduction</A>
+<BR> <HR> <P>
+<H1><A NAME=SECTION00020000000000000000>2 ARIES Recovery</A></H1>
+<P>
+<A NAME=sectionariesintro>&#160;</A>
+<P>
+ARIES (Algorithm for Recovery and Isolation Exploiting Semantics)
+recovery is based on the Write Ahead Logging (WAL) protocol.  Every
+update operation writes a log record which is one of
+<P>
+<OL><LI> An undo-only log record: Only the before image is
+logged.  Thus, an undo operation can be done to retrieve the old data.
+<P>
+	<LI> A redo-only log record: Only the after image is logged.
+Thus, a redo operation can be attempted.
+<P>
+	<LI> An undo-redo log record.  Both before image and after
+images are logged.
+<P>
+</OL>
+Every log record is assigned a unique and monotonically increasing
+log sequence number (LSN).
+Every data page has a page LSN field that is set to the LSN of the log
+record corresponding to the last update on the page.  WAL requires
+that the log record corresponding to an update make it to stable
+storage<A NAME=tex2html1 HREF="footnode.html#47"><IMG ALIGN=BOTTOM ALT="gif" SRC="http://www.cs.wisc.edu/latex2html//foot_motif.gif"></A> before the data page
+corresponding to that update is written to disk.  For performance
+reasons, each log write is not immediately forced to disk.  A log tail
+is maintained in main memory to buffer log writes.
+The log tail is flushed to disk when it gets full.  A transaction
+cannot be declared committed until the commit log record makes it to
+disk.
+<P>
+	Once in a while the recovery subsystem writes a checkpoint
+record to the log.  The checkpoint record contains the transaction
+table (which gives the list of active transactions) and the dirty page
+table (the list of data pages in the buffer pool that have not yet made it
+to disk).  A master log record is maintained separately, in stable
+storage, to store the LSN of the latest checkpoint record that made it
+to disk.  On restart, the recovery subsystem reads the master log
+record to find the checkpoint's LSN, reads the checkpoint record, and
+starts recovery from there on.
+<P>
+	The actual recovery process consists of three passes:
+<P>
+<OL><LI> <A NAME=ariesintroenumanalysis>&#160;</A> Analysis.  The
+recovery subsystem determines the earliest log record from which the
+next pass must start.  It also scans the log forward from the
+checkpoint record to construct a snapshot of what the system looked
+like at the instant of the crash.
+<P>
+	<LI> Redo.  Starting at the earliest LSN determined in pass
+(<A HREF="node2.html#ariesintroenumanalysis">1</A>) above, the log is read forward and
+each update redone.
+<P>
+	<LI> Undo.  The log is scanned backward and updates
+corresponding to loser transactions are undone.
+<P>
+</OL>
+For further details of the recovery process, see [<A HREF="node32.html#aries">Mohan et al. 92</A>,<A HREF="node32.html#recovery">Ramamurthy &amp; Tsoi 95</A>].
+<P>
+	It is clear from this description of ARIES that the following
+features are required for a log manager:
+<P>
+<OL><LI> Ability to write log records.  The log manager should
+maintain a log tail in main memory and write log records to it.  The
+log tail should be written to stable storage on demand or when the log
+tail gets full.  Implicit in this requirement is the fact that the log
+tail can become full halfway through the writing of a log record.  It
+also means that a log record can be longer than a page<A NAME=tex2html2 HREF="footnode.html#54"><IMG ALIGN=BOTTOM ALT="gif" SRC="http://www.cs.wisc.edu/latex2html//foot_motif.gif"></A>.
+<P>
+	<LI> Ability to wraparound.  The log is typically maintained
+on a separate disk.  When the log reaches the end of the disk, it is
+wrapped around back to the beginning.
+<P>
+	<LI> Ability to store and retrieve the master log record.
+The master log record is stored separately in stable storage, possibly
+on a different duplex-disk.
+<P>
+	<LI> Ability to read log records given an LSN.  Also, the
+ability to scan the log forward from a given LSN to the end of log.
+Implicit in this requirement is that the log manager should be able to
+detect the end of the log and distinguish the end of the log from a
+valid log record's beginning.
+<P>
+	<LI> Ability to create a log.  In actual practice, this will
+require setting up a duplex-disk for the log, a duplex-disk for the
+master log record, and a raw device interface to read and write the
+disks bypassing the Operating System.
+<P>
+	<LI> Ability to maintain the log tail.  This requires some
+sort of shared memory because the log tail is common to all
+transactions accessing the database the log corresponds to.
+Mutual exclusion of log writes and reads have to be taken care of.
+<P>
+</OL>
+<P>
+The following sections describe some simplifying assumptions that we
+have made to fit the protocol into <em> Minirel</em> and 
+the interface and implementation of our log manager.
+<P>
+<BR> <HR><A NAME=tex2html64 HREF="node3.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html62 HREF="main.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html56 HREF="node1.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html65 HREF="node3.html">3 The  Minirel RDBMS</A>
+<B>Up:</B> <A NAME=tex2html63 HREF="main.html">An ARIES Log Manager </A>
+<B> Previous:</B> <A NAME=tex2html57 HREF="node1.html">1 Introduction</A>
+<BR> <HR> <P>
+<BR> <HR>
+<P><ADDRESS>
+ajitk@cs.wisc.edu, cjin@cs.wisc.edu
+</ADDRESS>
+</BODY>

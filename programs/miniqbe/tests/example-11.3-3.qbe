@@ -1,0 +1,4 @@
+setComment {Three relations}
+addRelationTable {Sailors {}} {sid _Id} {sname {}} {rating {}} {age >25}
+addRelationTable {Reserves {}} {sid _Id} {bid _B} {date {"8/24/96"}}
+addRelationTable {Boats {}} {bid _B} {bname Interlake} {color p.}

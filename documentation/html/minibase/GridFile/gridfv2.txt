@@ -1,0 +1,71 @@
+// Grid File  Interface April 6, 1995
+
+//*********************** GridFile ******************************
+
+class GridFile: public IndexFile has  friend GridFileScan
+
+GridFile::GridFile (char * filename,int num_dimensions,char KeyTypes[])
+    //filename is name of file
+    //num_dimensions is number of index dimensions AND types in KeyTypes
+    //KeyTypes is array of char where each item is the type of the
+         // corresponding dimension (numbered from 0). 
+         // types: i int, f float, s string  (Case insensitive)
+         // If GridFile index already exists, it is opened else
+         //      it is created.
+         // Dimensions and key types are stored in private class
+         // variables for subsequent use by all GridFile procedures.
+
+GridFile::~GridFile ()
+      //destructor closes index
+
+Status GridFile:insert_record(RID record_id, void * KeyArray[])
+   //KeyArray must have number of members equal to num_dimensions
+   //    passed to constructor previously. KeyArray[0] corresponds
+   //    to key given for dimension 0, keyarray[1] is key given for
+   //    dimension 1 and so on. Key types are assumed to correspond
+   //    to the types passed to the constructor originally in the
+   //    KeyTypes array.
+   //    No dimension key value should be unspecified in insert_record. 
+
+
+Status GridFile:delete_record(RID record_id, void * KeyArray[])
+   //KeyArray must have number of members equal to num_dimensions
+   //    passed to constructor previously. KeyArray[0] corresponds
+   //    to key given for dimension 0, keyarray[1] is key given for
+   //    dimension 1 and so on. Key types are assumed to correspond
+   //    to the types passed to the constructor originally in the
+   //    KeyTypes array.
+   //    No dimension key value should be unspecified in delete_record. 
+
+//***************************** Scans ****************************
+
+GridFile_scan: public IndexFileScan
+
+Status GridFile_scan::GridFile_scan(GridFile * fileptr)
+   //Full scan on given gridfile.
+
+
+Status GridFile_scan::GridFile_scan(GridFile * fileptr,
+         void *KeyArray[])
+   //Create a case of an exact scan on given gridfile.
+   //If a key is not being specified here then its pointer must
+   // be set to null in the KeyArray. Looks for exact match on
+   // keys that are specified. Key's dimension and type must 
+   // match as in insert_record and delete_record.
+   
+Status GridFile_scan::GridFile_scan(GridFile * fileptr,;
+      void *LowKeys[], void *HighKeys[])
+   //Create a case of min/max scan on given gridfile.
+   //If a key is not being specified here then its pointer must
+   // be set to null in the KeyArray. 
+   // Key's dimension and type must 
+   // match as in insert_record and delete_record.
+   
+
+Status GridFile_scan:: get_next (RID & record_id)
+    // Scan returns next record qualifies under ongoing scan if
+    //        there is one.
+
+Status GridFile_scan::delete_current_record()
+    // Scan deletes current record
+

@@ -1,0 +1,194 @@
+
+/* Some sample SQL queries */
+
+/* basic query */
+select * from emp;
+
+
+/* pushed selection */
+select * from emp, dept
+where emp.dno = dept.dno and empid = 3459;
+
+/* an interesting join, with no "simple" part */ 
+select * from emp, dept
+where emp.dno = 10 or ename = "Smith" and dname = "shipping";
+
+/* a three relation join */
+select * from emp, dept, job
+where emp.dno = dept.dno and emp.jno = job.jno;
+
+/* a three relation join, where one is not equijoin */
+select * from emp, dept, job
+where emp.dno = dept.dno and emp.jno < job.jno;
+
+/* a three relation join, except with a projection */
+select empid, dname, jname from emp, dept, job
+where emp.dno = dept.dno and emp.jno = job.jno;
+
+/* a three relation join, without or an or */ 
+select empid, dname, jname from emp, dept, job
+where emp.dno = dept.dno or emp.jno = job.jno;
+
+/* a two relation join, with an interesting projection on two parts. */
+select ename, emp.jno, job.jno, jname from emp, job
+where emp.jno = job.jno;
+
+/* another three relation join, with lots of opprotunuities for 
+   selections */
+select * from emp, dept, job
+where emp.dno = dept.dno and emp.jno = job.jno 
+and ename < "Doe" 
+and emp.jno < 34;
+
+/* same with the addition of projection - which means a different
+   plan is selected, since some are smaller! */
+select empid, dname, jname from emp, dept, job
+where emp.dno = dept.dno and emp.jno = job.jno 
+and ename > "Doe" 
+and emp.jno < 34;
+
+/* simple join */
+select * from emp, job
+where emp.jno = job.jno;
+
+/* self joins */
+select A.ename, B.ename from emp A, emp B
+where A.jno = B.dno;
+
+
+select empid, dno
+from emp
+where ename = "Doe" and empid > 2000 and jno < 100
+
+/* ename is better index */
+
+select empid, dno
+from emp
+where ename = "Doe" and empid > 9900 and jno < 100
+
+/* empid is better index */
+
+
+select empid, dno
+from emp
+where ename < "Doe" and empid > 2000 and jno < 100
+
+/* empid better index */
+
+select empid, dno
+from emp
+where ename < "Doe" and empid > 2000 and jno < 10
+
+/* jno better index */
+
+select empid, dno
+from emp
+where ename < "Doe" and empid > 2000 and jno < 36
+
+/* jno still better index */
+
+select empid, dno
+from emp
+where ename < "Doe" and empid > 2000 and jno < 37
+
+/* now empid is a better index */
+
+select empid, dno
+from emp
+where (ename = "Doe" and empid > 100) or jno < 100
+
+/* CNF manipulates predicate */
+
+select empid, dno
+from emp
+where (ename = "Doe" and empid > 3600) or (jno < 100 and empid > 8252)
+
+/* more CNF manipulation */
+
+select empid, dno
+from emp
+where (ename = "Doe" and empid > 3600) or (jno < 100 and empid > 8252) and dno = 25;
+
+/* more CNF manipulation, but using an index */
+
+select * from emp
+where (ename = "Smith" or (jno = 25 and (dno = 21 or empid > 1520)))
+
+/* CNF conversion changes this into 
+         (ename = "Smith" or jno = 25) and
+         (ename = "Smith" or dno= 21 or empid > 1520)
+*/
+
+
+select empid, dno
+from emp
+where (ename = "Doe" or empid > 100) and jno < 100
+
+
+
+
+
+# These tests were done using the bogus catalogs
+# defined int ./temporary/bogus.catalog.data
+
+
+# test case 1,  sort merge is best solution
+
+select * from emp, dept
+where emp.dno = dept.dno;
+
+
+# test case 2,  nested loops with job as the inner 
+#		relation is best solution, unless
+#   		dname is requested to be ascending
+#		then sort merge is the best
+
+select * from job, dept
+where job.jname = dept.dname;
+
+
+# test case 3,  nested loops with index with job as 
+#		the inner relation is best solution
+
+select * from job, pet
+where petid < job.jno;
+
+
+# test case 4,  good example of pushing of selects 
+#               and projects
+
+select empid, dname, jname from emp, dept, job
+where emp.dno = dept.dno and emp.jno = job.jno 
+and ename > "Doe" 
+and emp.jno < 34;
+
+
+# test case 5,  above case with tuple vars
+
+select A.empid, B.dname, C.jname from emp A, dept B, job C
+where A.dno = B.dno and A.jno = C.jno 
+and ename > "Doe" 
+and A.jno < 34;
+
+
+# test case 6,  self join using tuple vars
+
+select A.ename, B.ename from emp A, emp B
+where A.jno = B.dno;
+
+
+# test case 7,  join of four relations
+
+select * from emp, dept, job, pet
+where emp.dno = dept.dno and emp.jno < job.jno
+and pet.pname = job.jname;
+
+# sailors             
+select s.sname
+from reserves R, sailors s
+where R.sid = S.sid
+	and R.bid = 100 and S.rating >5;
+
+
+
+

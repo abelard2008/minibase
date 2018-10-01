@@ -1,0 +1,85 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> Introduction :</TITLE>
+<meta name="description" value=" Introduction :">
+<meta name="keywords" value="rec">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html26 HREF="node2.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A> <A NAME=tex2html24 HREF="rec.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A> <A NAME=tex2html18 HREF="rec.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html27 HREF="node2.html"> External Interface:</A>
+<B>Up:</B> <A NAME=tex2html25 HREF="rec.html">MINIREL : Recovery Manager
+<P>
+</A>
+<B> Previous:</B> <A NAME=tex2html19 HREF="rec.html">MINIREL : Recovery Manager
+<P>
+</A>
+<BR> <HR> <P>
+<H1><A NAME=SECTION00010000000000000000> Introduction :</A></H1>
+ <A NAME=secintro>&#160;</A>
+The Recovery Manager of MINIREL, is based on the ARIES
+recovery 
+algorithms <A HREF="node9.html#aries">[MHL+90]</A>. Some of the important
+features of ARIES are:
+<UL><LI> It uses the Write-Ahead-Logging (WAL) protocol.
+<LI> The use of the WAL protocol supports the use of the Steal/No-force
+policy by the Buffer Manager.
+<LI> ARIES <em>repeats history</em>.
+</UL>
+<P>
+The Recovery Manager operates in the <b>Normal Mode</b> during normal database operation
+and the <b>Restart Mode</b> during crash restart.
+While running in the Normal
+Mode, the Recovery Manager  supports transaction atomicity by supporting 
+rollback for aborted transactions. It also performs checkpoints to 
+assist in recovery from crashes. 
+The Restart Mode is invoked by the system after a crash. It is the
+task of the Recovery Manager to ensure that the system is brought back to
+a consistent state.
+There are three distinct phases when
+a database system is operating in the Restart Mode. 
+The initial phase is the <em>Analysis Phase</em>, in which the Manager processes
+the log record from the most recent checkpoint taken. 
+The <em>Redo Phase</em> repeats
+history : i.e. it performs all logged operations. The final <em>Undo
+Phase</em> <em>Undo Phase</em> moves backward from the end of the log and 
+removes the
+effects of those transactions that had not yet committed at the time of
+the crash.
+<P>
+The Recovery Manager primarily interacts with the Log Manager. One of the 
+functions of the Recovery Manager is to generate records to log different
+actions ( abort, update, commit ). The Recovery Manager creates the log records
+which are written to the log file by the Log Manager. The Recovery Manager
+also interacts to a lesser degree with the Buffer Manager and the Transaction
+Manager.  It is invoked by the Transaction Manager for transaction rollback.
+It requests the Buffer Manager for the Dirty Page list and the Transaction
+Manager for the Transaction table.  Section <A HREF="node3.html#secinternal">3</A> describes the relationships in detail.
+<P>
+The remainder of this report is organized as follows. 
+Sections <A HREF="node2.html#secexternal">2</A>
+and <A HREF="node3.html#secinternal">3</A> describe the external and internal interfaces.
+Sections <A HREF="node6.html#secacc">4</A> and
+<A HREF="node7.html#sectesting">5</A>  summarize the accomplishments and testing methods utilized
+in this project. Finally Section <A HREF="node8.html#secretro">6</A> is the retrospective on the
+design of the MINIREL project.
+<P>
+<BR> <HR><A NAME=tex2html26 HREF="node2.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A> <A NAME=tex2html24 HREF="rec.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A> <A NAME=tex2html18 HREF="rec.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html27 HREF="node2.html"> External Interface:</A>
+<B>Up:</B> <A NAME=tex2html25 HREF="rec.html">MINIREL : Recovery Manager
+<P>
+</A>
+<B> Previous:</B> <A NAME=tex2html19 HREF="rec.html">MINIREL : Recovery Manager
+<P>
+</A>
+<BR> <HR> <P>
+<BR> <HR>
+<P><ADDRESS>
+<I> ranjani ramamurthy <BR>
+Sat May 13 16:56:49 CDT 1995</I>
+</ADDRESS>
+</BODY>

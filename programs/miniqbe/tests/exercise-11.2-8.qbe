@@ -1,0 +1,3 @@
+setComment {Parts that come in blue and green}
+addRelationTable {Parts {}} {pid {}} {pname p._n} {color blue}
+addRelationTable {Parts {}} {pid {}} {pname _n} {color green}

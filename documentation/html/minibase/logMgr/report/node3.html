@@ -1,0 +1,98 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!Converted with LaTeX2HTML 95 (Thu Jan 19 1995) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds >
+<HEAD>
+<TITLE>3 The  Minirel RDBMS</TITLE>
+</HEAD>
+<BODY>
+<meta name="description" value="3 The  Minirel RDBMS">
+<meta name="keywords" value="main">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+<P>
+ <BR> <HR><A NAME=tex2html74 HREF="node4.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html72 HREF="main.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html66 HREF="node2.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html75 HREF="node4.html">4 Log Manager Interface</A>
+<B>Up:</B> <A NAME=tex2html73 HREF="main.html">An ARIES Log Manager </A>
+<B> Previous:</B> <A NAME=tex2html67 HREF="node2.html">2 ARIES Recovery</A>
+<BR> <HR> <P>
+<H1><A NAME=SECTION00030000000000000000>3 The  Minirel RDBMS</A></H1>
+<P>
+<A NAME=sectionminirelintro>&#160;</A>
+<P>
+<em> Minirel</em> is a simple, multi-user RDBMS.  It has all the features
+of a regular RDBMS, including concurrency control and locking, logging
+and recovery, buffer, heap file, and space management, access methods
+(B<IMG  ALIGN=BOTTOM ALT="" SRC="img14.gif">-trees, hashing, grid files, etc.), relational operators, query
+planning, and user interface components.  The log manager fits into
+the system as follows:
+<P>
+<UL><LI> Every update operation will log its update via the
+recovery manager into the log tail.  When the log tail is full or when
+there is a flush request, the log tail is flushed to disk.
+<P>
+	<LI> WAL is enforced by informing the buffer manager whenever
+the log tail is flushed.  The buffer manager can also call the log
+manager to flush the log tail when it wants to flush a page whose page
+LSN is more than the last flushed LSN the buffer manager knows about.
+<P>
+	<LI> The recovery manager periodically writes checkpoint
+records into the log and calls the log manager to update the master
+log record.
+<P>
+	<LI> On restart, the recovery manager scans the log and
+performs restart recovery as described in
+Section <A HREF="node2.html#sectionariesintro">2</A>.
+<P>
+</UL>
+Thus, the log manager mainly interacts with the recovery manager.
+Every other component (except the buffer manager) sees the log manager
+only through the recovery manager.   The only
+piece of the log manager that the buffer manager sees is the
+enforcement of the WAL protocol.
+<P>
+	<em> Minirel</em> is organized as follows: every <em> Minirel</em>
+process runs one transaction and accesses one database throughout its
+existence.  There is one log corresponding to each database.  (For
+simplicity, the log is maintained as a Unix file.  Duplex-disks and
+log disks are not used.)  Every <em> Minirel</em> process has the entire
+code for all components.  However, the data portion (the buffer pool,
+the log tail, the lock and transaction tables, etc.) are kept in
+shared memory.  The first transaction to use a database initializes
+all the shared data structures.  Currently, a <em> Minirel</em> process
+uses only one database and its corresponding log.  Thus, the shared
+memory data structures correspond to a common database.
+<P>
+	We have made the following simplifications:
+<P>
+<UL><LI> No duplex-disks or raw device manipulation.  We maintain
+the log as a single Unix file.
+<P>
+	<LI> A log tail of size one page.  This considerably
+simplifies the implementation.  Unfortunately, performance is not as
+good as it would have been with double buffering or multiple buffers.
+<P>
+	<LI> Complete ignorance of log record types.  All that the
+log manager sees is a sequence of bytes.  The recovery manager
+interprets the contents of a log record.
+<P>
+	<LI> No transaction ``crashes.''  If regular crashes
+were allowed and a transaction was in a critical section when it
+crashed (e.g., updating the log tail), no other transaction can enter
+its critical section.  Thus, every transaction exits cleanly.
+However, cleanliness is restricted to unlocking shared data structures
+and exiting critical sections.
+<P>
+</UL>
+The log management component of a real database system would relax
+these assumptions and be more rigorous about duplexing and crashes.
+<P>
+<BR> <HR><A NAME=tex2html74 HREF="node4.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html72 HREF="main.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html66 HREF="node2.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html75 HREF="node4.html">4 Log Manager Interface</A>
+<B>Up:</B> <A NAME=tex2html73 HREF="main.html">An ARIES Log Manager </A>
+<B> Previous:</B> <A NAME=tex2html67 HREF="node2.html">2 ARIES Recovery</A>
+<BR> <HR> <P>
+<BR> <HR>
+<P><ADDRESS>
+ajitk@cs.wisc.edu, cjin@cs.wisc.edu
+</ADDRESS>
+</BODY>

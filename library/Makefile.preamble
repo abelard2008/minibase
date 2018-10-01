@@ -1,0 +1,58 @@
+##############
+# Makefile.preamble - Contains common makefile macros for Minibase.
+# Expects GLOBAL_DB_DIR to have been set before including this file.
+##############
+
+
+OBJ_DIR := obj
+
+TOP_DIR := $(GLOBAL_DB_DIR)/..
+HDR_INSTALL_DIR := $(TOP_DIR)/include
+LIB_INSTALL_DIR := $(TOP_DIR)/libs
+MAKE_DIR := $(TOP_DIR)/makefiles
+
+GLOBALDEFS_DIR := $(GLOBAL_DB_DIR)/globaldefs
+GLOBALDEFS_OBJ_DIR := $(GLOBALDEFS_DIR)/$(OBJ_DIR)
+
+BTREE_DIR := $(GLOBAL_DB_DIR)/btree
+BTREE_OBJ_DIR := $(BTREE_DIR)/$(OBJ_DIR)
+
+BUFMGR_DIR := $(GLOBAL_DB_DIR)/bufmgr
+BUFMGR_OBJ_DIR := $(BUFMGR_DIR)/$(OBJ_DIR)
+
+CATALOG_DIR := $(GLOBAL_DB_DIR)/catalog
+CATALOG_OBJ_DIR := $(CATALOG_DIR)/$(OBJ_DIR)
+
+INTERPRETER_DIR := $(GLOBAL_DB_DIR)/interpreter
+INTERPRETER_OBJ_DIR := $(INTERPRETER_DIR)/$(OBJ_DIR)
+
+JOINS_DIR := $(GLOBAL_DB_DIR)/joins
+JOINS_OBJ_DIR := $(JOINS_DIR)/$(OBJ_DIR)
+
+LINEARHASH_DIR := $(GLOBAL_DB_DIR)/linearhashing
+LINEARHASH_OBJ_DIR := $(LINEARHASH_DIR)/$(OBJ_DIR)
+
+OPTIMIZER_DIR := $(GLOBAL_DB_DIR)/optimizer
+OPTIMIZER_OBJ_DIR := $(OPTIMIZER_DIR)/$(OBJ_DIR)
+
+SPACE_DIR := $(GLOBAL_DB_DIR)/spacemgr
+SPACE_OBJ_DIR := $(SPACE_DIR)/$(OBJ_DIR)
+
+TESTS_DIR := $(GLOBAL_DB_DIR)/tests
+TESTS_OBJ_DIR := $(TESTS_DIR)/$(OBJ_DIR)
+
+
+INCLUDES := \
+	-I$(GLOBALDEFS_DIR)/include \
+	-I$(BTREE_DIR)/include \
+	-I$(BUFMGR_DIR)/include \
+	-I$(CATALOG_DIR)/include \
+	-I$(INTERPRETER_DIR)/include \
+	-I$(JOINS_DIR)/include \
+	-I$(LINEARHASH_DIR)/include \
+	-I$(OPTIMIZER_DIR)/include \
+	-I$(SPACE_DIR)/include \
+	-I$(TESTS_DIR)/include
+
+
+include $(MAKE_DIR)/common.make

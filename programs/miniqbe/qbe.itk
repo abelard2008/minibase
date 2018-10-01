@@ -1,0 +1,909 @@
+# -*- tcl -*-
+# (setq tcl-default-application "itkwish")
+
+#--------------------------------------------------------------------------
+# Copyright Notice
+#
+# This software is copyright 1996 by Luke Blanshard.  You may use this
+# software for any purpose, provided that you leave this copyright
+# notice intact and that you accept all liability for damage caused by
+# it or any modified version of it.
+#--------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------
+# The QBE Display module
+#
+# This file contains the code to display QBE queries on the screen.  The
+# user interface lets you arrange tables and columns, type in QBE commands
+# and conditions, and save and open entire QBE queries.
+#
+# You interact with this module by calling the ::qbe::display::init command
+# and passing as arguments the relation schemas you want your queries to
+# use.  Each relation schema must consist of a list whose first element is
+# the name of the relation and whose remaining elements are the names of
+# attributes in the relation.  For example, using the Sailors / Reserves /
+# Boats schema of Raghu Ramakrishnan's _Database Management Systems_ QBE
+# chapter, you would call init as follows:
+#
+#	::qbe::display::init \
+#		{Sailors sid sname rating age} \
+#		{Reserves sid bid date} \
+#		{Boats bid bname color}
+#
+#--------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------
+# For a discussion of the implementation design of this UI, please read the
+# README file.
+#--------------------------------------------------------------------------
+
+namespace ::qbe::display {
+
+    proc init {args} {}
+
+    private {
+	#----------------------------------------------------------
+	# This first set of commands corresponds to the menu items.
+	#----------------------------------------------------------
+	proc newQuery {} {}
+	proc openQuery {} {}
+	proc saveQuery {} {}
+	proc saveQueryAs {} {}
+	proc closeQuery {} {}
+	proc exitQBE {} {}
+	proc genSql {} {}
+
+	proc cut_proc {} {}
+	proc copy_proc {} {}
+	proc paste_proc {} {}
+
+	proc addRelationTable {relation} {}
+	proc addConditionsBox {} {}
+	proc addTargetTable {} {}
+	proc deleteTable {} {}
+	proc moveTableUp {} {}
+	proc moveTableDown {} {}
+
+	proc addAttribute {attr} {}
+	proc addCondition {} {}
+	proc addCalc {} {}
+	proc deleteCol {} {}
+	proc moveColLeft {} {}
+	proc moveColRight {} {}
+
+	proc showOverview {} {}
+	proc showTips {} {}
+	proc showNotes {} {}
+	proc showAuthor {} {}
+
+
+	#----------------------------------------------------------
+	# The rest of them are internal utilities.
+	#----------------------------------------------------------
+	proc addTable {t} {}
+	proc delTable {t} {}
+	proc addColumn {col fr {where end}} {}
+	proc setCurrentColumn {col} {}
+	proc updateColumnMenus {col oldTable} {}
+
+	proc trackFileName {fn ign op} {}
+	proc trackValue {ec col op} {}
+	proc saveColumn {col} {}
+	proc cancelColumn {col} {}
+	proc updateInconsistencies {} {}
+	proc confirm {title msg} {}
+
+
+	variable fileName
+	variable relations
+	variable inconsistencies {}
+
+	variable helpVar
+	variable tableFrames
+	variable counter 0
+	variable currentColumn {}
+	variable entryContents
+	variable columnLabels
+	variable changed 0
+
+	variable consistentColor "light gray"
+	variable inconsistentColor "pale turquoise"
+	variable errorColor "peach puff"
+	variable fixedfont {-adobe-courier-medium-r-normal--*-120-*-*-m-*-*-*}
+	variable font {-adobe-helvetica-medium-r-normal--*-120-*-*-p-*-*-*}
+    }
+}
+
+
+proc ::qbe::display::init {args} {
+    global relations font fileName
+
+    Query query
+    foreach arg $args {
+	set relations([lindex $arg 0]) [lrange $arg 1 end]
+    }
+
+    option add *textBackground white
+    toplevel .qbe
+    wm minsize .qbe 300 300
+    trace variable fileName w [code trackFileName]
+    set fileName {}
+
+    menubar .qbe.mb -helpvariable [scope helpVar] -font $font -menubuttons {
+	menubutton file -text File -underline 0 -menu {
+	    command new -label New -underline 0 \
+		    -helpstr "Make new query" \
+		    -command {[code newQuery]}
+	    command open -label Open... -underline 0 \
+		    -helpstr "Open a saved query" \
+		    -command {[code openQuery]}
+	    command save -label Save -underline 0 \
+		    -helpstr "Save this query" \
+		    -command {[code saveQuery]}
+	    command saveAs -label {Save As...} -underline 5 \
+		    -helpstr "Save this query in a different file" \
+		    -command {[code saveQueryAs]}
+	    separator sep1
+	    command sql -label {Show SQL} -underline 6 \
+		    -helpstr "Display this query as an SQL select statement" \
+		    -command {[code genSql]}
+	    separator sep2
+	    command close -label Close -underline 0 \
+		    -helpstr "Close query" \
+		    -command {[code closeQuery]}
+	    command exit -label Exit -underline 1 \
+		    -helpstr "Close QBE window" \
+		    -command {[code exitQBE]}
+	}
+#	 menubutton edit -text Edit -underline 0 -menu {
+#	     command cut -label Cut -underline 2 \
+#		     -state disabled \
+#		     -helpstr "Cut selection to clipboard" \
+#		     -command {[code cut_proc]}
+#	     command copy -label Copy -underline 0 \
+#		     -state disabled \
+#		     -helpstr "Copy selection to clipboard" \
+#		     -command {[code copy_proc]}
+#	     command paste -label Paste -underline 0 \
+#		     -state disabled \
+#		     -helpstr "Paste clipboard contents into query" \
+#		     -command {[code paste_proc]}
+#	 }
+	menubutton table -text Table -underline 0 -menu {
+	    cascade addRel -label {Add Relation Skeleton} -menu {}
+	    command addCond -label {Add Conditions Box} -underline 4 \
+		    -helpstr "Add a conditions box table" \
+		    -command {[code addConditionsBox]}
+	    command addTarget -label {Add Target Table} -underline 4 \
+		    -helpstr "Add a target (blank) table" \
+		    -command {[code addTargetTable]}
+	    separator sep1
+	    command moveUp -label {Move Table Up} -underline 11 \
+		    -helpstr "Move the current table up" \
+		    -command {[code moveTableUp]}
+	    command moveDown -label {Move Table Down} -underline 11 \
+		    -helpstr "Move the current table down" \
+		    -command {[code moveTableDown]}
+	    separator sep2
+	    command del -label {Delete Table} \
+		    -helpstr "Delete the current table" \
+		    -command {[code deleteTable]}
+	}
+	menubutton column -text Column -underline 0 -menu {
+	    cascade addAttr -label {Add Attribute} -menu {}
+	    command addCond -label {Add Condition} -underline 4 \
+		    -helpstr "Add a conditions column" \
+		    -command {[code addCondition]}
+	    command addCalc -label {Add Calc} -underline 4 \
+		    -helpstr "Add a calculated column" \
+		    -command {[code addCalc]}
+	    separator sep1
+	    command moveLeft -label {Move Column Left} -underline 12 \
+		    -helpstr "Move the current column left" \
+		    -command {[code moveColLeft]}
+	    command moveRight -label {Move Column Right} -underline 12 \
+		    -helpstr "Move the current column right" \
+		    -command {[code moveColRight]}
+	    separator sep2
+	    command del -label {Delete Column} \
+		    -helpstr "Delete the current column" \
+		    -command {[code deleteCol]}
+	}
+	menubutton help -text Help -underline 0 -menu {
+	    command overview -label "QBE Overview" -underline 0 \
+		    -helpstr "What is QBE?" \
+		    -command {[code showOverview]}
+	    command tips -label "Editing Tips" -underline 0 \
+		    -helpstr "How to use this screen" \
+		    -command {[code showTips]}
+	    command notes -label "Notes" -underline 0 \
+		    -helpstr "How is this implementation different from IBM's?" \
+		    -command {[code showNotes]}
+	    separator sep
+	    command author -label Author -underline 0 \
+		    -helpstr "Who wrote this?" \
+		    -command {[code showAuthor]}
+	}
+    }
+
+    foreach rel [lsort [array names relations]] {
+	.qbe.mb add command .table.addRel.rel-$rel -label $rel \
+		-helpstr "Add skeleton table for $rel relation" \
+		-command [code addRelationTable $rel]
+    }
+    updateColumnMenus {} {force update}
+
+    pack .qbe.mb -side top -anchor nw -fill x
+    label .qbe.help -font $font -textvariable [scope helpVar]
+    pack .qbe.help -side bottom -anchor s -fill x
+
+    scrolledtext .qbe.comment -labeltext "Comment" -wrap word \
+	    -labelpos w -visibleitems 40x3 -textfont $font \
+	    -labelfont $font -hscrollmode dynamic -vscrollmode dynamic
+    pack .qbe.comment -side top -anchor nw -fill x
+    set t [.qbe.comment component text]
+    bind $t <FocusIn> [code setCurrentColumn {}]
+    $t configure -takefocus 0
+
+    frame .qbe.fr -width 300 -height 300
+    pack .qbe.fr -side top -anchor nw -fill both -expand yes
+
+    focus $t
+}
+
+
+proc ::qbe::display::newQuery {} {
+    closeQuery
+}
+
+proc ::qbe::display::openQuery {} {
+    if {![closeQuery]} {return}
+    if {[winfo exists .fsd]} {
+	[.fsd component fsb] configure -mask *.qbe
+	[.fsd component fsb] filter
+    } else {
+	fileselectiondialog .fsd -modality application -mask *.qbe
+	.fsd center
+    }
+    wm title .fsd "Open Query"
+    if {[.fsd activate]} {
+	global fileName changed
+	set fileName [.fsd get]
+	set fd [open $fileName r]
+	delete object query
+	Query query [read $fd]
+	close $fd
+	foreach t [query getTables] {
+	    addTable $t
+	}
+	[.qbe.comment component text] insert 1.0 [query comment]
+	updateInconsistencies
+	set changed 0
+    }
+}
+
+proc ::qbe::display::saveQuery {} {
+    global fileName changed currentColumn
+    if {$fileName == ""} {
+	return [saveQueryAs]
+    }
+
+    # Save any edits in progress.
+    saveColumn $currentColumn
+    query setComment [[.qbe.comment component text] get 1.0 {end - 1 chars}]
+
+    set fd [open $fileName w]
+    puts $fd [query stringRep]
+    close $fd
+    set changed 0
+    return 1
+}
+
+proc ::qbe::display::saveQueryAs {} {
+    if {[winfo exists .fsd]} {
+	[.fsd component fsb] configure -mask *.qbe
+	[.fsd component fsb] filter
+    } else {
+	fileselectiondialog .fsd -modality application -mask *.qbe
+	.fsd center
+    }
+    wm title .fsd "Save Query"
+    if {[.fsd activate]} {
+	global fileName
+	set fn [.fsd get]
+	if {![string match *.qbe $fn]} {
+	    set fn $fn.qbe
+	}
+	if {[file exists $fn]} {
+	    if {![confirm "Query Exists" "The file $fn already exists.  Replace it?"]} {
+		return 0
+	    }
+	}
+	set fileName $fn
+	return [saveQuery]
+    }
+    return 0
+}
+
+proc ::qbe::display::closeQuery {} {
+    global changed currentColumn fileName inconsistencies
+    set closeIt 1
+
+    # Save any edits in progress.
+    saveColumn $currentColumn
+
+    if {$changed || [query comment] != \
+	    [[.qbe.comment component text] get 1.0 {end - 1 chars}]} {
+	if {[confirm "Close Query" "You have changed this query.  Save it before closing?"]} {
+	    set closeIt [saveQuery]
+	}
+    }
+
+    if {$closeIt} {
+	foreach t [query getTables] {
+	    delTable $t
+	}
+	query setComment {}
+	[.qbe.comment component text] delete 1.0 end
+	set changed 0
+	set fileName {}
+	set inconsistencies {}
+    }
+    set closeIt
+}
+
+proc ::qbe::display::exitQBE {} {
+    if {![closeQuery]} {return}
+    destroy .qbe
+}
+
+proc ::qbe::display::genSql {} {
+    global fixedfont currentColumn
+
+    # Save any edits in progress.
+    saveColumn $currentColumn
+
+    if {[catch {query sql} result]} {
+	catch {destroy .qbe_error}
+	messagedialog .qbe_error -title "Query Error" \
+		-text $result -bitmap warning -modality application
+	.qbe_error hide Cancel
+	.qbe_error center .qbe
+	.qbe_error activate
+	destroy .qbe_error
+    } else {
+	set st .qbe_sql.sql
+	if {![winfo exists .qbe_sql]} {
+	    toplevel .qbe_sql
+	    wm title .qbe_sql "SQL"
+	    scrolledtext $st -wrap none -textfont $fixedfont \
+		    -hscrollmode dynamic -vscrollmode dynamic \
+		    -visibleitems 50x12
+	    pack $st -fill both -expand yes
+	} else {
+	    [$st component text] delete 1.0 end
+	}
+	[$st component text] insert 1.0 $result
+    }
+}
+
+
+
+proc ::qbe::display::cut_proc {} {
+    puts cut
+}
+
+proc ::qbe::display::copy_proc {} {
+    puts copy
+}
+
+proc ::qbe::display::paste_proc {} {
+    puts paste
+}
+
+
+
+proc ::qbe::display::addRelationTable {relation} {
+    global relations
+    if {[catch {set relations($relation)} attrs]} {
+	set attrs {}
+    }
+    set t [eval "query addRelationTable $relation $attrs"]
+    addTable $t
+    set changed 1
+}
+
+
+proc ::qbe::display::addConditionsBox {} {
+    addTable [query addConditionsBox {}]
+    set changed 1
+}
+
+
+proc ::qbe::display::addTargetTable {} {
+    addTable [query addTargetTable {p.} {}]
+    set changed 1
+}
+
+
+proc ::qbe::display::deleteTable {} {
+    global currentColumn
+
+    set table [$currentColumn table]
+    if {[$table isRelationTable]} {
+	set name [$table name]
+    } elseif {[$table isConditionsBox]} {
+	set name "Conditions"
+    } else {
+	set name "Target"
+    }
+
+    if {[confirm "Delete Table" "Really delete $name table?"]} {
+	delTable $table
+    }
+}
+
+proc ::qbe::display::moveTableUp {} {
+    global currentColumn tableFrames
+
+    set table [$currentColumn table]
+    set fr $tableFrames($table)
+    set idx [$table indexInQuery]
+    set newidx [expr $idx - 1]
+    if {$newidx < 0} {
+	set newidx [expr [query numTables] - 1]
+	set lfr $tableFrames([query getTable $newidx])
+	pack $fr -after $lfr
+    } else {
+	set pfr $tableFrames([query getTable $newidx])
+	pack $fr -before $pfr
+    }
+    query moveTable $idx $newidx
+    set changed 1
+}
+
+proc ::qbe::display::moveTableDown {} {
+    global currentColumn tableFrames
+
+    set table [$currentColumn table]
+    set fr $tableFrames($table)
+    set idx [$table indexInQuery]
+    set newidx [expr $idx + 1]
+    if {$newidx >= [query numTables]} {
+	set newidx 0
+	set ffr $tableFrames([query getTable 0])
+	pack $fr -before $ffr
+    } else {
+	set nfr $tableFrames([query getTable $newidx])
+	pack $fr -after $nfr
+    }
+    query moveTable $idx $newidx
+    set changed 1
+}
+
+
+
+proc ::qbe::display::addAttribute {attr} {
+    global currentColumn tableFrames
+    set table [$currentColumn table]
+    set col [$table addAttributeColumn $attr]
+    set changed 1
+    set fr $tableFrames($table)
+    addColumn $col $fr
+    $fr.pw reset
+    focus [$fr.pw childsite $col].e
+}
+
+proc ::qbe::display::addCondition {} {
+    global currentColumn tableFrames
+    set table [$currentColumn table]
+    set col [$table addColumn]
+    set changed 1
+    set fr $tableFrames($table)
+    addColumn $col $fr
+    $fr.pw reset
+    focus [$fr.pw childsite $col].e
+}
+
+proc ::qbe::display::addCalc {} {
+    global currentColumn tableFrames
+    set table [$currentColumn table]
+    set col [$table addExpressionColumn]
+    set changed 1
+    set fr $tableFrames($table)
+    addColumn $col $fr
+    $fr.pw reset
+    focus [$fr.pw childsite $col].e
+}
+
+proc ::qbe::display::deleteCol {} {
+    global currentColumn
+
+    set col $currentColumn
+    if {[confirm "Delete Column" "Really delete [$col printName] column?"]} {
+	global tableFrames entryContents columnLabels inconsistencies
+
+	# Yes, really delete the thing.
+	unset entryContents($col)
+	unset columnLabels($col)
+	if {[set idx [lsearch -exact $inconsistencies $col]] >= 0} {
+	    set inconsistencies [lreplace $inconsistencies $idx $idx]
+	}
+
+	set idx [$col indexInTable]
+	set table [$col table]
+	$table removeColumn $idx
+	set changed 1
+	set fr $tableFrames($table)
+	$fr.pw delete $idx
+
+	set currentColumn {}
+
+	updateInconsistencies
+
+	if {$idx == [$table numColumns]} {
+	    incr idx -1
+	}
+	focus [$fr.pw childsite $idx].e
+    }
+}
+
+proc ::qbe::display::moveColLeft {} {
+    global currentColumn tableFrames entryContents columnLabels
+
+    set col $currentColumn
+    set table [$col table]
+
+    # Unset these things to avoid having multiple traces on them.
+    unset entryContents($col)
+    unset columnLabels($col)
+
+    # We have to delete the pane and then add it back in elsewhere.
+    set idx [$col indexInTable]
+    set fr $tableFrames($table)
+    $fr.pw delete $idx
+    set newidx [expr $idx - 1]
+    if {([$table isConditionsBox] && $newidx < 0) \
+	    || (![$table isConditionsBox] && $newidx < 1)} {
+	set newidx [expr [$table numColumns] - 1]
+	set where end
+    } else {
+	set where $newidx
+    }
+
+    $table moveColumn $idx $newidx
+    set changed 1
+    addColumn $col $fr $where
+    $fr.pw reset
+
+    focus [$fr.pw childsite $newidx].e
+}
+
+proc ::qbe::display::moveColRight {} {
+    global currentColumn tableFrames entryContents columnLabels
+
+    set col $currentColumn
+    set table [$col table]
+
+    # Unset these things to avoid having multiple traces on them.
+    unset entryContents($col)
+    unset columnLabels($col)
+
+    # We have to delete the pane and then add it back in elsewhere.
+    set idx [$col indexInTable]
+    set fr $tableFrames($table)
+    $fr.pw delete $idx
+    set newidx [expr $idx + 1]
+    if {$newidx == [$table numColumns]} {
+	# Move it to 0 if cond box, 1 o/w
+	set newidx [expr ![$table isConditionsBox]]
+    }
+    if {[set where $newidx] == [$table numColumns] - 1} {
+	set where end
+    }
+
+    $table moveColumn $idx $newidx
+    set changed 1
+    addColumn $col $fr $where
+    $fr.pw reset
+
+    focus [$fr.pw childsite $newidx].e
+}
+
+
+
+proc ::qbe::display::showHelp {file} {
+    set st .qbe_help.text
+    if ![winfo exists .qbe_help] {
+	global fixedfont
+	toplevel .qbe_help
+	scrolledtext $st -wrap none -textfont $fixedfont \
+		-hscrollmode dynamic -vscrollmode dynamic \
+		-visibleitems 80x25
+	pack $st -fill both -expand yes
+    } else {
+	[$st component text] delete 1.0 end
+    }
+    wm title .qbe_help "QBE Help - $file"
+    $st import $file
+}
+
+
+proc ::qbe::display::showOverview {} {
+    showHelp overview.txt
+}
+
+
+proc ::qbe::display::showTips {} {
+    showHelp tips.txt
+}
+
+
+proc ::qbe::display::showNotes {} {
+    showHelp notes.txt
+}
+
+
+proc ::qbe::display::showAuthor {} {
+    catch {destroy .qbe_author}
+    messagedialog .qbe_author -title Author \
+	    -text "QBE-SQL Translator\nv1.0, May 1996\n\nby Luke Blanshard" \
+	    -bitmap info -modality application
+    .qbe_author hide Cancel
+    .qbe_author center .qbe
+    .qbe_author activate
+    destroy .qbe_author
+}
+
+
+
+proc ::qbe::display::addTable {t} {
+    global tableFrames counter
+
+    set fr .qbe.fr.t[incr counter]
+    set tableFrames($t) $fr
+    set pw $fr.pw
+
+    frame $fr -borderwidth 1 -relief raised
+    panedwindow $pw -orient vertical -width 300 -height 60 \
+	    -sashwidth 6 -thickness 2
+    foreach c [$t getColumns] {
+	addColumn $c $fr
+    }
+
+    pack $pw -fill both -expand yes
+    pack $fr -side top -anchor nw -fill x
+    focus [$pw childsite 0].e
+}
+
+
+proc ::qbe::display::delTable {table} {
+    global currentColumn tableFrames entryContents columnLabels \
+	    inconsistencies
+
+    destroy $tableFrames($table)
+
+    foreach col [$table getColumns] {
+	unset entryContents($col)
+	unset columnLabels($col)
+	if {[set idx [lsearch -exact $inconsistencies $col]] >= 0} {
+	    set inconsistencies [lreplace $inconsistencies $idx $idx]
+	}
+    }
+
+    set idx [$table indexInQuery]
+    query removeTable $idx
+    set currentColumn ""
+
+    updateInconsistencies
+
+    if {[query numTables] == 0} {
+	focus [.qbe.comment component text]
+    } else {
+	if {$idx == [query numTables]} {
+	    incr idx -1
+	}
+	set table [query getTable $idx]
+	set fr $tableFrames($table)
+	focus [$fr.pw childsite 0].e
+    }
+}
+
+
+proc ::qbe::display::addColumn {c fr {where end}} {
+    global entryContents columnLabels font consistentColor
+    if {$where == "end"} {
+	$fr.pw add $c -margin 3
+    } else {
+	$fr.pw insert $where $c -margin 3
+    }
+    set cs [$fr.pw childsite $c]
+    set columnLabels($c) $cs.l
+    label $cs.l -font $font -text [$c printName] -background $consistentColor
+    set entryContents($c) [$c value]
+    entry $cs.e -font $font -textvariable [scope entryContents($c)]
+    trace variable entryContents($c) w [code trackValue]
+    bind $cs.e <Return> [code saveColumn $c]
+    bind $cs.e <Escape> [code cancelColumn $c]
+    bind $cs.e <FocusIn> [code setCurrentColumn $c]
+    pack $cs.l $cs.e -side top -fill both -expand yes
+}
+
+
+proc ::qbe::display::setCurrentColumn {col} {
+    global currentColumn helpVar
+
+    if {$currentColumn != $col} {
+
+	# Save any changes made in the (former) current column.
+	saveColumn $currentColumn
+
+	set oldTable [expr {$currentColumn == ""? "" : [$currentColumn table]}]
+	updateColumnMenus $col $oldTable
+    }
+
+    set currentColumn $col
+
+    # Always update the help variable, even if the column hasn't
+    # changed.  That's because the help variable is shared by the menu
+    # bar help.
+    if {$col == ""} {
+	set helpVar ""
+    } else {
+	set helpVar [$col inconsistency]
+    }
+}
+
+
+proc ::qbe::display::updateColumnMenus {col oldTable} {
+    set newTable [expr {$col == ""? "" : [$col table]}]
+
+    if {$newTable != $oldTable} {
+	# Update the menu options that pertain to the current
+	# table.
+	if {[.qbe.mb index .column.addAttr.0] >= 0} {
+	    .qbe.mb delete .column.addAttr.0 .column.addAttr.end
+	}
+
+	if {$newTable != "" && [$newTable isRelationTable]} {
+	    global relations
+	    if {[catch {set relations([$newTable name])} attrs]} {
+		set attrs {}
+	    }
+	    foreach attr $attrs {
+		.qbe.mb add command .column.addAttr.attr-$attr -label $attr \
+			-helpstr "Add `$attr' column" \
+			-command [code addAttribute $attr]
+	}   }
+
+	if {$newTable == ""} {
+	    .qbe.mb menuconfigure .table.moveUp -state disabled
+	    .qbe.mb menuconfigure .table.moveDown -state disabled
+	    .qbe.mb menuconfigure .table.del -state disabled
+	} else {
+	    .qbe.mb menuconfigure .table.moveUp -state normal
+	    .qbe.mb menuconfigure .table.moveDown -state normal
+	    .qbe.mb menuconfigure .table.del -state normal
+	}
+	if {$newTable == "" || [$newTable isConditionsBox]} {
+	    .qbe.mb menuconfigure .column.addCalc -state disabled
+	} else {
+	    .qbe.mb menuconfigure .column.addCalc -state normal
+	}
+	if {$newTable == "" || ![$newTable isConditionsBox]} {
+	    .qbe.mb menuconfigure .column.addCond -state disabled
+	} else {
+	    .qbe.mb menuconfigure .column.addCond -state normal
+	}
+    }
+
+    # And update menu items that may depend on the column as well
+    # as the table.
+    if {$newTable == "" || (![$newTable isConditionsBox] \
+	    && [$col indexInTable] == 0) || [$newTable numColumns] < 2} {
+	.qbe.mb menuconfigure .column.moveLeft -state disabled
+	.qbe.mb menuconfigure .column.moveRight -state disabled
+	.qbe.mb menuconfigure .column.del -state disabled
+    } else {
+	.qbe.mb menuconfigure .column.moveLeft -state normal
+	.qbe.mb menuconfigure .column.moveRight -state normal
+	.qbe.mb menuconfigure .column.del -state normal
+    }
+}
+
+
+
+# trackFileName changes the QBE window's title when the current file
+# name changes.
+proc ::qbe::display::trackFileName {fn ign op} {
+    global fileName
+    if {$fileName == ""} {
+	wm title .qbe QBE
+    } else {
+	set fn $fileName
+	if {[string length $fn] > 30} {
+	    set fn ...[string range $fn \
+		    [string wordstart $fn [expr [string length $fn] - 25]] end]
+	}
+	wm title .qbe "QBE - $fn"
+    }
+}
+
+
+# This command, trackValue, is called whenever entryContents($col) changes,
+# for each column $col displayed.  The variable entryContents($col) is
+# updated by $col's entry widget when the user edits the text in the entry.
+# This command then compares the new text against $col's current value, and
+# appends an asterisk to $col's label if they are different.
+proc ::qbe::display::trackValue {ec col op} {
+    global entryContents columnLabels
+    if {[$col value] != $entryContents($col)} {
+	set label "[$col printName]*"
+    } else {
+	set label [$col printName]
+    }
+    $columnLabels($col) configure -text $label
+}
+
+
+proc ::qbe::display::saveColumn {col} {
+    global entryContents columnLabels currentColumn changed
+    if {$col != "" && [$col value] != $entryContents($col)} {
+
+	# Update the column's value.
+	$col setValue $entryContents($col)
+
+	# Update its label too.
+	$columnLabels($col) configure -text [$col printName]
+
+	# Now update the display to show the query's inconsistencies.
+	updateInconsistencies
+
+	# And make sure we get the new inconsistency displayed.
+	if {$col == $currentColumn} {
+	    setCurrentColumn $col
+	}
+
+	# Keep track so we'll know whether to ask at close time.
+	set changed 1
+    }
+}
+
+proc ::qbe::display::cancelColumn {col} {
+    global entryContents
+    set entryContents($col) [$col value]
+}
+
+proc ::qbe::display::updateInconsistencies {} {
+    global inconsistencies columnLabels consistentColor inconsistentColor errorColor
+    set oldInconsistencies $inconsistencies
+    set inconsistencies [query inconsistentColumns]
+    foreach col "$oldInconsistencies $inconsistencies" {
+	set problem [$col inconsistency]
+	if {$problem == ""} {
+	    $columnLabels($col) configure -background $consistentColor
+	} elseif {[$col hasError]} {
+	    $columnLabels($col) configure -background $errorColor
+	} else {
+	    $columnLabels($col) configure -background $inconsistentColor
+	}
+    }
+    if {[llength $inconsistencies]} {
+	.qbe.mb menuconfigure .file.sql -state disabled
+    } else {
+	.qbe.mb menuconfigure .file.sql -state normal
+    }
+}
+
+proc ::qbe::display::confirm {title msg} {
+    catch {destroy .qbe_confirm}
+    messagedialog .qbe_confirm -title $title \
+	    -text $msg -bitmap question -modality application
+    .qbe_confirm buttonconfigure OK -text Yes
+    .qbe_confirm buttonconfigure Cancel -text No
+    .qbe_confirm center .qbe
+
+    set answer [.qbe_confirm activate]
+    destroy .qbe_confirm
+    set answer
+}

@@ -1,0 +1,442 @@
+<html><head><!-- This document was created from RTF source by rtftohtml version
+<html><head><!-- This document was created from RTF source by rtftohtml version2.5 --></head>
+<body><p><p><p><p><p><p>
+<H2><CENTER>CS 764 Project Report</CENTER></H2><p>
+<p><p></p><p><p><b></p></p><p>
+<CENTER><H3>Operating System Support</H3></CENTER> <p>
+<H3><CENTER>For <p>Multi-User Relational Data Base</b><p></H3></CENTER>
+<p><p><p><b><p><B><p><CENTER><FONT SIZE=3>Advisor</FONT></b><p></B>Professor Mike Carey<p></CENTER></FONT><p><p><p><b><p><CENTER>By</b><p>ZhongBin Yin and Matt Wang<p><p><p>	<p><p><p><p><p></p><BR><p>University of Wisconsin, Madison<p><p>Spring 1995</CENTER></body></html>
+<p>
+<b><p>
+<hr></hr>
+<CENTER><B>1. Introduction</B></CENTER></b><p>
+<p>
+	<p>
+Minirel was a single user relational data base developed in the University of
+Wisconsin, Madison over the past few years. This semester(Spring 1995), there
+is an effort leaded by Professor Mike Carey to develop it into a full fledge
+multi-user relational database. More than 30 graduate students have
+participated in this project. <p>
+<p>
+To evolve from single user system to multi user system, a crucial task is the
+ability to  do communication between different users and to achieve mutual
+exclusion and synchronization for access of shared resources.  In this project,
+we set up our goal as:<p>
+	<p>
+* To provide a set of C++ classes that will encapsulate the shared memory 
+resource  required  to  make  Minirel  into  a  multi-user  system. <p>
+* To provide the lowest level semaphore facility, locking
+  protocol for synchronization and mutual exclusion. <p>
+* To provide a base class of  SharedRegion, which will be inherited and 
+  instantiated to get objects like buffer manager, lock manager, etc.. <p>
+* To provide the infrastructure for managing the table for active
+transactions. <p>
+<p>
+In this report, we will discuss and describe the design and implementation of
+operating system facilities we have provided for the development of multi user
+Minirel. It includes sections on the user interface, implementation, testing
+and discussion.<p>
+<p>
+<p>
+<p>
+<p>
+<CENTER><B>2. Class Functionality and Interface</B></CENTER><p>
+	<p>
+2.1 <u>Semaphore class  </u><p>
+<p>
+Semaphore class will be constructed from UNIX system calls. It uses a specific
+key to get an array of semaphores from the system, and allocate a small trunk
+of shared memory to hold control information  on those semaphores. An array of
+bit map is put in this shared memory to keep track of which semaphore is used,
+which one is available.  When user requests a new semaphore by declaring a new
+Semaphore object, a free semaphore in the pool will be granted, corresponding
+bit in the bit map is set, and the user just has the impression that he obtains
+a new semaphore.<p>
+
+<pre>class Semaphore{
+
+Semaphore(int init=1, int flag = 0); constructor bin-semaphore if flag=0,
+			             else general sem default is bin-sem 
+				     with init_val 1
+
+void 	operator delete(void *p);    To delete semaphore object. 
+
+int 	up();			     Semaphore value + 1, 
+				     for bin-sem, is unlock
+
+int  	down(); 		     sem value - 1,  for bin-sem, is lock 
+
+void    remove();	   	     return to system when not needed anymore
+}</pre>
+
+<p>
+<p>
+<p>
+2.2 <u>SaredRegion class </u>  <p>
+<p>
+SharedRegion is a base class, it will be the parent of all other classes which
+will be put in the shared memory and shared by all the users, some examples for
+children class are BufferMgr, lock_Mgr, etc. <p>
+<p>
+It has two public functions:  <i>void lock()</i>, which lock the shared region,
+so other process can't get in while one process hold  the lock.  <i>void
+unlock()</i>, which unlock the shared region, and let others in.<p>
+<p>
+<pre>
+class SharedRegion {
+	void 	lock(); 			Enter, set semaphore
+	
+	void 	unlock(); 			Leave_normally
+};</pre>
+<p>
+<p>
+2.3 <u>SharedMemory class</u> <p>
+<p>
+An object of this class is a chunk of fixed-size shared memory in the main
+memory with other book-keeping information. Different users can communicate
+with each other by using this shared memory. All the shared objects like
+lock_table, xact_table, and buf_pool will be put into the shared memory.<p>
+<p>
+The constructor of this class will get a chunk of shared memory by using a
+specific key known as SHM_KEY, and then map this shared memory into the calling
+process's address space.  Since the key is the same for all users of the db
+system, it will guarantee that different process will access the same chuck of
+shared memory.  The shared memory will be mapped to the address spaces for all
+calling process. It will also check if it is the first calling process. If yes,
+it will get  a new shared memory and do mapping, otherwise, only do mapping.<p>
+<p>
+<pre>
+class SharedMemory{
+	
+	SharedMemory(int size);     In kilobytes 
+	
+	char* begin_shmadd(); 	    The beginning address of shm
+	
+	char* malloc(int size);	    Size in bytes get bytes  and return                                             the start address
+	
+	void 	lock();  	    Lock shm, needed at startup to avoid 
+				    race condition,i.e. only one process 
+				    do the initialization
+
+	void 	unlock(); 	    Unlock the shm
+}</pre>
+<p>
+<p><p>
+2.4 <u>ShMemMgr class</u><p>
+<p>
+This class manages the shared memory, it first creates an object of the
+SharedMemory class, and then put all the shared stuff, like LockTable,
+XactionTable, Buf_Mgr, etc. in the shared memory. Since each of those objects
+has a global pointer in the Minirel DBMS, this class will also let those global
+pointers point to corresponding  objects in the shared memory. In this way, all
+users can see those objects in the shared memory concurrently and can
+manipulate them directly(subject to mutual exclusion). Other groups are totally
+shaded away from the details, and only see those globally available pointers
+and objects.<p>
+<p>
+<p>
+<p>
+In Minirel, there is global pointer for an object of this class, it is<p>
+<i><p>
+       	(ShMemMgr*) SM_Mgr</i><p>
+<p>
+to get a chunk of shm, do following:<p>
+<i><p>
+       	SM_Mgr-&gt;malloc(size);  </i><p>
+<p>
+which will give away (size)bytes shared memory memory allocated ealier, and
+return the beginning address of that piece of shared memory.<p>
+<pre>
+class ShMemMgr{
+	
+	ShMemMgr(int size = 20);	Default 20K bytes
+	char* malloc(int size);		Overloaded malloc for shared 
+					memory management
+}</pre>
+<p>
+<p><p>
+2.5  <u>Xaction_manager class</u><p>
+<p>
+Xaction_manager is composed by two major classes and some of other groups
+defined classes. The function of Transaction is to provide other project group
+a "hanger" for their own stuff and some vital information for the whole
+project. The reason for this "hanger" is that we are in the multi user
+environment, every user has his own stack. After finishing his own task, he
+will leave. Data base itself must have a way to keep track of this kind of
+activity. For groups like crash recovery and log manager, they regularly need
+to know the number of current users and their status. For the whole database
+system, we also need a centralized "COMMIT", "ABORT", "SLEEP" and  "WAKEUP" to
+each transaction. <p>
+
+<pre>
+class Xaction_manager:public SharedRegion{
+	Xaction_manager();		constructor for Xaction_manager; 
+	int begin();			called by every xaction at the 
+					startup time, return a  xid to the 
+					calling process; 
+	
+	Status 	commit();		In commit time,  be called to do 
+					some clean up job. It will delete 
+					Xaction object from Xaction_manager. 
+					It will also call other group's 
+					commit method;
+	
+	Status 	abort();		In abort time,  will be called to do 
+					some clean up job. It will delete 
+					Xaction object from Xaction_manager,
+					and call other groups abort  method
+	Status sleep();			put the calling process to sleep at 
+					xid's semaphore.
+	
+	Status wakeup(int xid);		awake one of the sleeping process 
+					that is sleeping on xid's semaphore; 
+	
+	Status print();			debug function for project management 
+					group to use.	
+	
+	Status GetRecInfo(int xxid,RecInfo &amp;recInfo);
+				        "hanger" function for log group. It 
+					will return a required record 
+					information in Xaction object. 
+	
+	Status SetRecInfo(int xxid,RecInfo &amp;recInfo);
+					"hanger" function for log group. It 
+					will assign a new value to RecInfo 
+					object reside in Xaction object.
+	
+	Status GetAllRecInfo(char *db_name,int &amp;num_entries,int xid[], 
+					RecInfo recInfoList[]);
+				    	"hanger" function for log group. It 
+					will dump "all" the RecInfo object in 
+					Xaction_manager to them.
+	
+	Status get_lock_info(trans_lock_info* &amp;lock_info);
+				       "hanger" function for lock group. It 
+				       will return a trans_lock_info object 
+				       to caller.	
+}
+</pre>
+<p>
+<p>
+<p>
+<p>
+<p>
+
+
+
+<CENTER><B>3. Internal Design</B></CENTER></b><p>
+<p>
+		<p>
+3.1  <u>Semaphore Class</u><p>
+<p>
+A UNIX system call <i>int semget(key_t key, int nsems, int semflg) </i>will be
+called, which will obtain an array (size=nsems) of semaphores(<b><A HREF = "fig1.GIF">Fig.1</A></b>).  A
+specific key is used here so that it will always return the same set of
+semaphores when called multiple times.  When user asks for a new Semaphore
+object, an unused semaphore in the pool is granted to him.  To do necessary
+book-keeping,  an array of bit-map for keeping track of the usage of  the
+semaphore pool is utilized.   This array is put in a small truck of shared
+memory, which is obtained by system call <i>int shmget(key_t key, size_t size,
+int shmflg);</i><p>
+	 <p>
+To ensure each user only attach to this shared memory once, a static integer
+variable sem_count is used. The first semaphore in the semaphore is reserved to
+achieve mutual exclusion access of the bit-map array.  Rest Semaphores are
+available for others to use. The  <i>up()</i> and <i>down() </i>public
+functions are basically implemented from system call <i>int semop(int semid,
+struct sembuf *sops, unsigned int nsops).</i> For details please refer to the
+attached source code. The  remove()  function will set the corresponding bit in
+the bit map to 1, so it can be used by others later.<p>
+<p>
+<p>
+3.2  <u>SharedRegion Class</u><p>
+<p>
+	It has a  private  variable  mutex of Semaphore type, which is used to
+implement the two public function lock() and unlock(). Since this class is
+designed to be the parent of all other shared classes, those children classes
+will have those facilities automatically by inheritance.	<p>
+	<p>
+<p>
+3.3 <u>SharedMemory Class</u><p>
+<p>
+This class will only be used by ShMemMgr class to get a chunk of shared memory
+from the system, other groups are totally shielded away the existence of this
+class. A large chunk of shared memory is obtained by using UNIX system call int
+shmget(); the beginning address is called (char*)real_shmadd. A small section
+of shared memory is reserved to store head information, the rest memory is
+provided to ShMemMgr class for further manipulation. The beginning address of
+thiose memory is (char*)shmadd (please refer to <b><A HREF = "fig2.GIF">Fig.2</A></b>).<p>
+<p>
+	In the header section, we store an offset  to points to the beginning of
+available shared memory. We also put two semaphores in the header section, one
+is for locking the whole shared memory(to avoid the race condition when Minirel
+first starts up, since only one user can initialize it), another is used by
+mutual exclusion access for public function <i>char* malloc(int size)</i> . The
+char* <i>malloc(int size)</i> function will always advance the free pointer to
+allocate size bytes to user, reset the offset to adequate value. An alignment
+mask(=7) is used here to make sure free pointer will always point to address
+ending with 000 in binary. This will at most waste 7 bytes in every
+<i>malloc()</i>, but turn out to be crucial to make memory allocation
+correct.<p>
+	<p>
+	<p>
+3.4 <u>ShMemMgr Class</u><p>
+<p>
+This class will first create a SharedMemory object, and get a chunk of shared
+memory starting at address <i>(char*)shmadd</i>. It also use a small section of
+this shared memory as a header, in which two structs are stored. One  struct is
+<i>head_info</i> currently with two members: a <i>tag</i> to see if it's first
+user of the Minirel( Since first user will acquire the lock, there is no race
+condition here ), and a <i>count</i> to count how many users are using Minirel.
+When count goes to 0, delete operator will remove the shared memory and
+semaphore. Another struct is <i>SharedStuff</i>, which serves as a directory to
+point to all the shared objects in the shared memory. This is a homogenous
+struct with all members are pointers, but casted to corresponding type, so it
+has member like: <i>(Xaction_manager*) xact_mgr</i>; <i>(Buf_Mgr*)
+bufmgr</i>....,  each will point to the beginning of its corresponding object
+in the shared memory. (Please refer to <b><A HREF = "fig3.GIF">Fig.3</A>)</b>.<p>
+<p>
+So when constructor of ShMemMgr is called, it will  first create a
+<i>SharedMemory</i> object, then check if it's the first user, if yes, set the
+tag, and call the constructors of all those shared classes and create those
+objects in the shared memory. It then lets the member pointers of struct
+<i>(SharedStuff*)directory</i> and their corresponding global pointers (each
+object like <i>buf_mgr</i> etc. has an associated global pointer defined in the
+Minirel.h file.) point to the right address. If not the first user, it simply
+passes the address saved in the member pointers of struct
+<i>(SharedStuff*)directory</i> to their corresponding global pointers.  In this
+way, all users have pointers point to those shared objects, communication is
+achieved. On the other hand, semaphore-based lock protocol is used to guarantee
+mutual exclusion.<p>
+<p>
+The <i>(char*)malloc(int size)</i> public function will simply call the
+<i>malloc()</i> function of <i>SharedMemory</i> class. Since mutual exclusion
+is guaranteed in that function, there is no need to lock here now.<p>
+	<p>
+<p>
+3.5  <u>Xaction_manager Class</u><p>
+	<p>
+The idea of transaction manager came to us in the middle of this project.
+After the design of shared memory management and monitor finished, we found
+that it would be a good idea to have a transaction manager inside the shared
+memory to keep some essential information about each Xaction and provide useful
+functionality to other groups like lock manager and recovery manager.<p>
+<p>
+The class Xaction_manager is resided in the shared memory. It is created by
+the first user process upon entering data base. Xaction_manager includes a hash
+table of 200 entries, a few user specified function and some system required
+functions. The hash table is a static, non-expandable array of hash object's
+pointer. When an object being hashed to a given slot, it will be linked by that
+pointer. If there are more than one object hashed to that slot, there will be a
+linked list of hashed object. Since the maximum allowed number of co-exist
+transaction at any given time is no more than 100, there is not much worry
+about linked list's search time.<p>
+<p>
+There is also a class called Xaction. It contains all the essential data and
+classes needed by different project groups. At the moment of creating a Xaction
+object, we create all the enclosed user specified class objects.  Xaction
+object is scattered in the whole shared memory. The only link between Xaction
+and Transaction_Manager is the Xaction pointer in Transaction_Manager's hash
+table. Physically, the whole picture looks like a plate of spaghetti. <p>
+<p>
+ Freelist and hash table list: Like Grapevine's deleted list, we have
+something called freelist. It is a list of deleted Xaction object. The purpose
+of free list is, next time when we need to create another Xaction object, we
+will reuse the memory on free list. With this method, we can speed upwhole
+system's performance since we make much less system call to kernel.<b><p>
+<p>
+<p>
+<B><CENTER>4. Testing</CENTER></B><p>
+</b><p>
+<p>
+Testing is the most important part of operating system infrastructure. In
+order to test other parts of Minirel, we need to have OS code work correcttly
+at first. We wrote 4 drivers to test all the extreme cases explicitly. <p>
+<p>
+<p>
+4.1 <u>ShmMemMgr and Semaphore test</u>:<p>
+<p>
+To test ShmMemMgr and Semaphore class, we created a simple linked list class
+as child class of SharedRegion which will put into the shared memory. To insert
+a node in the list, it will call malloc(int size) function of ShmMemMgr class.
+When node is deleted, it will be put into free list to be used later. To
+achieve this, we also overload the operator new and delete. All the insertion
+and deletion are protected by semaphore. Then we run several processes at the
+same time. Each will to insertion and deletion concurrently. We found the
+communication and synchronization is indeed achieved in this simple case. This
+demonstrates the correctness of all facilities. <p>
+<p>
+<p>
+4.2 <u>Xaction_manager and related test</u>:<p>
+	<p>
+In our driver for Xaction_manager, we explicitly tested the following
+functions of Xaction_manager:<p>
+<p>
+a. Test of begin(), abort() and commit(). <p>
+These functions are the most fundamental function of Xaction_manager. We
+repeatedly start a transaction and then delete it from Xaction_manager 's list.
+The print() function proved that hash table and linked list manipulation is
+correct.<p>
+<p>
+b. Test of class passing and assignment:<p>
+Xaction_manager involves several layers inheritance. We created a inner most
+object( the one inside Xaction) independently and then assign it to the same
+class object through Xaction_manager method. It proved that our class passing
+for other project team is successful.<p>
+<p>
+c. Sleep and Wakeup function:<p>
+We intently put one transaction to sleep then use another transaction to wake
+it up to test if sleep and wakeup work correctly. We also tested these
+functions in 3 and 5 transactions case to see if the waiting queue work as we
+expected.<p>
+<p>
+4.3.  <u>Overall System Intergration Testing:</u> <p>
+<p>
+Since we provide the lowest level classes and OS facilities for other groups
+to use, the correctness and functionality of our code is best demonstrated when
+incorporated with the code of other groups. The feed back from groups like
+buffer manager, lock manager, recovery manager give us the confidence that we
+have indeed achieved our original goals.<p>
+	<p>
+ <b><p>
+<p>
+<CENTER><B>5. Discussion</B></CENTER><p>
+<p>
+</b><p>
+After a semester of hard work, we implemented operating system infrastructure
+for the rest of project team 3 weeks before the due day. It gave our
+co-programmer plenty of time to test their code in multi user mode. In addition
+to operating system infrastructure, we also implemented Xaction_manager, a new
+data base class for multi user Minirel. Although it was not on the initial
+plan, we voluntarily took that part and finished on time.<p>
+<p>
+The challenge of our project is to deal with system level methods correctly.
+Timing is another very important issue here. Like in the case of new car test,
+you need to have road first. What we provided here is more like a road to
+automobile than automobile itself.<p>
+	<p>
+Another hard point of our project is to satisfy various project team's need.
+Since everyone in the Computer Science department seems very busy, it is hard
+to communicate effectively. We realized later in this semester that if you
+could stand on your teammate's point,  you could serve them better.<p>
+<p>
+In conclusion, we have successfully provided operating system infrastructure
+for the development of multi-user Minirel. For inter process communication, we
+have provided a SharedMemory class and ShMemMgr class. For mutual exclusion and
+synchronization, we have provided a Semaphore class. In addition to these, we
+have also provided a Xaction_manager class for management of active
+transactions. <p>
+<p>
+<p>
+<p>
+<p>
+<p>
+<p>
+<b><p>
+<B><CENTER>Acknowledgmen</CENTER></B></b><p>
+	<p>
+<p>
+Our most heartfelt thanks go to Professor Marvin Solomon, Professor Michael
+Carey and Professor Raghu Ramakrishnan for their invaluable and never ending
+generous help and advice throughout this project.
+</body></html>

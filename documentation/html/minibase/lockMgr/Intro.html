@@ -1,0 +1,51 @@
+<BODY BGCOLOR="#FFDDDD">
+<h2 ALIGN=CENTER>Introduction</h2>
+
+We implemented a page level lock manager for the Minirel DB system which provides
+the following locking modes: 
+
+  Intention Shared, Intention Exclusive, Shared and Exclusive locks on file pages.
+
+In addition, the lock manager also handles deadlock detection.
+
+Locking is done via the use of the following functions:
+  
+<PRE>
+ Status lock_page(page_def &page,lock_type lock);
+ Status upgrade_lock(page_def &page,lock_type lock); 
+ Status unlock_page(page_def &page);
+ Status unlockall();
+</PRE>
+
+The lock manager maintains a table which keeps track of the pages that each
+transaction has locked.  Every time a new lock is requested, the subgraph
+dealing with that page will be check for cycles. If a cycle is detected, then
+the lock manager will select the transaction which just completed the cycle for
+restarting.  It will then return this error to the transaction requesting the
+lock.  Upon receiving this error, the transaction is then responsible for
+restarting itself.
+
+Whenever a transaction commits or aborts, it is the operating systems
+responsibility to call the lock manager function, unlockall(), to unlock all the
+pages that the transaction currently has locked.
+
+The lock manager is intended to be used by functions are responsible for
+accessing the database at the page level.  Before requesting a page from the
+buffer manager, the function should first call the lock manager to get a lock on
+that page.  
+
+<H3 ALIGN=CENTER> Components Used by the Lock Manager</H3>
+
+The lock manager depends upon the database operating system to run.  The
+operating system is responsible for setting up the lock manager's data
+structures in shared memory and providing access to them.  It does this by
+either maintaining global pointers to these structures, or providing functions
+that return pointers to these structures.  In the implementation, both of these
+methods are used.  
+
+The operating system also maintains a shared region around the lock managers
+data structures so that only one instance of the lock manager can be
+manipulating the data structures at any given time.  It is the lock managers
+responsibility to lock its data structures in memory before accessing it and to
+unlock it when it is done.
+                                

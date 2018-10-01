@@ -1,0 +1,35 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> Delete records</TITLE>
+<meta name="description" value=" Delete records">
+<meta name="keywords" value="report">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html297 HREF="node24.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A> <A NAME=tex2html295 HREF="node16.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A> <A NAME=tex2html289 HREF="node22.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html298 HREF="node24.html"> Open an exact </A>
+<B>Up:</B> <A NAME=tex2html296 HREF="node16.html"> Internal Design</A>
+<B> Previous:</B> <A NAME=tex2html290 HREF="node22.html"> Insert records</A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00037000000000000000> Delete records</A></H2>
+<P>
+When a record is deleted, it's first hashed to a bucket number. Then
+all the pages in that bucket is searched for this record. If it's not
+found, RECNOTFOUND is returned. If it's found, then the last record on
+the last page of this bucket is moved to the deleted record's slot to
+keep all pages compact. If the last page is an overflow page and it's
+empty as the result of  the deletion, a merge is triggered.<BR>When a merge is triggered, all the records in the last bucket is
+moved to the end of the image bucket of the last bucket. Overflow
+pages are allocated if necessary. Then the last bucket is deallocated
+and the corresponding header information is updated.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+<I> Weiqing Huang <BR>
+Sun May 14 16:22:27 CDT 1995</I>
+</ADDRESS>
+</BODY>

@@ -1,0 +1,48 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> Retrospective</TITLE>
+<meta name="description" value=" Retrospective">
+<meta name="keywords" value="report">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html375 HREF="node32.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A> <A NAME=tex2html373 HREF="report.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A> <A NAME=tex2html367 HREF="node30.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html376 HREF="node32.html"> Appendix</A>
+<B>Up:</B> <A NAME=tex2html374 HREF="report.html">CS764 Project Report - </A>
+<B> Previous:</B> <A NAME=tex2html368 HREF="node30.html"> Testing</A>
+<BR> <HR> <P>
+<H1><A NAME=SECTION00060000000000000000> Retrospective</A></H1>
+<P>
+The condition to trigger a split or merge in the current design is
+mainly associated with allocation or deallocation of overflow pages. I
+tested the performance and found out that 40% of the pages are
+overflow pages. This means on average, a record access needs 1.2 disk
+I/O. The result is the same as that in <A HREF="node33.html#Raghu">[3]</A>. However, we could
+also try to use the overall capacity of the index as the trigger
+condition. I wish I had time to implement this.<BR>The current design of the <IMG ALIGN=BOTTOM SRC="_2017_tex2html_wrap450.gif"> class is very
+elegant in the sense that it eliminates C++ derived-class
+hierarchy and it's used very conveniently  by access methods, e.g. any
+object (bucket page, etc) can be casted to a <IMG ALIGN=BOTTOM SRC="_2017_tex2html_wrap454.gif">. 
+ But when I was adding code to write update logs, it's really a pain
+to find out the PageId of each ``page'' since it's not associated with
+its <IMG ALIGN=BOTTOM SRC="_2017_tex2html_wrap454.gif"> object.<BR>There is a method <em>lock_manager_def::unlockall()</em> which can
+unlock all pages locked by a process. It can be used in deadlock
+situation to release all the locks a process is holding. Hence at
+access method level, if a deadlock is detected, it's not necessary to
+release all the locks it has required. I think it's better if we also
+have a similar method (of BufMgr) to unpin all the pages a process
+pinned.<BR>One last point, since the whole projet cannot be divided into parallel
+developments, we should have started the project earlier, especially
+for lower level groups, to make sure the whole project can work at the
+end of the semester.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+<I> Weiqing Huang <BR>
+Sun May 14 16:22:27 CDT 1995</I>
+</ADDRESS>
+</BODY>

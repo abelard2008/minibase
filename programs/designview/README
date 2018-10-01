@@ -1,0 +1,37 @@
+
+Installation instructions for designview
+-------------------------------------------------
+
+Directory structure
+--------------------
+	src:		Source code for the designview custom wish interpreter
+	lib:		Tcl/tk code
+	bin:		Executables
+	doc:		Help files
+	examples:	Sample designview input files
+
+
+Installation
+-------------
+Run 'make install' from the designview root directory. This runs a make
+process in the src subdirectory, and then moves an executable into the
+bin subdirectory.
+
+You will need to edit the Makefile in the src directory.  The compiler
+used in development is gcc 2.7.2, thus you should probably use this
+to compile the designview tcl/tk interpreter.
+
+
+Running designview
+---------------
+designview is started by executing the designview shell script found in the
+designview root directory.
+
+To run designview from any directory, set the DBNPATH environment variable
+to the designview root directory, and also put the designview root directory
+into your PATH environment variable. Then typing 'designview' at a command
+prompt will bring up the system.
+
+You can also run designview without setting any environment variables by
+just changing into the designview root directory and typing 'designview'.
+

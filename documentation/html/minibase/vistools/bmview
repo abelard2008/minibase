@@ -1,0 +1,169 @@
+From flisakow@cs.wisc.edu Thu Aug  1 11:46:07 1996
+Received: from fontina.cs.wisc.edu (fontina.cs.wisc.edu [128.105.67.23]) by ricotta.cs.wisc.edu (8.6.12/8.6.12) with ESMTP id LAA02128 for <raghu@ricotta.cs.wisc.edu>; Thu, 1 Aug 1996 11:46:07 -0500
+Received: (from flisakow@localhost) by fontina.cs.wisc.edu (8.6.12/8.6.12) id KAA05790 for raghu@cs.wisc.edu; Thu, 1 Aug 1996 10:46:06 -0600
+From: Shaun Flisakowski <flisakow@cs.wisc.edu>
+Message-Id: <199608011646.KAA05790@fontina.cs.wisc.edu>
+Subject: Re: help files for bmview (nroff)
+To: raghu@cs.wisc.edu (Raghu Ramakrishnan)
+Date: Thu, 1 Aug 1996 11:46:06 -0500 (CDT)
+In-Reply-To: <199608011637.LAA02056@ricotta.cs.wisc.edu> from "Raghu Ramakrishnan" at Aug 1, 96 11:37:53 am
+X-Mailer: ELM [version 2.4 PL25]
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Content-Length: 4683      
+Status: RO
+
+
+    The man page for bmview follows (in nroff format).
+
+    Shaun
+-- 
+.\" Copyright (c) 1994 University of Wisconsin - Madison.
+.\" All rights reserved.  
+.\"
+.TH Tickle_BM 1 "Dec 19, 1994"
+.UC 4
+.SH NAME
+Tickle_BM - A Tk visualization tool. 
+.SH SYNTAX
+Type \fBbm_demo\f at the prompt.
+.fi
+.SH BUTTONS
+.IP "\fBStart"
+Re-start the trace from the beginning.
+..
+.IP "\fBNext\fP \fIn\fP"
+Step down the trace file named \fItrace_filename\f
+.I n
+lines. The default is 1, but it can be changed manually. Breakpoints
+are ignored.
+..
+.IP "\fBPrev"
+Go up the \fItrace_file\f 
+.I n
+lines. The default is 1, but it can be changed manually. Breakpoints
+are ignored. All actions logged in the trace file between the new and
+old lines will be undone (hence the state of the \fIbuffer manager\f will
+be the same as if the last \fIn\f actions had not been executed). NOTE
+THAT YOU CAN ALSO GO TO \fBANY\f PREVIOUS LINE BY DOUBLE-CLICKING ON IT.
+..
+.IP "\fBCont"
+Continue until you encounter a \fIbreakpoint.
+..
+.IP "\fBExit"
+Exits...
+.fi
+.SH MENUBUTTONS
+.IP "\fBHelp"
+Shows this page.
+.fi
+.SH REPLACEMENT STRATEGY
+Displays the replacement strategy used - for now \fILRU\f & \fIMRU\f - and the
+list of frames. \fBNote:\f The list is \fBmeaningless\f unless \fBALL\f frames
+have been pinned already - this is due to the way the replacement strategy
+is implemented in \fIminibase.\f Hopefully this problem will be corrected
+soon.
+.fi
+.SH DISPLAY LABELS
+Display info about the buffer under the mouse.
+.IP "\fBFile Name"
+Displays the name of the file to which the page currently in the \fIbuffer\f
+belongs.
+..
+.IP "\fBPage Number"
+Displays the \fIpage number\f of the page in the buffer.
+..
+.IP "\fBFrame Number"
+Displays the number of the \fIbuffer.\f
+..
+.IP "\fBPage Pins"
+Displays the number of times the page currently in the buffer has been
+pinned.
+.. 
+.IP "\fBPage Unpins"
+Displays the number of times the page currently in the buffer has been
+unpinned.
+.fi
+.SH STATISTICS
+.PP
+The following statistics are shown:
+.IP
+The ratio of pinned-to-total pages.
+.IP
+The hit ratio (percentage of times a requested page is already in the
+buffer). 
+.IP 
+The percentage of the number of \fIunpinned\f pages that are \fIdirty\f
+at the time of unpinning.
+.fi
+.SH DESCRIPTION
+.PP
+The mission of \fBTickle_BM\f is to give the user a feeling of how the 
+\fIbuffer_manager\f works. The buttons above allow to trace the
+behaviour of the \fIbm.\f 
+Tickle_BM works as follows: There exists a file 
+which contains a \fIlog\f of the actions taken by the \fIbuffer_manager.\f
+
+The format
+of the file should be as specified below:
+.DS
+The first line should be:
+.PP
+xx/zz/yy  AA:BB:CC  STARTUP \fIf\f \fIg\f \fIe\f
+.PP
+where \fIxx/zz/yy  AA:BB:CC\f are the date and time of the day.
+\fIf,\f \fIg\f and \fIe\f are the \fIpage size, \f the \fInumber of buffers\f
+and the \fIreplacement policy,\f respectively. Subsequently,
+the file contents must be:
+.PP
+FILE_OPEN (or FILE_CLOSE) \fIfilename\f
+.pp 
+PAGE_READ (or PAGE_WRITE) \fIfilename\f \fIx\f \fIy\f
+.pp 
+PAGE_PIN (or PAGE_UNPIN, or PAGE_DIRTY) \fIfilename\f \fIx\f \fIy\f
+.PP
+\fIx\f and \fIy\f are the \fIbuffer\f and \fIpage\f numbers, respectively.
+.DE
+.PP
+Using the buttons described above one can trace the actions of the 
+\fIbuffer_manager.\f 
+(Tcl is case sensitive, so the trace file should contain the info exactly
+as specified above. Any number of blank spaces may exist between two strings
+of characters.) 
+.pp
+Example log-files can be found in subdirectory \fILOG_FILES\f.
+.fi
+.PP
+.SH HOW IT WORKS
+Tickle_BM reads the contents of the \fItrace_file\f and depicts the corresponding 
+actions (one at a time, or more - see the \fBNext\f and \fBPrev\f button
+entries, above). By bringing the mouse over a buffer, info about the buffer
+is displayed. Also, a blob of color is shown in every frame; this is used
+to distinguish the files where the pages come from.
+.fi
+.PP
+.SH BREAKPOINTS
+\fIBreakpoints\f can be inserted in the \fItrace_file\f by inserting a
+line with a * as its only character. Only the \fBcont\f button acts
+on the breakpoints.
+.PP
+.fi
+.SH BUFFER MANAGER SIZE
+In \fIminibase,\f the user specifies the size of the buffer manager. The
+present version of \fBTickle_BM,\f though, supports only buffer sizes
+between 16 and 64. 
+.PP
+.fi
+.SH NOTES
+The hit-ratio is sometimes greater than 1. This is due to the fact that
+the graph gets updated with every action taken by the \fIbuffer_manager,\f
+so there exists the possibility that the \fIbm\f will issue a number of
+READS before actually pinning the pages - the graph - which depicts the
+ratio READS/PINS will jump up and then go down again as the pages start
+to get pinned.
+.PP
+.fi
+.SH BUGS
+Unknown yet.
+

@@ -1,0 +1,33 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!Converted with LaTeX2HTML 95 (Thu Jan 19 1995) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds >
+<HEAD>
+<TITLE>7.1 Duplex-Disks and Raw Disk Interfaces</TITLE>
+</HEAD>
+<BODY>
+<meta name="description" value="7.1 Duplex-Disks and Raw Disk Interfaces">
+<meta name="keywords" value="main">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+<P>
+ <BR> <HR><A NAME=tex2html304 HREF="node25.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html302 HREF="node23.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html296 HREF="node23.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html305 HREF="node25.html">7.2 Allowing More Concurrency</A>
+<B>Up:</B> <A NAME=tex2html303 HREF="node23.html">7 Future Work</A>
+<B> Previous:</B> <A NAME=tex2html297 HREF="node23.html">7 Future Work</A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00071000000000000000>7.1 Duplex-Disks and Raw Disk Interfaces</A></H2>
+<P>
+<A NAME=subsectionfutureduplex>&#160;</A>
+<P>
+The current implementation of the log manager uses a Unix file to
+store the log.  Real database systems use a duplex-disk and directly
+access the disk to read and write log records, bypassing the OS.  The
+current log manager implementation can be changed to handle this.  The
+only changes required are in the implementation of <tt> class
+Rawfile</tt>.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+ajitk@cs.wisc.edu, cjin@cs.wisc.edu
+</ADDRESS>
+</BODY>

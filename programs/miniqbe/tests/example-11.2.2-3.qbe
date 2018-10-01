@@ -1,0 +1,2 @@
+setComment {Attribute conditions}
+addRelationTable {Sailors {}} {sid {}} {sname p.} {rating >=4} {age <30}

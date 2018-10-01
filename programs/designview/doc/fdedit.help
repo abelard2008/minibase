@@ -1,0 +1,14 @@
+
+dbnorm Help: Using the FD Editor
+=================================
+
+Within the FD Editor window you have the ability to define a single
+functional dependency. A list of all attributes appears at the top of
+the screen. Two other lists appear at the bottom--one for the FD's
+antecedent and one for its consequence. To add attributes to one of
+the bottom frames, highlight the attribute names in the top frame,
+then click on the Add button in one of the lower frames. To delete
+attributes from one of the lower frames, hightlight the attributes in
+the lower frame (not the top one), then click on the Delete button
+within that frame.
+

@@ -1,0 +1,19 @@
+#!/bin/sh
+
+TCL_LIBRARY=$MINIBASE_ROOT/packages/tcl/$PLATFORM/lib/tcl7.4
+TK_LIBRARY=$MINIBASE_ROOT/packages/tcl/$PLATFORM/lib/tk4.0
+TREE_PATH=$MINIBASE_ROOT/packages/tree/$PLATFORM/bin/tree_wish
+
+HERE=$MINIBASE_ROOT/programs/opttool
+PWD=`pwd`
+
+export TCL_LIBRARY TK_LIBRARY
+
+if [ $# != 1 ];
+then
+    echo "Usage: $0 <database name>";
+    echo "(The database need not already exist.)"
+else
+    $TREE_PATH -f $HERE/minibase.tcl $PWD $1
+fi
+

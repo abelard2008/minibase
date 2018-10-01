@@ -1,0 +1,18 @@
+BTREE_SRCS := \
+	btfile.C \
+	btindex_page.C \
+	btleaf_page.C \
+	btreefilescan.C \
+	key.C \
+	sorted_page.C
+
+BTREE_HDRS := \
+	bt.h \
+	btfile.h \
+	btindex_page.h \
+	btleaf_page.h \
+	btreefilescan.h \
+	sorted_page.h
+
+BTREE_OBJS := $(BTREE_SRCS:.C=.o)
+

@@ -1,0 +1,360 @@
+\batchmode
+
+
+
+
+
+
+\documentstyle[a4,epsf]{article}
+\makeatletter
+
+
+\title{An ARIES Log Manager for {\em Minirel} \\ 
+       {\normalsize CS 764 -- Project Report}}
+\author{Ajitkumar Natarajan ({\tt ajitk}) \and Cjin Pheow Lee ({\tt cjin})}
+
+
+\renewcommand {\baselinestretch}{1.3}
+
+\makeatother
+\newenvironment{tex2html_wrap}{}{}
+\newwrite\lthtmlwrite
+\def\lthtmltypeout#1{{\let\protect\string\immediate\write\lthtmlwrite{#1}}}%
+\newbox\sizebox
+\begin{document}
+\pagestyle{empty}
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$\sim $}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline828: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline830: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline832: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline834: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+\stepcounter{section}
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$\langle$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline836: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$\rangle$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline838: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$\langle$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline840: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$\rangle$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline842: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$\langle$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline844: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$\rangle$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline846: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$\langle$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline848: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$\rangle$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline850: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$^+$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline852: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+\stepcounter{section}
+\stepcounter{section}
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$^+$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline854: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+\stepcounter{section}
+\stepcounter{subsection}
+\stepcounter{subsection}
+{\newpage
+\clearpage
+\samepage \begin{figure}\rule[5mm]{7in}{0.25mm}
+\centerline{\epsffile{logrecord.eps}}
+
+\label{figure-logrecord}
+\rule[0mm]{7in}{0.25mm}
+\end{figure}
+}
+
+\stepcounter{subsection}
+\stepcounter{subsection}
+\stepcounter{section}
+\stepcounter{subsection}
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$\langle$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline868: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$\rangle$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline870: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{${\tt UINT\_MAX} - 1$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline872: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \begin{figure}\rule[5mm]{7in}{0.25mm}
+\centerline{\epsffile{lsn.eps}}
+
+\label{figure-lsn}
+\rule[0mm]{7in}{0.25mm}
+\end{figure}
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$\langle{\tt UINT\_MAX} -
+1$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline874: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{${\tt INT\_MAX} - 1$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline876: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{${\tt UINT\_MAX} - 1\rangle$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline878: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+\stepcounter{subsection}
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$3 * {\tt PAGESIZE}$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline880: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+\stepcounter{subsection}
+\stepcounter{subsection}
+\stepcounter{subsubsection}
+\stepcounter{subsubsection}
+\stepcounter{subsubsection}
+\stepcounter{subsubsection}
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$\sim$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline882: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+\stepcounter{subsubsection}
+\stepcounter{subsubsection}
+\stepcounter{subsubsection}
+\stepcounter{subsubsection}
+\stepcounter{section}
+\stepcounter{section}
+\stepcounter{subsection}
+\stepcounter{subsection}
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline888: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline890: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline892: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline894: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline896: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline892: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline894: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline896: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \begin{figure}\rule[0mm]{7in}{0.25mm}
+\centerline{\epsffile{newdesign.eps}}
+
+\label{figure-newdesign}
+\rule[0mm]{7in}{0.25mm}
+\end{figure}
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline898: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_q$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline900: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline902: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline904: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline906: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline908: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline910: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline912: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_q$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline914: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_q$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline916: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline918: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$\neq$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline920: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline922: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline924: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline926: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline928: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline930: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline932: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline934: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline936: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline938: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+{\newpage
+\clearpage
+\samepage \setbox\sizebox=\hbox{$_p$}\lthtmltypeout{latex2htmlSize :tex2html_wrap_inline940: \the\ht\sizebox::\the\dp\sizebox.}\box\sizebox
+}
+
+\stepcounter{section}
+\stepcounter{subsection}
+{\newpage
+\clearpage
+\samepage \begin{figure}\rule[5mm]{7in}{0.25mm}
+\centerline{\epsffile{errors.eps}}
+
+\label{figure-errors}
+\rule[0mm]{7in}{0.25mm}
+\end{figure}
+}
+
+\stepcounter{subsection}
+\stepcounter{subsection}
+\stepcounter{subsection}
+\stepcounter{section}
+\stepcounter{section}
+
+\end{document}

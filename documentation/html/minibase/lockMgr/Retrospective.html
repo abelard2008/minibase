@@ -1,0 +1,22 @@
+<BODY BGCOLOR="#FFDDDD">
+<h2 ALIGN=CENTER>Retrospective</h2>
+
+In retrospect some of the things we would change about the design of the lock
+manager is the sh_alloc memory management class.  It would probably have been
+better to break up its functionality between the different list classes by
+overloading the new function for them.  <P>
+
+Also, lock-elements are only reclaimed for use when the lock mangager looks
+through the bucket which contains them.  It would be a better idea to reclaim them
+as soon as its waiting and lock queues become empty.<P>
+
+Some of the functions in the list class could be made more efficient.  We should
+also probably change our public interface so it would no longer be necessary to
+pass in the database name when requesting a page lock, upgrade, or unlock.<P>
+
+For the project in general, it would have helped a lot if the os interface had
+been fixed before we even started coding the lock manager.  The uncertainty of how
+to interface with the OS made design decisions difficult. The dynamic evoultion of
+the project at the weekly group meetings did work well and made the project
+exciting. 
+

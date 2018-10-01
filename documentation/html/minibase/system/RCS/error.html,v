@@ -1,0 +1,113 @@
+head	1.1;
+access;
+symbols;
+locks
+	michaell:1.1; strict;
+comment	@# @;
+
+
+1.1
+date	95.10.04.20.44.53;	author michaell;	state Exp;
+branches;
+next	;
+
+
+desc
+@error description html file
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@<BODY BGCOLOR="#FFDDDD">
+<HTML>
+<HEAD>
+<TITLE>Error Reporting</TITLE>
+</HEAD>
+
+<BODY>
+
+
+<H1>Error Reporting</H1>
+
+<IMG SRC="../hline.gif">
+<P>
+
+A layered approach is used, but 
+the path that error discovery takes may be confusing at times
+since the calling sequence between layers can be complex
+(e.g., DB->BufMgr->DSM).  
+<P>
+Each layer of the database has associated with it a list of errors that
+can occur. Character strings with messages corresponding to these errors
+are stored in arrays which are prefixed by the name of the layer (Eg:
+BufMgr_errors[]). To access an error, a variable (having a meaningful name)
+is defined using a <i>#define</i>. This varible should also be used to
+interpret the error.
+
+<P>
+A global error class is used to log errors as they occur.
+When an error is discovered, the following actions are performed:
+<OL>
+<LI> Push the name of the layer in which the execution is currently in.
+     For example, suppose the error was discovered by the buffer manager
+     after a call to a function of the DB manager, the buffer manager
+     pushes <i>BufMgr</i> on the error stack.
+<LI> Push the offset into the array of error messages.
+<LI> Push a string with some context sensitive information about the error.
+     This information includes the name of the file and the line number
+     in the file where this error discovery has occured.
+
+</OL>
+
+This elaborate protocol allows the user to see where the error was first
+discovered and to see how the error caused various functions to fail.
+Error correction can also be done if desired by popping errors from the
+stack and correcting the error.
+<P>
+All this is encapsulated into a small function called <i>add_errors</i>:
+<pre>
+Status add_errors(int Elayer, int Clayer, Status flag,
+                    int lineno, char *file, int error_index)
+{
+    assert(flag != OK && flag != DONE); // Should not be here w/o an error.
+    char * other = new char [strlen(file) + 10];
+    sprintf(other, "%s, %d", file, lineno);
+    minirel_error->add_error(Elayer, Clayer, error_index, other);
+    return !OK;
+}
+</pre>
+A sample call to this would be:
+<PRE>
+Status s = bm->pinPage(...)
+
+if (s != OK)
+    return add_errors(DBMGR, BUFMGR, s, __LINE__, __FILE__, PINFAILED);
+</PRE>
+
+
+The <I>Status</I> enumerated type is mainly used to signal the occurrence
+of an error. When a function completes execution without any errors, it
+returns OK to its caller. In general, a value that is not OK is an error.
+However, there is one situation (in the case of iterators), where it returns
+a non error value other than OK (it returns DONE).
+In this case, Status is used to signal the occurence of an event, rather
+than an error condition.
+<P>
+<IMG SRC="../hline.gif">
+<P>
+Click here for the <B><A HREF="error.public.txt">error interface</A></B>.
+<P>
+<IMG SRC="../hline.gif">
+<P>
+<A HREF="../project.html">Back to the List of Components</A><BR>
+<A HREF="../minibase.html">Back to the Minibase Home Page</A><BR>
+
+<HR>
+<i> Last modified by Amit Shukla, 9/30/95</i>
+</BODY>
+</HTML>
+@

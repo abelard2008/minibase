@@ -1,0 +1,52 @@
+<HTML>
+<HEAD>
+<TITLE>Access Methods</TITLE>
+</HEAD>
+
+<BODY>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+<H1>Access Methods</H1>
+<IMG SRC="../pics/hline.gif">
+
+<H2>Introduction</H2>
+An access method (or index) facilitates retrieval of a desired record
+from a relation.  In Minibase, all records in a relation are stored in
+a Heap File.  An index consists of a collection of records of the
+form (key value,rid), where `key value' is a value for the 
+<B>search key</B> of the index, and `rid' is the id of a record
+in the relation being indexed.  Any number of indexes can be
+defined on a relation.  
+<P>
+<B><A HREF="../BTree/BTree.html">B+ Tree</A></B> and 
+<B><A HREF="../linearHash/linearHash.html">Linear Hash</A></B> 
+indexes are supported.  (The Linear Hashing code has not
+been tested in this release!)
+<P>
+Minibase only supports non-clustered indexes.
+Implementing clustered indexes would require major changes.
+(The <B><A HREF="../optimizer/optimizer.html">optimizer</A></B>,
+however, can correctly handle clustered vs. non-clustered 
+indexes.  Of course, this is only useful while running the optimizer
+in stand-alone mode.)
+<P>
+<IMG SRC="../pics/hline.gif">
+
+<H2>Design Decisions</H2>
+All access methods are based on a <B><A HREF="index.txt">common C++ base class.</A></B>
+A particular access method can be understood in terms of its
+<EM>file structure</EM> (which determines how the pages in the index file
+are organized), <EM>page structures</EM> (typical page format), and
+the functionality of <EM>scans</EM> (e.g., whether range scans are
+supported).
+
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+<A HREF="../project.html">Back to the List of Components</A><BR>
+<A HREF="../minibase.html">Back to the Minibase Home Page</A><BR>
+<P>
+
+</BODY>
+</HTML>
+
+

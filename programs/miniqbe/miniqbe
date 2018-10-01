@@ -1,0 +1,9 @@
+#!/bin/sh
+
+unset TK_LIBRARY
+unset TCL_LIBRARY
+
+WISH=$MINIBASE_ROOT/packages/itcl/$PLATFORM/bin/itkwish
+PROG=$MINIBASE_ROOT/programs/miniqbe/driver.itk
+
+$WISH $PROG

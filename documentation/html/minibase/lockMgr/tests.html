@@ -1,0 +1,64 @@
+<BODY BGCOLOR="#FFDDDD">
+<H3>Single User Testing</H3>
+We assume that trivial single user tests are not
+worth enumerating here as the main operation of
+lock_manager is support for multi-user locking.
+Many single user tests were run, and all passed.
+Single Xact Upgrades, lock/unlock , and unlock all
+were all "exhaustively" tested in single user mode, and repetitive testing
+was used in an attempt to gauge the robustness of the code.
+After many, many many lock/unlock/unlockall/upgrade/error causing
+calls/multiple locks per page per transaction etc..., the code did not fail.
+
+<H3>Multi User Testing:</H3>
+
+<b>Test 1:</b> 3 way circular deadlock detection test.<P>
+This is the basic deadlock detection test, and it is set up as
+follows:
+<ol>
+<LI> Xact 1 locks page 1 ex mode
+<LI> Xact 2 locks page 2 ex mode
+<LI> Xact 3 locks page 3 ex mode
+<LI> Xact 2 requests a lock on page 3 ex mode and sleeps
+<LI> Xact 3 requests a lock on page 1 ex mode and sleeps
+<LI> Xact 1 requests a lock on page 2 ex mode,
+   causing deadlock, and is selected for restart.
+</ol>
+Note that Xact two still sleeps until Xact 3
+releases the write lock.
+After all transactions do a release all, each of
+the buckets lock modes return to None.
+This test tests deadlock detection, victim selection,unlockall, 
+wakeup.<P>
+
+<B>Test 2:</B> Simple Compatibility Groups.<P>
+  This test tests to see if more than one Xact can enter the same locked queue.
+the compatability groups followed the chart exactly.
+If there was someone waiting, then even though the new request is
+compatible with the current lock mode, it was put on the wait queue.<P>
+
+<B>Test 3:</B> Waiting Compatibility Groups.<P>
+  This test checks to see if a group of Xact's in the waiting queue
+are correctly handled when they are awakened. The result is that 
+the first group of compatible lock types is taken off the queue,
+and every Xact after the first non-compatible waiter stays in the 
+wait queue.
+
+<B>Test 4:</B> Upgrades and Deadlock<P>
+  This test makes sure that two people in the same locked queue can not
+both do upgrades.  The second request causes a Restart error which is the correct
+action. This tricky test was not obvious, but it works.<P>
+
+<B>Test 6:</B> Error returns<P>
+  This test makes sure that all error returns unlock the Lock_Table.
+The only ones which may have been a problem were in upgrade because it is the only
+highest level call which has multiple returns. Each return is preceded by an
+unlock call so the tests all suceeded.<P>
+
+<B>Test 7:</B> Many Locked pages test<P>
+  This test tests that the internal memory system does not fail under heavy
+traffic. It simply grabs 9 locks on 9 different pages done by 4 transaction,
+resulting in 36 locked pages. It took a long time, but nothing died.
+After each transaction did an unlockall, simulating commits, all lock_queues were
+empty, and the lock mode on each page was None.<P>
+

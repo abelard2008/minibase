@@ -1,0 +1,57 @@
+<html>
+<head>
+<title>	Testing </title>
+
+<body>
+<h1> Testing </h1>
+
+The testing of our code can be viewed  as having </i>two</i> phases. The first
+phase consisted  of us running a series  of tests that stress the code
+and  test  its   correctness.   In  the second  phase,   other  groups
+integrated our code with theirs and ran their own tests.
+<p>
+
+The normal operation of the space  manager was tested  by having a set
+of tests   that  use every   call in  the  interface.   Then,  several
+pathological cases were  explored. We  forced the  space  map to  span
+several pages, by having  a large number of pages  and a smaller sized
+page. Then, the allocation and  deallocation of runs that span  across
+page  boundaries were checked.  Similarly,  the  header page can  also
+overflow. By having a small  enough page size  (128 bytes), we  forced
+the directory to overflow across several pages and tested the routines
+that insert, delete and retrieve file entries.
+<p>
+
+The multiuser version   of the space manager   uses shared memory  for
+storing the  space map and the  directory, Synchronization of accesses
+to shared memory   was tested by designing   one process to  lock  the
+shared memory and  sleep for a while. This  caused the other processes
+to  block trying to access the  shared  memory. When the first process
+woke up and  released  the lock, the  other  process could finish  its
+execution.
+<p>
+
+The  heapfile component   was   exhaustively tested  by  a   series of
+tests. These  use  all  the methods in  the  public  interface to  the
+heapfile and in several  different   combinations. We inserted   large
+number  of   records  that  caused  the    heapfile to  grow   to many
+pages.  Under such   conditions, we tested    the working of  inserts,
+deletes, scans and all other operations.
+<p>
+
+Our  code has been integrated  with  several other  components and has
+been used by them for several weeks.  No major bug has been reported
+by any of   them, thus reenforcing  the  reliability of our code.  The
+space  management   code   has  been  used     by the  <i>buffer  manager</i>
+group. Heapfiles have been used by the <i>catalogs</i> group among others.
+
+<p>
+<HR>
+<BR>
+<I> Ravi Murthy</I><BR>
+<I> Sriram Narasimhan </I><BR><BR>
+<IMG SRC="uwlogo.gif"><BR>
+
+</body>
+</html>
+

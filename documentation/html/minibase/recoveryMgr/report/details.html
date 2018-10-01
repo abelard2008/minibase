@@ -1,0 +1,65 @@
+<BODY BGCOLOR="#FFDDDD">
+<HTML>
+<HEAD>
+<TITLE>A Description of the Recovery Manager's Operations</TITLE>
+</HEAD>
+
+<BODY>
+
+<HR>
+
+<H3>General Description </H3>
+<UL>
+The general responsiility of our group is to provide a Recovery Manager for
+MINIREL. It is based on the ARIES recovery algorithms. We provide methods
+with which a transaction may abort and take care of the system 
+after a crash. The Recovery Manager also provides methods to write log
+records during the normal operating mode. <br>
+
+<p>
+The Recovery Manager has a "Rollback" method with which
+transactions are aborted. When a transaction aborts, all references of the 
+transaction are removed from the data pages and an abort log record  and CLRs
+are written to the appropriate log file. 
+
+<p>
+During normal operation, the 
+Recovery Manager provides methods to log update and commit operations to the
+log file. That is, the manager takes care of the format of the update and
+commit log records. 
+
+<p> 
+The real work of the Recovery Manager is after a crash. The "Restart" rooutines
+take care of the three phases : Analysis, Redo and Undo, and restore the
+system to a consistent state.
+
+<p> 
+The Recovery Manager also takes care of checkpointing. During checkpointing
+the dirty page table and transaction tables are written to the log file.
+After a crash, the analysis phase starts from the log record of the last
+checkpoint.
+</UL>
+
+<HR>
+
+<H3> Interaction with other groups</H3>
+<UL>
+<li>The Recovery Manager uses the Log Manager interface to write and read
+log records from the log file. We, however determine the format of the log
+records to be written to the log file.
+<li>We interact with the Buffer Manager in order to acquire the Dirty Page
+Table, which is logged during a checkpoint.
+<li>The OS group provides us with a method to acquire the Transaction table.
+This is again, logged during a checkpoint. We also update the LastLSN field
+of the Transaction table.
+<li>Finally, we interact with the lock manager. During the restart mode of
+operation, the entire database needs to be locked and the locking methods 
+are used.
+</UL>
+
+<HR>
+
+
+</BODY>
+
+</HEAD>

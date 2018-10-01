@@ -1,0 +1,28 @@
+//****************************************************************
+
+// Class definition for the disk space manager. This class manages the 
+// space maps belonging to all the open DBs. 
+
+//****************************************************************
+
+const int MAX_HEADER_PAGES = 10;
+const PageId INVALID_PAGE = -1;
+const int MAX_SPACE = PAGESIZE - sizeof(lsn_t);
+const int MAX_SPM_PAGES = DB_SIZE/(8*MAX_SPACE)+1;
+const int MAX_NAME = 50;
+
+//****************************************************************
+
+
+//****************************************************************
+class SpaceMgr:public SharedRegion
+{
+public:
+	SpaceMgr();
+	~SpaceMgr(){};
+
+	DSM::DBEntry SpaceTable;
+};
+
+//****************************************************************
+

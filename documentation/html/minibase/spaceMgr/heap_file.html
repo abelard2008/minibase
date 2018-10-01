@@ -1,0 +1,81 @@
+<HTML>
+<HEAD>
+<TITLE>Heap File</TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+
+<H1>Heap File</H1>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+<h2> Introduction </h2>
+A <i>heap file</i> is an unordered set of records.  The following 
+operations are supported:  <br>
+* Heap files can be created   and  destroyed. <br>
+* Existing   heapfiles   can  be   opened and closed.<br>
+* Records  can be inserted and  deleted. <br>
+* Records are uniquely identified by a record id (rid). A specific 
+record can be retrieved by using the record id.    <br>
+<P>
+Sequential scans on heap files are also supported.  
+A scan  object is  created, and get-next calls on this 
+object allow us to retrieve all
+records starting from  the first record.  
+<P>
+A <i><B>file scan iterator</B></i>
+uses a heap file scan, and calls the
+<i>eval</i> function
+to apply any desired selections to the retrieved tuples.
+<P>
+Temporary heap files are supported as well.  These are used for external
+sorting.  
+<P><I>A word on naming: </I>  The catalog also names files.  It would
+be best to have a global naming algorithm.  
+<P>
+<IMG SRC="../pics/hline.gif">
+
+<H2>Design Decisions</H2>
+
+The main kind of page structure used in the Heap File is 
+<B><A HREF="hfpage.public.txt">HFPage</B></A>, and this is viewed as a <B>Page</B>
+object by lower-level code.  The HFPage class uses a slotted
+page structure with a slot directory that contains 
+(slot offset, slot length) pairs.  The page number and slot number
+are used together to uniquely identify a record (<B>rid</B>).
+When a record is deleted, the space is reclaimed by compacting records
+on the page, and the length in the corresponding slot entry is
+set to a negative value (indicating that the slot is empty).
+<P>
+Records are inserted only to the last page of a heapfile;  
+no attempt is made to find an empty slot on earlier pages.
+Therefore, any deletes will cause fragmentation.  Pages
+are maintained in a doubly linked list, and can be de-allocated when
+empty.  The heap file layer makes calls to the 
+<A HREF="../bufMgr/bufMgr.html">buffer manager</A>.
+The only exception is that the directory (file naming) services
+of the DB class
+<A HREF="../spaceMgr/dsm.html">(disk space management)</A>
+are called directly.
+<P>
+Alignment issues are not considered.  Tuples are stored only as a series
+of bytes.  It is up to upper layers to make sense of them.
+(See related point in discussion of
+<i><A HREF="../AM/tuple.html">tuples</A></i>.)
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+Click here for the <A HREF="public.heapfile.txt"><B>public interface</B></A>.
+<P>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+<B><A HREF="../project.html">Back to the List of Components</A></B><BR>
+<B><A HREF="../minibase.html">Back to the Minibase Home Page</A></B><BR>
+<B><!A HREF="doc/report/html/project.html">
+<!764 Report</A></B>
+<BR>
+
+</BODY>
+</HTML>

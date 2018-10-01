@@ -1,0 +1,66 @@
+<BODY BGCOLOR="#FFDDDD">
+<HTML>
+<HEAD>
+<TITLE>Startup Info</TITLE>
+</HEAD>
+
+<BODY>
+
+
+<H1>Startup Info</H1>
+
+<H3>Info about what happens when a process is created and 
+how a DB is created</H3>
+
+<HR>
+
+
+<H2>Creating a DataBase</H2>
+
+
+ When a DataBase is created (using the front end utility), many things
+will happen.  The DataBase will be named by the user, and a directory with 
+that name will be created.  Within that directory will be <B>three UNIX
+files:</B> one for the DB (the tuples, indicies, etc..), one for the log, and one
+for the catalog.
+<P>
+ Each of these must be specified.  A <B><EM>naming convention</B></EM> for 
+naming these files will be specified (maybe like this:<BR>
+       DataBase name = my_db<BR>
+       logfilename   = my_db.log<BR>
+       dbname        = my_db.data<BR>
+       catalogname   = my_db.catalog )<BR>
+<P>
+
+<H2>Starting a Process</H2>
+
+When a process is created, it needs to be able to find the correct UNIX
+file.  So every DB object must be passed a name.  Most likely, the user
+will create the process by typing "minirel my_db".  Then the main
+function will parse the command line and append the string with ".log" 
+and ".data" and start each of the DB objects.  
+<P>
+Several objects need to be created when a process begins.  If it is the first
+process, it must allocate shared memory.  Other processes will then 
+detect that the shared memory has been allocated and will attach to it when
+the SharedMemory class is instantiated.  
+<P>
+The various managers must be instantiated as well.  This may be done by the
+SharedMemory constructor.
+<P>
+Some of the values that are currently stored as "const int's" in "minirel.h"
+will NOT remain this way.  Some may be specified at the command line or in
+some other fashion.  At any rate, their instantiation will occur early and
+will not occur in the different managers.  
+<P>
+
+
+
+
+
+
+
+
+
+</BODY>
+</HTML>

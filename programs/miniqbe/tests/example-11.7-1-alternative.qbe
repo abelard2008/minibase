@@ -1,0 +1,2 @@
+setComment {We allow complex conditions in attribute columns}
+addRelationTable {Sailors {}} {sid {}} {sname {}} {rating g.p.} {age {(avg._ > 30)}}

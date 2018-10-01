@@ -1,0 +1,165 @@
+  Schema: 0x448210
+    Primitive: 0xaccca0 of-type: Entity
+      Attr: Name == Employees
+      Attr: Strength == Strong
+      Attr: OwnedThroughRel == @
+    Primitive: 0xa3afb0 of-type: IsA
+      Attr: ParentEntity ==  0xaccca0
+    Primitive: 0xa39d88 of-type: Entity
+      Attr: Name == Technician
+      Attr: Strength == Strong
+      Attr: OwnedThroughRel == @
+    Primitive: 0xaeca28 of-type: Entity
+      Attr: Name == Traffic Control
+      Attr: Strength == Strong
+      Attr: OwnedThroughRel == @
+    Primitive: 0xa3ab80 of-type: Entity
+      Attr: Name == Model
+      Attr: Strength == Strong
+      Attr: OwnedThroughRel == @
+    Primitive: 0xa3bd80 of-type: Relationship
+      Attr: Name == Expert
+      Attr: RelatesWeakToOwner == Does Not
+    Primitive: 0xaed8b0 of-type: Relationship
+      Attr: Name == Test Info
+      Attr: RelatesWeakToOwner == Does Not
+    Primitive: 0x448f98 of-type: Entity
+      Attr: Name == Plane
+      Attr: Strength == Strong
+      Attr: OwnedThroughRel == @
+    Primitive: 0xaee888 of-type: Entity
+      Attr: Name == Test
+      Attr: Strength == Strong
+      Attr: OwnedThroughRel == @
+    Primitive: 0xaf18b8 of-type: Relates
+      Attr: Name == 
+      Attr: Name2 == 
+      Attr: Relationship ==  0xa3bd80
+      Attr: Entity ==  0xa3ab80
+      Attr: Total == Partial
+      Attr: Cardinality1 == ManyTo
+      Attr: Cardinality2 == ManyTo
+      Attr: SelfRelates == Does Not
+    Primitive: 0xaf3080 of-type: Relates
+      Attr: Name == 
+      Attr: Name2 == 
+      Attr: Relationship ==  0xa3bd80
+      Attr: Entity ==  0xa39d88
+      Attr: Total == Partial
+      Attr: Cardinality1 == ManyTo
+      Attr: Cardinality2 == ManyTo
+      Attr: SelfRelates == Does Not
+    Primitive: 0xaf4630 of-type: Relates
+      Attr: Name == 
+      Attr: Name2 == 
+      Attr: Relationship ==  0xaed8b0
+      Attr: Entity ==  0xaee888
+      Attr: Total == Partial
+      Attr: Cardinality1 == ManyTo
+      Attr: Cardinality2 == ManyTo
+      Attr: SelfRelates == Does Not
+    Primitive: 0xaf5e78 of-type: Relates
+      Attr: Name == 
+      Attr: Name2 == 
+      Attr: Relationship ==  0xaed8b0
+      Attr: Entity ==  0x448f98
+      Attr: Total == Partial
+      Attr: Cardinality1 == ManyTo
+      Attr: Cardinality2 == ManyTo
+      Attr: SelfRelates == Does Not
+    Primitive: 0xaf7260 of-type: ChildToIsA
+      Attr: ChildEntity ==  0xa39d88
+      Attr: IsABox ==  0xa3afb0
+    Primitive: 0xaf3e38 of-type: ChildToIsA
+      Attr: ChildEntity ==  0xaeca28
+      Attr: IsABox ==  0xa3afb0
+    Primitive: 0xb04018 of-type: Attribute
+      Attr: Name == name
+      Attr: AssociatedWith ==  0xaee888
+      Attr: Key == Is-Not-Key
+      Attr: Type == char
+    Primitive: 0xb04ef8 of-type: Attribute
+      Attr: Name == FAA #
+      Attr: AssociatedWith ==  0xaee888
+      Attr: Key == Is-Key
+      Attr: Type == int
+    Primitive: 0xb07138 of-type: Attribute
+      Attr: Name == score
+      Attr: AssociatedWith ==  0xaee888
+      Attr: Key == Is-Not-Key
+      Attr: Type == int
+    Primitive: 0xb083b0 of-type: Attribute
+      Attr: Name == hours
+      Attr: AssociatedWith ==  0xaed8b0
+      Attr: Key == Is-Not-Key
+      Attr: Type == datetime
+    Primitive: 0xaefb98 of-type: Attribute
+      Attr: Name == date
+      Attr: AssociatedWith ==  0xaed8b0
+      Attr: Key == Is-Not-Key
+      Attr: Type == date
+    Primitive: 0xb0ab10 of-type: Attribute
+      Attr: Name == score
+      Attr: AssociatedWith ==  0xaed8b0
+      Attr: Key == Is-Not-Key
+      Attr: Type == int
+    Primitive: 0xb0c720 of-type: Attribute
+      Attr: Name == reg #
+      Attr: AssociatedWith ==  0x448f98
+      Attr: Key == Is-Key
+      Attr: Type == int
+    Primitive: 0xb0e358 of-type: Attribute
+      Attr: Name == model #
+      Attr: AssociatedWith ==  0x448f98
+      Attr: Key == Is-Not-Key
+      Attr: Type == int
+    Primitive: 0xaf95e8 of-type: Attribute
+      Attr: Name == model number
+      Attr: AssociatedWith ==  0xa3ab80
+      Attr: Key == Is-Key
+      Attr: Type == int
+    Primitive: 0xafa398 of-type: Attribute
+      Attr: Name == weight
+      Attr: AssociatedWith ==  0xa3ab80
+      Attr: Key == Is-Not-Key
+      Attr: Type == int
+    Primitive: 0xafb9f8 of-type: Attribute
+      Attr: Name == capacity
+      Attr: AssociatedWith ==  0xa3ab80
+      Attr: Key == Is-Not-Key
+      Attr: Type == int
+    Primitive: 0xb17638 of-type: Attribute
+      Attr: Name == ssn
+      Attr: AssociatedWith ==  0xaccca0
+      Attr: Key == Is-Key
+      Attr: Type == char
+    Primitive: 0xb013a0 of-type: Attribute
+      Attr: Name == phone number
+      Attr: AssociatedWith ==  0xa39d88
+      Attr: Key == Is-Not-Key
+      Attr: Type == char
+    Primitive: 0xafd0e0 of-type: Attribute
+      Attr: Name == salary
+      Attr: AssociatedWith ==  0xa39d88
+      Attr: Key == Is-Not-Key
+      Attr: Type == int
+    Primitive: 0xafe5d0 of-type: Attribute
+      Attr: Name == name
+      Attr: AssociatedWith ==  0xa39d88
+      Attr: Key == Is-Not-Key
+      Attr: Type == char
+    Primitive: 0xaff970 of-type: Attribute
+      Attr: Name == address
+      Attr: AssociatedWith ==  0xa39d88
+      Attr: Key == Is-Not-Key
+      Attr: Type == char
+    Primitive: 0xb18cc0 of-type: Attribute
+      Attr: Name == union member number
+      Attr: AssociatedWith ==  0xaccca0
+      Attr: Key == Is-Not-Key
+      Attr: Type == int
+    Primitive: 0xb02998 of-type: Attribute
+      Attr: Name == exam date
+      Attr: AssociatedWith ==  0xaeca28
+      Attr: Key == Is-Not-Key
+      Attr: Type == date

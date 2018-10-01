@@ -1,0 +1,51 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> External Interface</TITLE>
+<meta name="description" value=" External Interface">
+<meta name="keywords" value="report">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html58 HREF="node3.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A> <A NAME=tex2html56 HREF="report.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A> <A NAME=tex2html50 HREF="node1.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html59 HREF="node3.html"> LinearHashingFile</A>
+<B>Up:</B> <A NAME=tex2html57 HREF="report.html">CS764 Project Report - </A>
+<B> Previous:</B> <A NAME=tex2html51 HREF="node1.html"> Introduction</A>
+<BR> <HR> <P>
+<H1><A NAME=SECTION00020000000000000000> External Interface</A></H1>
+<P>
+The class <b>LinearHashingFile</b>  is used to create/open a linear hashing
+index, destroy the index, insert records to the index and delete
+records from the index.  The class <b>LinearHashingScan</b> is used to
+open an exact match scan on a linear hashing index. The scan can be
+used to get the next record and delete the current record.<BR><BR> <HR>
+<UL> 
+<LI> <A NAME=tex2html60 HREF="node3.html#SECTION00021000000000000000"> LinearHashingFile</A>
+<UL> 
+<LI> <A NAME=tex2html61 HREF="node4.html#SECTION00021100000000000000"> LinearHashingFile(Status&amp; status, const char* name, const
+int length,const AttrType type, const int N = 1) 
+<BR>LinearHashingFile(Status&amp; status, const char * name)</A>
+<LI> <A NAME=tex2html62 HREF="node5.html#SECTION00021200000000000000"> &#126;LinearHashingFile()</A>
+<LI> <A NAME=tex2html63 HREF="node6.html#SECTION00021300000000000000"> Status destroyFile(void)</A>
+<LI> <A NAME=tex2html64 HREF="node7.html#SECTION00021400000000000000"> Status insert(const void* value, const RID rid)</A>
+<LI> <A NAME=tex2html65 HREF="node8.html#SECTION00021500000000000000"> Status Delete(const void* value, const RID rid)</A>
+<LI> <A NAME=tex2html66 HREF="node9.html#SECTION00021600000000000000"> IndexFileScan * new_scan(const void* value)</A>
+<LI> <A NAME=tex2html67 HREF="node10.html#SECTION00021700000000000000"> void PrintHeader()<BR>void PrintBucket()<BR>void PrintBucket(int BucNum)<BR></A>
+</UL> 
+<LI> <A NAME=tex2html68 HREF="node11.html#SECTION00022000000000000000"> LinearHashingScan</A>
+<UL> 
+<LI> <A NAME=tex2html69 HREF="node12.html#SECTION00022100000000000000"> &#126;LinearHashingScan()</A>
+<LI> <A NAME=tex2html70 HREF="node13.html#SECTION00022200000000000000"> Status get_next(RID&amp; rid)</A>
+<LI> <A NAME=tex2html71 HREF="node14.html#SECTION00022300000000000000"> Status delete_current()</A>
+</UL> 
+<LI> <A NAME=tex2html72 HREF="node15.html#SECTION00023000000000000000"> Downward interfaces</A>
+</UL>
+<BR> <HR>
+<P><ADDRESS>
+<I> Weiqing Huang <BR>
+Sun May 14 16:22:27 CDT 1995</I>
+</ADDRESS>
+</BODY>

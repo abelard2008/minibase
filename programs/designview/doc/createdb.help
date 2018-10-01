@@ -1,0 +1,114 @@
+
+dbnorm Help: Creating a New Database
+=====================================
+
+dbnorm contains a graphical interface for creating new databases. You
+can open the "Create Database" window by selecting "Create New
+Database" from the File menu in the Main window. You have the option
+of initializing the new database with all attributes, functional
+dependencies (FDs), and source relations from the database that is
+currently open.
+
+While working in the Create Database window, you are creating the
+structure of a single dbnorm database. You may want to think of this
+as a 3-phase process:
+
+1. Decide on all the attributes that belong in the database and add
+them to the attribute list. Remember that attribute names are defined
+over the entire database--not on a per-relation basis.
+
+2. Define the functional dependencies that hold over the set of
+attributes.
+
+3. Group related attributes into source relations, and define the key
+and foreign key dependencies for each source relation.
+
+
+From the Create Database window, you can perform the following operations:
+
+        * Add an attribute to the database.
+        * Delete an attribute from the database.
+        * Create a new FD.
+        * Edit an existing FD.
+        * Delete an FD.
+        * Create a new source relation.
+        * Define the attributes, a primary key and foreign keys for 
+          a source relation.
+        * Delete a source relation.
+
+Here are instructions for each operation...
+
+* Add an attribute to the database.
+
+Click on the "Add" button below the list of database attributes. You
+will be prompted for an attribute name and its type. You must also
+enter a length if the type of the new attribute is "Char".
+
+* Delete an attribute from the database.
+
+Highlight one or more attributes in the list of database attributes,
+then click on the "Delete" button below the list. A dialog box will
+appear asking you to confirm the deletion, and if you continue the
+selected attributes will be deleted from all relations and FDs in the
+database.
+
+* Create a new FD.
+
+Click on the "Add" button below the list of FDs. The "FD Editor"
+window will appear, which is where you can define the new FD. See the
+"FD Editor" help file for more information on using the FD Editor.
+
+* Edit an existing FD.
+
+Highlight an existing FD, then click on the "Edit" button below the
+FDlist.  The "FD Editor" window will appear, which is where you can
+edit the selected FD. See the "FD Editor" help file for more
+information on using the FD Editor.
+
+* Delete an FD.
+
+Highlight an existing FD, then click on the "Delete" button below the
+FDlist. You will be asked to confirm the deletion, and by doing so the
+FD is permanently removed from the database.
+
+* Create a new source relation.
+
+Click on the "Add" button below the list of source relations. You will
+be prompted for a name for the new relation. Duplicate relation names
+are not allowed during database creation. After entering the name, a
+new relation is created, initialized with an empty attribute set, no
+primary key, and no foreign keys. See below for how to add attributes
+and keys.
+
+* Define the attributes, a primary key and foreign keys for a source relation.
+
+To add attributes to a source relation, first make sure the correct
+relation is highlighted. Then go to the list of all database
+attributes and highlight the attributes you want to add. Now click on
+the "Add" button below the list of relation attributes and the
+selected attributes from the top list will be added to the bottom
+list.
+
+You can set the primary key for a relation by highlighting the key
+attributes in the list of attributes for that relation (not the list
+of all database attributes) and then clicking on the "Set" button next
+to the primary key box. You can delete the primary key by clicking on
+the "Clear" button.  NOTE: By defining a primary key for a relation
+you are implicitly generating an FD for the database. So even if there
+is no FD in the list which implies the key dependency, the proper FD
+will be created when the database is opened in dbnorm.
+
+You can set a foreign key for a relation by highlighting the key
+attributes in the list of attributes for that relation (not the list
+of all database attributes) and then clicking on the "Add" button next
+to the list of foreign keys. You will then be prompted to choose which
+other relation contains the selected attributes. You can delete a
+foreign key from the list by highlighting it and clicking on the
+"Delete" button next to the foreign key list.
+
+* Delete a source relation.
+
+You can delete a relation from the database by highlighting its name
+in the list of source relations and clicking on the "Delete" button
+below the list.
+

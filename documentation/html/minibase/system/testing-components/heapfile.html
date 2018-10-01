@@ -1,0 +1,72 @@
+<BODY BGCOLOR="#FFDDDD">
+<HTML>
+<HEAD>
+<TITLE>Heapfile Test Page</TITLE>
+</HEAD>
+<body background = "../../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+
+
+<H1>Heapfile Test Page</H1>
+
+<IMG SRC="../../pics/hline.gif">
+<P>
+
+The tests comprise of inserting, deleting, scanning, and updating
+records in a heap file.  The user may choose how many records (N) to 
+insert.  All records have three fields: an int, a real, and a 15 
+character string.
+
+<P>
+<IMG SRC="../../pics/hline.gif">
+
+<H2>Test 1:  Insert and Scan</H2>
+A heap file is created that is used in other tests as well. 
+N records are inserted, and then the heap file is scanned. These 
+are fixed size records. So the scan order reflects the insertion
+order.
+<P>
+<IMG SRC="../../pics/hline.gif">
+
+<H2>Test 2:  Delete</H2>
+The heap file created in Test 1 is opened. 50% of the
+records inserted in Test 1 are deleted here. The remaining
+records are scanned. 
+<P>
+<IMG SRC="../../pics/hline.gif">
+
+<H2>Test 3:  Record Count and Updates</H2>
+Uses the records from Test 1. Updates one of the fields in the
+record but the lenght of the record is left unchanged. Then
+the records are scanned to check the updates. 
+
+<P>
+<IMG SRC="../../pics/hline.gif">
+
+<H3>Test 4:  Temporary Heap Files and Variable Length Records</H3>
+Creates a temporary (non-persistent) heapfile.  The records 
+in it are not saved to disk.  (When the destructor is called,
+the heap file is destroyed.) Some variable-length records are
+added. Then a scan is done to check the insertions.  
+
+<P>
+<IMG SRC="../../pics/hline.gif">
+
+<H2> Test 5</H2>
+This test checks some error conditions. The heapfile created
+in test 1 is opened. A record whose length is greater than 
+the page size is inserted. As expected, the insertion fails.
+
+<P>
+<IMG SRC="../../pics/hline.gif">
+
+<P>
+<B><A HREF="../../spaceMgr/heap_file.html">Heap File Page</A></B><BR>
+<B><A HREF="../../project.html">Back to the Components Page</A></B><BR>
+<B><A HREF="../../minibase.html">Back to the Minibase Home Page</A></B><BR> 
+
+
+
+</BODY>
+</HTML>

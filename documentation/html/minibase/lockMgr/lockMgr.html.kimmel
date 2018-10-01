@@ -1,0 +1,46 @@
+<BODY BGCOLOR="#FFDDDD">
+<HTML>
+<HEAD>
+<TITLE>Lock Manager Page</TITLE>
+</HEAD>
+
+<BODY>
+<H1>Lock Manager Page</H1>
+
+<IMG SRC="../hline.gif">
+<P>
+
+<B><A HREF="../minibase.html">Back to the Minibase Home Page</A></B><BR>
+<B><A HREF="../project.html">Back to the Progress Page</A></B><BR>
+<B><A HREF="764.4.html">764 Page</A></B><BR>
+<B><A HREF="Project.html">764 Report</A></B>
+<P>
+
+
+<H2>Introduction</H2>
+The locking protocol supports page level locking only for simplicity. The 
+lock page class supports lock_page, unlock_page, unlock_all_pages,and upgrade_lock. 
+It support IS,IX,S,X lock modes.  It detects deadlocks and returns an error 
+code Restart if we have been killed because of a deadlock. It is the transactions 
+responsibility to abort itself on receiving a Restart error from any of the lock 
+manager functions. 
+
+
+<P>
+
+<H2>Design Decisions</H2>
+<EM>I'M NOT GOING TO DO THIS RIGHT NOW!!!!!!</EM>
+
+
+<ADDRESS>
+<IMG SRC="../hline.gif">
+<P>
+Bill Kimmel<br>
+<A HREF="http://www.cs.wisc.edu/cgi-bin/finger?kimmel@cs.wisc.edu">
+[kimmel@cs.wisc.edu]</A>
+</ADDRESS>
+
+
+</BODY>
+</HTML>
+

@@ -1,0 +1,2 @@
+setComment {Order by}
+addRelationTable {Sailors {}} {sid {}} {sname p.} {rating p.} {age p.ao.}

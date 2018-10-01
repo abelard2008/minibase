@@ -1,0 +1,102 @@
+<HTML>
+<HEAD>
+<TITLE>Minibase History</TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+
+<BODY>
+
+<H1>Minibase History</H1>
+<IMG SRC="../pics/hline.gif">
+<P>
+
+Many years ago, David Dewitt developed a database course project
+that involved building a small relational DBMS called Minirel in C.
+It has inspired several revised versions, and these have been
+used at Wisconsin and elsewhere over the years.
+
+<P>
+Mike Carey and Raghu Ramakrishnan wanted to develop a more complete
+version of Minirel, in C++, including components for concurrency control and
+recovery, more relational operator evaluation methods, a query
+optimizer, and design tools.  The result is Minibase.  Minirel supported 
+a course project in which students developed parts of the code;  Minibase
+additionally supports exercises in which various components are
+studied through experiments.  The system design differs
+in many ways from earlier versions, and it is a more
+comprehensive system than Minirel, but hopefully, the spirit of the original
+design, encouraging a hands-on approach to databases, is retained.
+
+<P>
+Much of the new Minibase was developed as a graduate course 
+project by students taking CS764.  Different groups developed 
+different parts such as the disk space and heap file managers 
+(Ravi Murthy and Sriram Narasimhan), the buffer manager (Kan Qiu 
+and Fei Su), B+ trees (Yanming Cao and Celena Tanguay), linear 
+hashing (Weiqing Huang), log manager (Cjin Lee and Ajitkumar 
+Natarajan), lock manager (Francis Salmon and Gary Zipfel), recovery 
+manager (Ranjani Ramamurthy and Arthur Tsoi), join methods 
+(Raghu Mallena and Amit Shukla) and query plan interpreter (Donko Donjerkovic). 
+Peter Feakins and Bill Kimmel were responsible for integrating the various 
+components for the single user minibase. 
+<p>
+The project was coordinated by Mike Carey and Raghu Ramakrishnan.
+Some code (e.g., parts of the buffer manager and heap files) was based on a
+C++ version of Minirel developed by Dewitt and Jussi Myllymaki, but most of
+it was written afresh.
+
+<P>
+The code developed in CS764
+was significantly refined and extended, and
+several additional tools were designed and developed, through the efforts
+of many people under the direction of Ramakrishnan.
+Huseyin Bektas and Harry Stavropoulos developed visualization
+tools for the buffer manager and B+ trees, and this code was
+developed further by Weiqing Huang.  Stephen Harris and Michael Lee
+developed an SQL query optimizer and a visual plan explanation tool.  Donko Donjerkovic
+developed the query optimizer further.  Bill Kimmel and Luke Blanshard 
+continued the integration effort and considerably cleaned up the single-user
+version.  Ranjani Ramamurthy substantially reworked many of the multi-user 
+components and integrated them to produce the multi-user version of Minibase.
+Eben Haber used the Opossum schema manager 
+to develop a tool for drawing and maintaining ER diagrams.  Andy Therber 
+and Andrew Prock developed an ER diagram to relational tables translator and a 
+Tcl/Tk based database design tool that supports normalization.
+Also, Emmanuel Ackaouy, Lee Schumacher and Bryan So made significant 
+contributions to an earlier version of Minibase.  This code from this 
+version did not survive, but it influenced the design
+of the current Minibase.  
+Shawn Flisakowski, Krishna Kunchithapadam and Venkatesh Ganti contributed
+to the testing and development of early releases of this software.
+
+<P>
+Needless to say, Minibase would not have been
+possible without the dedicated efforts of the many students involved.
+<P>
+
+
+<ADDRESS>
+<a HREF="http://www.cs.wisc.edu/~raghu/raghu.html"> Raghu Ramakrishnan</a> 
+<A HREF="http://www.cs.wisc.edu/cgi-bin/finger?raghu@cs.wisc.edu">
+[raghu@cs.wisc.edu]</A>
+<BR>
+</ADDRESS>
+
+
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+
+<P>
+<B><A HREF="../minibase.html">
+<IMG SRC="../pics/left.gif" ALIGN=middle> Back to the Minibase Home Page</A></B><BR>
+<P>
+
+
+</BODY>
+
+</HTML>
+
+
+

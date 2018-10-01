@@ -1,0 +1,3 @@
+setComment {Join plus conditions}
+addRelationTable {Sailors {}} {sid _Id} {sname P._S} {rating {}} {age >25}
+addRelationTable {Reserves {}} {sid _Id} {bid {}} {date {"8/24/96"}}

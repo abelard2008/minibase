@@ -1,0 +1,62 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!Converted with LaTeX2HTML 95 (Thu Jan 19 1995) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds >
+<HEAD>
+<TITLE>5.4.6  log::read</TITLE>
+</HEAD>
+<BODY>
+<meta name="description" value="5.4.6  log::read">
+<meta name="keywords" value="main">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+<P>
+ <BR> <HR><A NAME=tex2html254 HREF="node20.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html252 HREF="node13.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html246 HREF="node18.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html255 HREF="node20.html">5.4.7  log::read_next_logrec</A>
+<B>Up:</B> <A NAME=tex2html253 HREF="node13.html">5.4  class log</A>
+<B> Previous:</B> <A NAME=tex2html247 HREF="node18.html">5.4.5  log::write</A>
+<BR> <HR> <P>
+<H3><A NAME=SECTION00054600000000000000>5.4.6  log::read</A></H3>
+<P>
+<A NAME=subsubsectionimpllogread>&#160;</A>
+<P>
+<tt> Read</tt> is symmetric to <tt> write</tt>.  It gets the page in which the
+start of the log record resides.  It checks whether the log record
+starts with the magic number.  If not, it checks the byte against <tt>
+logrecord::LOG_END</tt>.  If this matches, an EOF is signaled and <tt>
+global_shm_log_ptr-&gt;sl_nextlsn</tt> is set to the LSN supplied.  (Thus,
+a side effect of the analysis pass of restart recovery would be to
+determine the end of the log.)  If this test also failed, the LSN does
+not point to the start of a log record.  An error indication is
+returned.
+<P>
+	The log record header is then examined.  It may happen that
+the log record header is split across pages.  In this case, the next
+page is read to get the remaining portion of the header.  The header
+contains the length of the entire log record.  This is used to
+determine the number of pages that must be read to get the whole log
+record.  The appropriate number of pages are read to assemble the
+entire log record.  If the physical end of the log is reached, <tt>
+read</tt> wraps back to the physical beginning of the log to continue the
+read.
+<P>
+	Note that <tt> write</tt> always goes through the log tail to the
+log file whereas read never touches the log tail.  This is required so
+that an arbitrary read does not corrupt the log tail.  However, this
+poses a problem during restart recovery.  The recovery manager will
+read log records till the end of the log is reached.  New log records
+are then written.  Unfortunately, if the end of the log occurred in
+the middle of a page, the log tail is not initialized with the
+contents of the page and, hence, the next flush of the log tail will
+corrupt the log.  The open constructor handles this by reading the
+page of the log into the log tail when it detects end of log.
+<P>
+<BR> <HR><A NAME=tex2html254 HREF="node20.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html252 HREF="node13.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html246 HREF="node18.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html255 HREF="node20.html">5.4.7  log::read_next_logrec</A>
+<B>Up:</B> <A NAME=tex2html253 HREF="node13.html">5.4  class log</A>
+<B> Previous:</B> <A NAME=tex2html247 HREF="node18.html">5.4.5  log::write</A>
+<BR> <HR> <P>
+<BR> <HR>
+<P><ADDRESS>
+ajitk@cs.wisc.edu, cjin@cs.wisc.edu
+</ADDRESS>
+</BODY>

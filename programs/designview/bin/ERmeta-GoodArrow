@@ -1,0 +1,651 @@
+MetaphorDef ER
+  DataModelIs 
+
+  ModelDef ER {  /* begins def for model: ER */
+
+    /* forward defs for primitive type */
+
+    PrimTypeDef Entity foreward;
+    PrimTypeDef Relationship foreward;
+    PrimTypeDef Relates foreward;
+    PrimTypeDef Attribute foreward;
+    PrimTypeDef IsA foreward;
+    PrimTypeDef ChildToIsA foreward;
+    PrimTypeDef Aggregate foreward;
+
+    /* attribute type definitions */
+
+    AttrTypeDef DefaultToEntityName CharStringAttrType;
+    AttrTypeDef DefaultToStrong CharStringAttrType Values {"Strong","Weak"};
+    AttrTypeDef Rel_Type PrimValuedAttrType Types {Relationship};
+    AttrTypeDef DefaultToRelationshipName CharStringAttrType;
+    AttrTypeDef WeakToOwner CharStringAttrType Values {"Does Not","Does"};
+    AttrTypeDef DefaultToBlank CharStringAttrType;
+    AttrTypeDef Entity_Or_Aggregate_Type PrimValuedAttrType Types {Entity,Aggregate};
+    AttrTypeDef TotalType CharStringAttrType Values {"Partial","Total"};
+    AttrTypeDef CardType CharStringAttrType Values {"ManyTo","OneTo"};
+    AttrTypeDef SelfRelatesType CharStringAttrType Values {"Does Not","Does"};
+    AttrTypeDef DefaultToAttributeName CharStringAttrType;
+    AttrTypeDef Entity_Or_Rel_Type PrimValuedAttrType Types {Entity,Relationship};
+    AttrTypeDef KeyType CharStringAttrType Values {"Is-Not-Key","Is-Key"};
+    AttrTypeDef Entity_Type PrimValuedAttrType Types {Entity};
+    AttrTypeDef IsA_Type PrimValuedAttrType Types {IsA};
+    AttrTypeDef AttributeType CharStringAttrType Values { "int", "float", "char", "text", "date", "datetime", "decimal", "interval", "money"};
+
+    /* definitions for primitive types */
+
+    PrimTypeDef Entity{
+      AttrDef Name DefaultToEntityName;
+      AttrDef Strength DefaultToStrong;
+      AttrDef OwnedThroughRel Rel_Type;
+    };
+
+    PrimTypeDef Relationship{
+      AttrDef Name DefaultToRelationshipName;
+      AttrDef RelatesWeakToOwner WeakToOwner;
+    };
+
+    PrimTypeDef Relates{
+      AttrDef Name DefaultToBlank;
+      AttrDef Name2 DefaultToBlank;
+      AttrDef Relationship Rel_Type;
+      AttrDef Entity Entity_Or_Aggregate_Type;
+      AttrDef Total TotalType;
+      AttrDef Cardinality1 CardType;
+      AttrDef Cardinality2 CardType;
+      AttrDef SelfRelates SelfRelatesType;
+    };
+
+    PrimTypeDef Attribute{
+      AttrDef Name DefaultToAttributeName;
+      AttrDef AssociatedWith Entity_Or_Rel_Type;
+      AttrDef Key KeyType;
+      AttrDef Type AttributeType;
+    };
+
+    PrimTypeDef IsA{
+      AttrDef ParentEntity Entity_Type;
+    };
+
+    PrimTypeDef ChildToIsA{
+      AttrDef ChildEntity Entity_Type;
+      AttrDef IsABox IsA_Type;
+    };
+
+    PrimTypeDef Aggregate{
+      AttrDef AggregateOf Rel_Type;
+    };
+
+/* definitions for default values of attribute types */
+
+    AttrTypeDefaultDef DefaultToEntityName  = "EntityName";
+    AttrTypeDefaultDef DefaultToRelationshipName  = "RelationshipName";
+    AttrTypeDefaultDef DefaultToBlank  = "";
+    AttrTypeDefaultDef DefaultToAttributeName  = "AttributeName";
+
+/* definitions for constraints */
+
+
+
+} /* end modeldef for model: ER */
+
+
+  VisualModelIs 
+
+  ModelDef ER {  /* begins def for model: ER */
+
+    /* forward defs for primitive type */
+
+    PrimTypeDef Entity foreward;
+    PrimTypeDef Relationship foreward;
+    PrimTypeDef Relates foreward;
+    PrimTypeDef Attribute foreward;
+    PrimTypeDef IsA foreward;
+    PrimTypeDef ChildToIsA foreward;
+    PrimTypeDef Aggregate foreward;
+
+    /* attribute type definitions */
+
+    AttrTypeDef Rel_Type_Default_To_Nil PrimValuedAttrType NullPermitted  Types {Relationship};
+    AttrTypeDef Region RegionAttrType;
+    AttrTypeDef LinePattern LinePatternAttrType;
+    AttrTypeDef BlackColorType ColorAttrType Values {ColorVal( 0.0 0.0 0.0) };
+    AttrTypeDef DefaultToOne IntAttrType;
+    AttrTypeDef pattern PatternAttrType;
+    AttrTypeDef DefaultToWhite ColorAttrType;
+    AttrTypeDef Rectangle ShapeAttrType Values {ShapeVal( 4 0 0 0 10 10 10 10 0  ) };
+    AttrTypeDef coordinate CoordinateAttrType;
+    AttrTypeDef ZeroOnly FloatAttrType Values {0.0};
+    AttrTypeDef InFrontLoc2 CoordinateAttrType Values { 2};
+    AttrTypeDef TrueOnly BoolAttrType Values { 2342472};
+    AttrTypeDef TextDisplayType TextDisplayAttrType;
+    AttrTypeDef int IntAttrType;
+    AttrTypeDef FontType FontAttrType;
+    AttrTypeDef string CharStringAttrType;
+    AttrTypeDef InFrontLoc3 CoordinateAttrType Values { 3};
+    AttrTypeDef Diamond ShapeAttrType Values {ShapeVal( 4 0 5 5 0 10 5 5 10  ) };
+    AttrTypeDef InFrontLoc1 CoordinateAttrType Values { 1};
+    AttrTypeDef Rel_Type PrimValuedAttrType Types {Relationship};
+    AttrTypeDef Entity_Or_Aggregate_Type PrimValuedAttrType NullPermitted  Types {Entity,Aggregate};
+    AttrTypeDef LineDisplayType LineDisplayAttrType;
+    AttrTypeDef SolidPatternType LinePatternAttrType Values { 65535};
+    AttrTypeDef InFrontLoc_1 CoordinateAttrType Values { -1};
+    AttrTypeDef InFrontLoc0 CoordinateAttrType Values { 0};
+    AttrTypeDef WhiteColorType ColorAttrType Values {ColorVal( 1.0 1.0 1.0) };
+    AttrTypeDef Triangle ShapeAttrType Values {ShapeVal( 3 0 0 5 20 10 0  ) };
+    AttrTypeDef float FloatAttrType;
+    AttrTypeDef DefaultToTrue BoolAttrType Values { 1, 0};
+    AttrTypeDef DefaultToFalse BoolAttrType Values { 1, 0};
+    AttrTypeDef Entity_Or_Rel_Type PrimValuedAttrType Types {Entity,Relationship};
+    AttrTypeDef OneOnly IntAttrType Values { 1};
+    AttrTypeDef Oval ShapeAttrType Values {ShapeVal( 0  ) };
+    AttrTypeDef SolidOrDashedPatternType LinePatternAttrType Values { 65535, 61680};
+    AttrTypeDef TwoOnly IntAttrType Values { 2};
+    AttrTypeDef bool BoolAttrType;
+    AttrTypeDef Entity_Type PrimValuedAttrType Types {Entity};
+    AttrTypeDef IsALabelType CharStringAttrType Values {"IS-A"};
+    AttrTypeDef IsA_Type PrimValuedAttrType Types {IsA};
+    AttrTypeDef DashedLineType LinePatternAttrType Values { 61680};
+    AttrTypeDef AttrType CharStringAttrType Values { "int", "float", "char", "text", "date", "datetime", "decimal", "interval", "money"};
+
+
+    /* definitions for primitive types */
+
+    PrimTypeDef Entity{
+      AttrDef OwnedThroughRel Rel_Type_Default_To_Nil;
+      RegionAttrDef ERegion.Region {
+         AttrDef ERegion.BoundaryPattern LinePattern;
+         AttrDef ERegion.BoundaryColor BlackColorType;
+         AttrDef ERegion.BoundaryWidth DefaultToOne;
+         AttrDef ERegion.BackPattern pattern ConstantValued ;
+         AttrDef ERegion.BackColor DefaultToWhite;
+         AttrDef ERegion.Shape Rectangle;
+         AttrDef ERegion.Bottom coordinate;
+         AttrDef ERegion.Left coordinate;
+         AttrDef ERegion.Orientation ZeroOnly;
+         AttrDef ERegion.Z InFrontLoc2;
+         AttrDef ERegion.Y coordinate;
+         AttrDef ERegion.X coordinate;
+         AttrDef ERegion.Visible TrueOnly;
+      };
+      TextDisplayAttrDef Label.TextDisplay {
+         AttrDef Label.Color BlackColorType;
+         AttrDef Label.Size int ConstantValued ;
+         AttrDef Label.Font FontType;
+         AttrDef Label.Text string;
+         AttrDef Label.Orientation ZeroOnly;
+         AttrDef Label.Z InFrontLoc3;
+         AttrDef Label.Y coordinate;
+         AttrDef Label.X coordinate;
+         AttrDef Label.Visible TrueOnly;
+      };
+    };
+
+    PrimTypeDef Relationship{
+      RegionAttrDef RRegion.Region {
+         AttrDef RRegion.BoundaryPattern LinePattern;
+         AttrDef RRegion.BoundaryColor BlackColorType;
+         AttrDef RRegion.BoundaryWidth DefaultToOne;
+         AttrDef RRegion.BackPattern pattern ConstantValued ;
+         AttrDef RRegion.BackColor DefaultToWhite;
+         AttrDef RRegion.Shape Diamond;
+         AttrDef RRegion.Bottom coordinate;
+         AttrDef RRegion.Left coordinate;
+         AttrDef RRegion.Orientation ZeroOnly;
+         AttrDef RRegion.Z InFrontLoc1;
+         AttrDef RRegion.Y coordinate;
+         AttrDef RRegion.X coordinate;
+         AttrDef RRegion.Visible TrueOnly;
+      };
+      TextDisplayAttrDef Label.TextDisplay {
+         AttrDef Label.Color BlackColorType;
+         AttrDef Label.Size int ConstantValued ;
+         AttrDef Label.Font FontType;
+         AttrDef Label.Text string;
+         AttrDef Label.Orientation ZeroOnly;
+         AttrDef Label.Z InFrontLoc2;
+         AttrDef Label.Y coordinate;
+         AttrDef Label.X coordinate;
+         AttrDef Label.Visible TrueOnly;
+      };
+    };
+
+    PrimTypeDef Relates{
+      AttrDef Relationship Rel_Type;
+      AttrDef Entity Entity_Or_Aggregate_Type;
+      LineAttrDef Line.LineDisplay {
+         AttrDef Line.Pattern SolidPatternType;
+         AttrDef Line.Color BlackColorType;
+         AttrDef Line.Width DefaultToOne;
+         AttrDef Line.Z InFrontLoc_1;
+         AttrDef Line.EndY coordinate;
+         AttrDef Line.EndX coordinate;
+         AttrDef Line.StartY coordinate;
+         AttrDef Line.StartX coordinate;
+         AttrDef Line.Visible TrueOnly;
+      };
+      TextDisplayAttrDef Label.TextDisplay {
+         AttrDef Label.Color BlackColorType;
+         AttrDef Label.Size int ConstantValued ;
+         AttrDef Label.Font FontType;
+         AttrDef Label.Text string;
+         AttrDef Label.Orientation ZeroOnly;
+         AttrDef Label.Z InFrontLoc0;
+         AttrDef Label.Y coordinate;
+         AttrDef Label.X coordinate;
+         AttrDef Label.Visible TrueOnly;
+      };
+      RegionAttrDef Arrowhead.Region {
+         AttrDef Arrowhead.BoundaryPattern LinePattern;
+         AttrDef Arrowhead.BoundaryColor BlackColorType;
+         AttrDef Arrowhead.BoundaryWidth DefaultToOne;
+         AttrDef Arrowhead.BackPattern pattern;
+         AttrDef Arrowhead.BackColor WhiteColorType;
+         AttrDef Arrowhead.Shape Triangle;
+         AttrDef Arrowhead.Bottom coordinate;
+         AttrDef Arrowhead.Left coordinate;
+         AttrDef Arrowhead.Orientation float;
+         AttrDef Arrowhead.Z InFrontLoc_1;
+         AttrDef Arrowhead.Y coordinate;
+         AttrDef Arrowhead.X coordinate;
+         AttrDef Arrowhead.Visible DefaultToTrue;
+      };
+      LineAttrDef Line2.LineDisplay {
+         AttrDef Line2.Pattern SolidPatternType;
+         AttrDef Line2.Color BlackColorType;
+         AttrDef Line2.Width DefaultToOne;
+         AttrDef Line2.Z InFrontLoc_1;
+         AttrDef Line2.EndY coordinate;
+         AttrDef Line2.EndX coordinate;
+         AttrDef Line2.StartY coordinate;
+         AttrDef Line2.StartX coordinate;
+         AttrDef Line2.Visible DefaultToTrue;
+      };
+      TextDisplayAttrDef Label2.TextDisplay {
+         AttrDef Label2.Color BlackColorType;
+         AttrDef Label2.Size int ConstantValued ;
+         AttrDef Label2.Font FontType;
+         AttrDef Label2.Text string;
+         AttrDef Label2.Orientation ZeroOnly;
+         AttrDef Label2.Z InFrontLoc0;
+         AttrDef Label2.Y coordinate;
+         AttrDef Label2.X coordinate;
+         AttrDef Label2.Visible TrueOnly;
+      };
+      RegionAttrDef Arrowhead2.Region {
+         AttrDef Arrowhead2.BoundaryPattern LinePattern;
+         AttrDef Arrowhead2.BoundaryColor BlackColorType;
+         AttrDef Arrowhead2.BoundaryWidth DefaultToOne;
+         AttrDef Arrowhead2.BackPattern pattern;
+         AttrDef Arrowhead2.BackColor WhiteColorType;
+         AttrDef Arrowhead2.Shape Triangle;
+         AttrDef Arrowhead2.Bottom coordinate;
+         AttrDef Arrowhead2.Left coordinate;
+         AttrDef Arrowhead2.Orientation float;
+         AttrDef Arrowhead2.Z InFrontLoc_1;
+         AttrDef Arrowhead2.Y coordinate;
+         AttrDef Arrowhead2.X coordinate;
+         AttrDef Arrowhead2.Visible DefaultToFalse;
+         AttrDef Arrowhead2.ShowArrow DefaultToFalse;
+      };
+    };
+
+    PrimTypeDef Attribute{
+      AttrDef AssociatedWith Entity_Or_Rel_Type;
+      RegionAttrDef ARegion.Region {
+         AttrDef ARegion.BoundaryPattern LinePattern;
+         AttrDef ARegion.BoundaryColor BlackColorType;
+         AttrDef ARegion.BoundaryWidth OneOnly;
+         AttrDef ARegion.BackPattern pattern ConstantValued ;
+         AttrDef ARegion.BackColor DefaultToWhite;
+         AttrDef ARegion.Shape Oval;
+         AttrDef ARegion.Bottom coordinate;
+         AttrDef ARegion.Left coordinate;
+         AttrDef ARegion.Orientation ZeroOnly;
+         AttrDef ARegion.Z InFrontLoc0;
+         AttrDef ARegion.Y coordinate;
+         AttrDef ARegion.X coordinate;
+         AttrDef ARegion.Visible TrueOnly;
+      };
+      TextDisplayAttrDef Label.TextDisplay {
+         AttrDef Label.Color BlackColorType;
+         AttrDef Label.Size int ConstantValued ;
+         AttrDef Label.Font FontType;
+         AttrDef Label.Text string;
+         AttrDef Label.Orientation ZeroOnly;
+         AttrDef Label.Z InFrontLoc1;
+         AttrDef Label.Y coordinate;
+         AttrDef Label.X coordinate;
+         AttrDef Label.Visible TrueOnly;
+      };
+      LineAttrDef Line.LineDisplay {
+         AttrDef Line.Pattern SolidPatternType;
+         AttrDef Line.Color BlackColorType;
+         AttrDef Line.Width OneOnly;
+         AttrDef Line.Z InFrontLoc_1;
+         AttrDef Line.EndY coordinate;
+         AttrDef Line.EndX coordinate;
+         AttrDef Line.StartY coordinate;
+         AttrDef Line.StartX coordinate;
+         AttrDef Line.Visible TrueOnly;
+      };
+      LineAttrDef KeyLine.LineDisplay {
+         AttrDef KeyLine.Pattern SolidOrDashedPatternType;
+         AttrDef KeyLine.Color BlackColorType;
+         AttrDef KeyLine.Width TwoOnly;
+         AttrDef KeyLine.Z InFrontLoc1;
+         AttrDef KeyLine.EndY coordinate;
+         AttrDef KeyLine.EndX coordinate;
+         AttrDef KeyLine.StartY coordinate;
+         AttrDef KeyLine.StartX coordinate;
+         AttrDef KeyLine.Visible bool;
+      };
+      AttrDef Type AttrType;
+    };
+
+    PrimTypeDef IsA{
+      AttrDef ParentEntity Entity_Type;
+      RegionAttrDef IRegion.Region {
+         AttrDef IRegion.BoundaryPattern LinePattern;
+         AttrDef IRegion.BoundaryColor BlackColorType;
+         AttrDef IRegion.BoundaryWidth OneOnly;
+         AttrDef IRegion.BackPattern pattern ConstantValued ;
+         AttrDef IRegion.BackColor DefaultToWhite;
+         AttrDef IRegion.Shape Triangle;
+         AttrDef IRegion.Bottom coordinate;
+         AttrDef IRegion.Left coordinate;
+         AttrDef IRegion.Orientation ZeroOnly;
+         AttrDef IRegion.Z InFrontLoc1;
+         AttrDef IRegion.Y coordinate;
+         AttrDef IRegion.X coordinate;
+         AttrDef IRegion.Visible TrueOnly;
+      };
+      TextDisplayAttrDef Label.TextDisplay {
+         AttrDef Label.Color BlackColorType;
+         AttrDef Label.Size int ConstantValued ;
+         AttrDef Label.Font FontType;
+         AttrDef Label.Text IsALabelType;
+         AttrDef Label.Orientation ZeroOnly;
+         AttrDef Label.Z InFrontLoc2;
+         AttrDef Label.Y coordinate;
+         AttrDef Label.X coordinate;
+         AttrDef Label.Visible DefaultToTrue;
+      };
+      LineAttrDef ParentLine.LineDisplay {
+         AttrDef ParentLine.Pattern SolidPatternType;
+         AttrDef ParentLine.Color BlackColorType;
+         AttrDef ParentLine.Width OneOnly;
+         AttrDef ParentLine.Z InFrontLoc0;
+         AttrDef ParentLine.EndY coordinate;
+         AttrDef ParentLine.EndX coordinate;
+         AttrDef ParentLine.StartY coordinate;
+         AttrDef ParentLine.StartX coordinate;
+         AttrDef ParentLine.Visible DefaultToTrue;
+      };
+      RegionAttrDef CrossRegion.Region {
+         AttrDef CrossRegion.BoundaryPattern LinePattern;
+         AttrDef CrossRegion.BoundaryColor BlackColorType;
+         AttrDef CrossRegion.BoundaryWidth OneOnly;
+         AttrDef CrossRegion.BackPattern pattern ConstantValued ;
+         AttrDef CrossRegion.BackColor DefaultToWhite;
+         AttrDef CrossRegion.Shape Rectangle;
+         AttrDef CrossRegion.Bottom coordinate;
+         AttrDef CrossRegion.Left coordinate;
+         AttrDef CrossRegion.Orientation ZeroOnly;
+         AttrDef CrossRegion.Z InFrontLoc1;
+         AttrDef CrossRegion.Y coordinate;
+         AttrDef CrossRegion.X coordinate;
+         AttrDef CrossRegion.Visible TrueOnly;
+      };
+    };
+
+    PrimTypeDef ChildToIsA{
+      AttrDef ChildEntity Entity_Type;
+      AttrDef IsABox IsA_Type;
+      LineAttrDef ChildLine.LineDisplay {
+         AttrDef ChildLine.Pattern SolidPatternType;
+         AttrDef ChildLine.Color BlackColorType;
+         AttrDef ChildLine.Width OneOnly;
+         AttrDef ChildLine.Z InFrontLoc0;
+         AttrDef ChildLine.EndY coordinate;
+         AttrDef ChildLine.EndX coordinate;
+         AttrDef ChildLine.StartY coordinate;
+         AttrDef ChildLine.StartX coordinate;
+         AttrDef ChildLine.Visible TrueOnly;
+      };
+    };
+
+    PrimTypeDef Aggregate{
+      AttrDef AggregateOf Rel_Type;
+      RegionAttrDef AgRegion.Region {
+         AttrDef AgRegion.BoundaryPattern DashedLineType;
+         AttrDef AgRegion.BoundaryColor BlackColorType;
+         AttrDef AgRegion.BoundaryWidth OneOnly;
+         AttrDef AgRegion.BackPattern pattern ConstantValued ;
+         AttrDef AgRegion.BackColor DefaultToWhite;
+         AttrDef AgRegion.Shape Rectangle;
+         AttrDef AgRegion.Bottom coordinate;
+         AttrDef AgRegion.Left coordinate;
+         AttrDef AgRegion.Orientation ZeroOnly;
+         AttrDef AgRegion.Z InFrontLoc_1;
+         AttrDef AgRegion.Y coordinate;
+         AttrDef AgRegion.X coordinate;
+         AttrDef AgRegion.Visible TrueOnly;
+      };
+    };
+
+/* definitions for default values of attribute types */
+
+    AttrTypeDefaultDef Rel_Type_Default_To_Nil  =  0;
+    AttrTypeDefaultDef DefaultToOne  =  1;
+    AttrTypeDefaultDef DefaultToWhite  = ColorVal( 1.0 1.0 1.0) ;
+    AttrTypeDefaultDef DefaultToTrue  =  1;
+    AttrTypeDefaultDef DefaultToFalse  =  0;
+
+/* definitions for constraints */
+
+    ConstDef Entity->Label.X = Entity->ERegion.X;
+    ConstDef Entity->Label.Y = Entity->ERegion.Y;
+    ConstDef Entity->ERegion.Bottom = Entity->ERegion.Y -  12;
+    ConstDef Entity->ERegion.Left = (LeftOf)Entity->Label.TextDisplay -  10;
+    ConstDef Entity->ERegion.BoundaryWidth =  If( Entity->OwnedThroughRel ==  0 )  Then(  1 )  Else(  2 ) ;
+    ConstDef Relationship->Label.X = Relationship->RRegion.X;
+    ConstDef Relationship->Label.Y = Relationship->RRegion.Y;
+    ConstDef Relationship->RRegion.Bottom = Relationship->RRegion.Y -  20;
+    ConstDef Relationship->RRegion.Left = (LeftOf)Relationship->Label.TextDisplay -  20;
+    ConstDef Relates->Arrowhead2.Visible =  ( Relates->Arrowhead2.ShowArrow )  And  ( Relates->Line2.Visible ) ;
+    ConstDef Relates->Label.X =  XMiddleOfLine( Relates->Line.LineDisplay ) ;
+    ConstDef Relates->Label.Y =  YMiddleOfLine( Relates->Line.LineDisplay ) ;
+
+    /*
+     * put the Relates Arrowhead near the Relationship diamond, but not
+     * too close
+     */
+
+    ConstDef Relates->Arrowhead.X 
+      = XDistanceAlongLine(Relates->Line.LineDisplay)
+        (SquareRoot(
+          Squared(XBoundaryNearestPoint(Relates->Relationship->RRegion.Region)
+                   (Relates->Entity->ERegion.X + Relates->Entity->AgRegion.X)
+                   (Relates->Entity->ERegion.Y + Relates->Entity->AgRegion.Y)-
+                  Relates->Relationship->RRegion.X)
+          + 
+          Squared(YBoundaryNearestPoint(Relates->Relationship->RRegion.Region)
+                   (Relates->Entity->ERegion.X + Relates->Entity->AgRegion.X)
+                   (Relates->Entity->ERegion.Y + Relates->Entity->AgRegion.Y)-
+                  Relates->Relationship->RRegion.Y))
+         + 10);
+
+    ConstDef Relates->Arrowhead.Y 
+      = YDistanceAlongLine(Relates->Line.LineDisplay)
+        (SquareRoot(
+          Squared(XBoundaryNearestPoint(Relates->Relationship->RRegion.Region)
+                   (Relates->Entity->ERegion.X + Relates->Entity->AgRegion.X)
+                   (Relates->Entity->ERegion.Y + Relates->Entity->AgRegion.Y)-
+                  Relates->Relationship->RRegion.X)
+          + 
+          Squared(YBoundaryNearestPoint(Relates->Relationship->RRegion.Region)
+                   (Relates->Entity->ERegion.X + Relates->Entity->AgRegion.X)
+                   (Relates->Entity->ERegion.Y + Relates->Entity->AgRegion.Y)-
+                  Relates->Relationship->RRegion.Y))
+
+         + 10);
+
+    ConstDef Relates->Arrowhead.Left = Relates->Arrowhead.X - 8;
+    ConstDef Relates->Arrowhead.Bottom = Relates->Arrowhead.Y - 10;
+    ConstDef Relates->Arrowhead.Orientation
+        = AngleOfLine(Relates->Line.LineDisplay) + 180;
+    ConstDef Relates->Arrowhead.BoundaryWidth = Relates->Line.Width;
+
+    ConstDef Relates->Line.StartX = Relates->Relationship->RRegion.X -  If( Relates->Line2.Visible )  Then(  20 )  Else(  0 ) ;
+    ConstDef Relates->Line.StartY = Relates->Relationship->RRegion.Y +  If( Relates->Line2.Visible )  Then(  5 )  Else(  0 ) ;
+    ConstDef Relates->Line.EndX = Relates->Entity->ERegion.X +  XBoundaryNearestPoint( Relates->Entity->AgRegion.Region )  ( Relates->Relationship->RRegion.X )  ( Relates->Relationship->RRegion.Y )  -  If( Relates->Entity->ERegion.X And Relates->Line2.Visible )  Then(  20 )  Else(  0 ) ;
+    ConstDef Relates->Line.EndY = Relates->Entity->ERegion.Y +  YBoundaryNearestPoint( Relates->Entity->AgRegion.Region )  ( Relates->Relationship->RRegion.X )  ( Relates->Relationship->RRegion.Y )  +  If( Relates->Entity->ERegion.X And Relates->Line2.Visible )  Then(  5 )  Else(  0 ) ;
+    ConstDef Relates->Line2.StartX = Relates->Relationship->RRegion.X +  20;
+    ConstDef Relates->Line2.StartY = Relates->Relationship->RRegion.Y -  5;
+    ConstDef Relates->Line2.EndX = Relates->Entity->ERegion.X +  XBoundaryNearestPoint( Relates->Entity->AgRegion.Region )  ( Relates->Relationship->RRegion.X )  ( Relates->Relationship->RRegion.Y )  +  If( Relates->Entity->ERegion.X )  Then(  20 )  Else(  0 ) ;
+    ConstDef Relates->Line2.EndY = Relates->Entity->ERegion.Y +  YBoundaryNearestPoint( Relates->Entity->AgRegion.Region )  ( Relates->Relationship->RRegion.X )  ( Relates->Relationship->RRegion.Y )  -  If( Relates->Entity->ERegion.X )  Then(  5 )  Else(  0 ) ;
+    ConstDef Relates->Label2.Visible = Relates->Line2.Visible;
+    ConstDef Relates->Label2.X =  XMiddleOfLine( Relates->Line2.LineDisplay ) ;
+    ConstDef Relates->Label2.Y =  YMiddleOfLine( Relates->Line2.LineDisplay ) ;
+    ConstDef Relates->Arrowhead2.X =  XDistanceAlongLine( Relates->Line2.LineDisplay )  (  SquareRoot(  Squared (  XBoundaryNearestPoint( Relates->Relationship->RRegion.Region )  ( Relates->Entity->ERegion.X + Relates->Entity->AgRegion.X )  ( Relates->Entity->ERegion.Y + Relates->Entity->AgRegion.Y )  - Relates->Relationship->RRegion.X )  +  Squared (  YBoundaryNearestPoint( Relates->Relationship->RRegion.Region )  ( Relates->Entity->ERegion.X + Relates->Entity->AgRegion.X )  ( Relates->Entity->ERegion.Y + Relates->Entity->AgRegion.Y )  - Relates->Relationship->RRegion.Y )  )  +  10 ) ;
+    ConstDef Relates->Arrowhead2.Y =  YDistanceAlongLine( Relates->Line2.LineDisplay )  (  SquareRoot(  Squared (  XBoundaryNearestPoint( Relates->Relationship->RRegion.Region )  ( Relates->Entity->ERegion.X + Relates->Entity->AgRegion.X )  ( Relates->Entity->ERegion.Y + Relates->Entity->AgRegion.Y )  - Relates->Relationship->RRegion.X )  +  Squared (  YBoundaryNearestPoint( Relates->Relationship->RRegion.Region )  ( Relates->Entity->ERegion.X + Relates->Entity->AgRegion.X )  ( Relates->Entity->ERegion.Y + Relates->Entity->AgRegion.Y )  - Relates->Relationship->RRegion.Y )  )  +  10 ) ;
+    ConstDef Relates->Arrowhead2.Left = Relates->Arrowhead2.X -  8;
+    ConstDef Relates->Arrowhead2.Bottom = Relates->Arrowhead2.Y -  10;
+    ConstDef Relates->Arrowhead2.Orientation =  AngleOfLine( Relates->Line2.LineDisplay )  +  180;
+    ConstDef Relates->Arrowhead2.BoundaryWidth = Relates->Line2.Width;
+    ConstDef Attribute->Label.X = Attribute->ARegion.X;
+    ConstDef Attribute->Label.Y = Attribute->ARegion.Y;
+    ConstDef Attribute->ARegion.Bottom = Attribute->ARegion.Y -  17;
+    ConstDef Attribute->ARegion.Left = (LeftOf)Attribute->Label.TextDisplay -  10;
+    ConstDef Attribute->Line.StartX = Attribute->ARegion.X;
+    ConstDef Attribute->Line.StartY = Attribute->ARegion.Y;
+    ConstDef Attribute->Line.EndX = Attribute->AssociatedWith->ERegion.X + Attribute->AssociatedWith->RRegion.X;
+    ConstDef Attribute->Line.EndY = Attribute->AssociatedWith->ERegion.Y + Attribute->AssociatedWith->RRegion.Y;
+    ConstDef Attribute->KeyLine.StartX = (LeftOf)Attribute->Label.TextDisplay;
+    ConstDef Attribute->KeyLine.StartY = Attribute->ARegion.Y -  7;
+    ConstDef Attribute->KeyLine.EndX = (RightOf)Attribute->Label.TextDisplay;
+    ConstDef Attribute->KeyLine.EndY = Attribute->ARegion.Y -  7;
+    ConstDef Attribute->KeyLine.Pattern =  If( Attribute->AssociatedWith->ERegion.BoundaryWidth ==  1 )  Then(  65535 )  Else(  61680 ) ;
+    ConstDef Attribute->ARegion.BackColor = 
+      If (( Attribute->Type == "char") Or (Attribute->Type == "text"))
+      Then (ColorVal(1.0 1.0 0.5))
+      Else ( If ((Attribute->Type == "date" )
+               Or (Attribute->Type == "datetime"))
+             Then (ColorVal(0.5 1.0 0.5))
+             Else ( If ((Attribute->Type == "int" )
+                      Or (Attribute->Type == "float")
+                      Or (Attribute->Type == "decimal"))
+                    Then( ColorVal(0.5 1.0 1.0))
+                    Else (ColorVal(1.0 0.25 1.0))));
+    ConstDef IsA->Label.X = IsA->IRegion.X;
+    ConstDef IsA->Label.Y = IsA->IRegion.Y -  6;
+    ConstDef IsA->IRegion.Bottom = IsA->IRegion.Y -  20;
+    ConstDef IsA->IRegion.Left = (LeftOf)IsA->Label.TextDisplay -  15;
+    ConstDef IsA->ParentLine.StartX = IsA->IRegion.X;
+    ConstDef IsA->ParentLine.StartY = IsA->IRegion.Y;
+    ConstDef IsA->ParentLine.EndX = IsA->ParentEntity->ERegion.X;
+    ConstDef IsA->ParentLine.EndY = IsA->ParentEntity->ERegion.Y;
+    ConstDef IsA->Label.Visible = IsA->IRegion.Visible;
+    ConstDef IsA->ParentLine.Visible = IsA->IRegion.Visible;
+    ConstDef IsA->CrossRegion.X =  XDistanceAlongLine( IsA->ParentLine.LineDisplay )  (  30 ) ;
+    ConstDef IsA->CrossRegion.Y =  YDistanceAlongLine( IsA->ParentLine.LineDisplay )  (  30 ) ;
+    ConstDef IsA->CrossRegion.Left = IsA->CrossRegion.X -  6;
+    ConstDef IsA->CrossRegion.Bottom = IsA->CrossRegion.Y -  6;
+    ConstDef IsA->CrossRegion.Orientation =  AngleOfLine( IsA->ParentLine.LineDisplay ) ;
+    ConstDef ChildToIsA->ChildLine.StartX = ChildToIsA->IsABox->IRegion.X;
+    ConstDef ChildToIsA->ChildLine.StartY = ChildToIsA->IsABox->IRegion.Y;
+    ConstDef ChildToIsA->ChildLine.EndX = ChildToIsA->ChildEntity->ERegion.X;
+    ConstDef ChildToIsA->ChildLine.EndY = ChildToIsA->ChildEntity->ERegion.Y;
+    ConstDef Aggregate->AgRegion.Left =  Min(  Min(  If(  CountOfSet( Aggregate->AggregateOf<-Relates->Relationship->Entity<-Attribute->AssociatedWith )  >  0 )  Then(  MinOfSet( (LeftOf)Aggregate->AggregateOf<-Relates->Relationship->Entity<-Attribute->AssociatedWith->ARegion.Region )  )  Else( (LeftOf)Aggregate->AggregateOf->RRegion.Region )  )  (  If(  CountOfSet( Aggregate->AggregateOf<-Attribute->AssociatedWith )  >  0 )  Then(  MinOfSet( (LeftOf)Aggregate->AggregateOf<-Attribute->AssociatedWith->ARegion.Region )  )  Else( (LeftOf)Aggregate->AggregateOf->RRegion.Region )  )  )  (  Min( (LeftOf)Aggregate->AggregateOf->RRegion.Region )  (  Min(  If(  CountOfSet( Aggregate->AggregateOf<-Relates->Relationship->Entity->ERegion.Region )  >  0 )  Then(  MinOfSet( (LeftOf)Aggregate->AggregateOf<-Relates->Relationship->Entity->ERegion.Region )  )  Else( (LeftOf)Aggregate->AggregateOf->RRegion.Region )  )  (  If(  CountOfSet( Aggregate->AggregateOf<-Relates->Relationship->Entity->AgRegion.Region )  >  0 )  Then(  MinOfSet( (LeftOf)Aggregate->AggregateOf<-Relates->Relationship->Entity->AgRegion.Region )  )  Else( (LeftOf)Aggregate->AggregateOf->RRegion.Region )  )  )  )  -  10;
+    ConstDef Aggregate->AgRegion.Bottom =  Min(  Min(  If(  CountOfSet( Aggregate->AggregateOf<-Relates->Relationship->Entity<-Attribute->AssociatedWith )  >  0 )  Then(  MinOfSet( (BottomOf)Aggregate->AggregateOf<-Relates->Relationship->Entity<-Attribute->AssociatedWith->ARegion.Region )  )  Else( (BottomOf)Aggregate->AggregateOf->RRegion.Region )  )  (  If(  CountOfSet( Aggregate->AggregateOf<-Attribute->AssociatedWith )  >  0 )  Then(  MinOfSet( (BottomOf)Aggregate->AggregateOf<-Attribute->AssociatedWith->ARegion.Region )  )  Else( (BottomOf)Aggregate->AggregateOf->RRegion.Region )  )  )  (  Min( (BottomOf)Aggregate->AggregateOf->RRegion.Region )  (  Min(  If(  CountOfSet( Aggregate->AggregateOf<-Relates->Relationship->Entity->ERegion.Region )  >  0 )  Then(  MinOfSet( (BottomOf)Aggregate->AggregateOf<-Relates->Relationship->Entity->ERegion.Region )  )  Else( (BottomOf)Aggregate->AggregateOf->RRegion.Region )  )  (  If(  CountOfSet( Aggregate->AggregateOf<-Relates->Relationship->Entity->AgRegion.Region )  >  0 )  Then(  MinOfSet( (BottomOf)Aggregate->AggregateOf<-Relates->Relationship->Entity->AgRegion.Region )  )  Else( (BottomOf)Aggregate->AggregateOf->RRegion.Region )  )  )  )  -  10;
+    ConstDef Aggregate->AgRegion.X =  (  Max(  Max(  If(  CountOfSet( Aggregate->AggregateOf<-Relates->Relationship->Entity<-Attribute->AssociatedWith )  >  0 )  Then(  MaxOfSet( (RightOf)Aggregate->AggregateOf<-Relates->Relationship->Entity<-Attribute->AssociatedWith->ARegion.Region )  )  Else( (RightOf)Aggregate->AggregateOf->RRegion.Region )  )  (  If(  CountOfSet( Aggregate->AggregateOf<-Attribute->AssociatedWith )  >  0 )  Then(  MaxOfSet( (RightOf)Aggregate->AggregateOf<-Attribute->AssociatedWith->ARegion.Region )  )  Else( (RightOf)Aggregate->AggregateOf->RRegion.Region )  )  )  (  Max( (RightOf)Aggregate->AggregateOf->RRegion.Region )  (  Max(  If(  CountOfSet( Aggregate->AggregateOf<-Relates->Relationship->Entity->ERegion.Region )  >  0 )  Then(  MaxOfSet( (RightOf)Aggregate->AggregateOf<-Relates->Relationship->Entity->ERegion.Region )  )  Else( (RightOf)Aggregate->AggregateOf->RRegion.Region )  )  (  If(  CountOfSet( Aggregate->AggregateOf<-Relates->Relationship->Entity->AgRegion.Region )  >  0 )  Then(  MaxOfSet( (RightOf)Aggregate->AggregateOf<-Relates->Relationship->Entity->AgRegion.Region )  )  Else( (RightOf)Aggregate->AggregateOf->RRegion.Region )  )  )  )  + Aggregate->AgRegion.Left +  10 )  /  2;
+    ConstDef Aggregate->AgRegion.Y =  (  Max(  Max(  If(  CountOfSet( Aggregate->AggregateOf<-Relates->Relationship->Entity<-Attribute->AssociatedWith )  >  0 )  Then(  MaxOfSet( (TopOf)Aggregate->AggregateOf<-Relates->Relationship->Entity<-Attribute->AssociatedWith->ARegion.Region )  )  Else( (TopOf)Aggregate->AggregateOf->RRegion.Region )  )  (  If(  CountOfSet( Aggregate->AggregateOf<-Attribute->AssociatedWith )  >  0 )  Then(  MaxOfSet( (TopOf)Aggregate->AggregateOf<-Attribute->AssociatedWith->ARegion.Region )  )  Else( (TopOf)Aggregate->AggregateOf->RRegion.Region )  )  )  (  Max( (TopOf)Aggregate->AggregateOf->RRegion.Region )  (  Max(  If(  CountOfSet( Aggregate->AggregateOf<-Relates->Relationship->Entity->ERegion.Region )  >  0 )  Then(  MaxOfSet( (TopOf)Aggregate->AggregateOf<-Relates->Relationship->Entity->ERegion.Region )  )  Else( (TopOf)Aggregate->AggregateOf->RRegion.Region )  )  (  If(  CountOfSet( Aggregate->AggregateOf<-Relates->Relationship->Entity->AgRegion.Region )  >  0 )  Then(  MaxOfSet( (TopOf)Aggregate->AggregateOf<-Relates->Relationship->Entity->AgRegion.Region )  )  Else( (TopOf)Aggregate->AggregateOf->RRegion.Region )  )  )  )  + Aggregate->AgRegion.Bottom +  10 )  /  2;
+
+
+} /* end modeldef for model: ER */
+
+
+  MetaphorCorsAre { 
+  PrimCorDef Entity Entity
+   {
+    AttrCorDef Name Label.Text;
+    AttrCorDef Strength ERegion.BoundaryWidth
+      {
+      ValueCorDef ( "Strong" ,  1 );
+      ValueCorDef ( "Weak" ,  2 );
+      };
+    AttrCorDef OwnedThroughRel OwnedThroughRel;
+   };
+  PrimCorDef Relationship Relationship
+   {
+    AttrCorDef Name Label.Text;
+    AttrCorDef RelatesWeakToOwner RRegion.BoundaryWidth
+      {
+      ValueCorDef ( "Does Not" ,  1 );
+      ValueCorDef ( "Does" ,  2 );
+      };
+   };
+  PrimCorDef Relates Relates
+   {
+    AttrCorDef Name Label.Text;
+    AttrCorDef Name2 Label2.Text;
+    AttrCorDef Relationship Relationship;
+    AttrCorDef Entity Entity;
+    AttrCorDef Total Line.Width
+      {
+      ValueCorDef ( "Partial" ,  1 );
+      ValueCorDef ( "Total" ,  2 );
+      };
+    AttrCorDef Cardinality1 Arrowhead.Visible
+      {
+      ValueCorDef ( "FromMany" ,  0 );
+      ValueCorDef ( "FromOne" ,  1 );
+      };
+    AttrCorDef Cardinality2 Arrowhead2.ShowArrow
+      {
+      ValueCorDef ( "FromMany" ,  0 );
+      ValueCorDef ( "FromOne" ,  1 );
+      };
+    AttrCorDef SelfRelates Line2.Visible
+      {
+      ValueCorDef ( "Does Not" ,  0 );
+      ValueCorDef ( "Does" ,  1 );
+      };
+   };
+  PrimCorDef Attribute Attribute
+   {
+    AttrCorDef Name Label.Text;
+    AttrCorDef AssociatedWith AssociatedWith;
+    AttrCorDef Key KeyLine.Visible
+      {
+      ValueCorDef ( "Is-Not-Key" ,  0 );
+      ValueCorDef ( "Is-Key" ,  1 );
+      };
+    AttrCorDef Type Type
+      {
+      ValueCorDef ( "char" , "char" );
+      ValueCorDef ( "int" , "int" );
+      ValueCorDef ( "float" , "float" );
+      ValueCorDef ( "date" , "date" );
+      ValueCorDef ( "datetime" , "datetime" );
+      ValueCorDef ( "decimal" , "decimal" );
+      ValueCorDef ( "interval" , "interval" );
+      ValueCorDef ( "money" , "money" );
+      ValueCorDef ( "text" , "text" );
+      };
+   };
+  PrimCorDef IsA IsA
+   {
+    AttrCorDef ParentEntity ParentEntity;
+   };
+  PrimCorDef ChildToIsA ChildToIsA
+   {
+    AttrCorDef ChildEntity ChildEntity;
+    AttrCorDef IsABox IsABox;
+   };
+  PrimCorDef Aggregate Aggregate
+   {
+    AttrCorDef AggregateOf AggregateOf;
+   };
+ }

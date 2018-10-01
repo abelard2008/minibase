@@ -1,0 +1,407 @@
+<BODY BGCOLOR="#FFDDDD">
+<HTML>
+
+<HEAD>
+<TITLE>Minirel Buffer Manager Report</TITLE>
+</HEAD>
+<h1 ALIGN=CENTER>Minirel Buffer Manager Report</h1>
+<hr>
+Prepared by <a href="http://math.wisc.edu/~qiu">Kan Qiu</a>
+(<a HREF="mailto:kan@cs.wisc.edu">kan@cs</a>)
+and
+<a href="http://math.wisc.edu/~fei">Fei Su</a>
+(<a HREF="mailto:fei@cs.wisc.edu">fei@cs</a>) May 13 ,1995<br>
+<ul>
+<li><a href="#intro">INTRODUCTION</a>
+<li><a href="#extern">EXTERNAL INTERFACES</a>
+<li><a href="#intern">INTERNAL DESIGN</a>
+<li><a href="#accomp">ACCOMPLISHMENTS</a>
+<li><a href="#testing">TESTING</a>
+<li><a href="#retro">RETROSPECTIVE</a>
+<li><a href="#append">APPENDIX</a>
+</ul>
+<br>
+<hr>
+
+
+<a name="intro"> <h2 ALIGN=CENTER>INTRODUCTION</h2> </a>
+Buffer manager plays an important role in the Minirel multi-user database
+system. It manages a number of memory frames and book-keeps based on a
+hashing table inside the shared memory region. Buffer manager sits between
+upper level database access methods and the lower level space management.
+Buffer manager is also extensible with respect to different replacement
+polocies, i.e., user can change the buffer frame replacement policy to
+any user defined policy as long as user can provide an replacer class
+whose public interfaces are identical to those of the default replacer 
+class Clock based on the clock algorithm. Writes of dirty pages are handled
+synchronously when dirty pages are replaced ; the buffer manager also 
+support the reservation of blocks of pages for use, e.g., by fancy join method
+that utilize large amounts of buffer space. Buffer manager observe steal and no force policy.
+<br>
+<br>
+Buffer manager provides basic methods such as page pinning and unpinning,
+page allocation and deallocation , buffer frame reservation and release
+for some special join methods . Most minirel components of Minirel have to 
+interact with buffer manager. Most public interfaces of buffer manager
+are designed for access methods(B+Tree, Linear Hashing , Grid Files ,
+R-Trees,etc.) and join methods. Buffer manager has to use interfaces 
+provided by space manager to do disk I/O for frame replacement. Also buffer
+manager communicates with recovery manager to provide the checkpoint
+service and log manager to enforce write after log(WAL) policy. After all,
+buffer manager uses synchronization machanisms provided by OS group to
+achieve mutual exclusion during its critical sections.
+<br>
+<br>
+<a name="extern"> <h2 ALIGN=CENTER>EXTERNAL INTERFACES</h2> </a>
+<pre>
+class BufMgr {
+public:
+   BufMgr();	//Buffer pool size is set to be a default integer
+
+   ~BufMgr();  	//flush all valid dirty pages to disk
+
+   Status pinPage(int PageId_in_a_DB, Page*& page,int emptyPage=0);
+		// check if this page is in buffer pool, otherwise
+		// find a frame for this page , read in and pin it.
+		// also write out the old page if it's dirty before 
+		// reading if emptyPage==TRUE, then actually no 
+		// read is done to bring the page
+
+   Status unpinPage(int globalPageId_in_a_DB, int dirty=FALSE);
+		// if pincount>0, decrement it and if it becomes zero,
+		// put it in a group of replacement candidates.
+		// if pincount=0 before this call, return error.
+
+   Status newPage(int& firstPageId, Page*& firstpage,int howmany=1); 
+		// call DB object to allocate a run of new pages and 
+                // find a frame in the buffer pool for the first page
+		// and pin it. If buffer is full, ask DB to deallocate 
+		// all these pages and return error
+
+    	Status 	freePage(int globalPageId); 
+		// user should call this method if it needs to 
+		// delete a page this routine will call DB to 
+		//deallocate the page 
+
+    	Status 	reserve(int number, Page* pagelist[]);
+		// reservation of a number of frames for special 
+		// purpose,actually it just pin these frames and 
+		// remove them from the buffer table.
+
+	Status	commit();   
+		// for Xact to notify bufferMgr to 
+		// really delete pages
+
+   	Status	release(int number, Page* pagelist[]); 
+		//only release those reserved by previous interface
+		//This routine includes unpinPage operation.
+
+	Status 	dirtyPageTable(int& Num_of_dirtyPage,
+			int globalPageId[],	
+				//user provides an array to hold Ids
+			lsn_t	recovery_LSN[]	
+				//user provides the space 
+			);
+		//(we don't assume that recovery manager has
+		//to know the size of the buffer pool)
+		//and an array of integers in the user
+		//provided integer buffer of some maximum
+		//size of buffer pool size.
+
+	void 	last_lsn_flushed(lsn_t last_lsn);
+		// To be called by log manager
+
+    	void 	printSelf(void);
+};
+</pre>
+<a name="intern"> <h2 ALIGN=CENTER>INTERNAL DESIGN</h2></a>
+Buffer manager is implemented by the BufMgr class. 
+Besides the lock machanisms, private members of the BufMgr class
+include an array of Page objects ,which is the real buffer pool,
+a BufHashTbl object, which is in charge of book-keeping for
+each frame and hashing search, a REPLACER(Clock) object enforcing the
+clock algorithm and finally a lsn_t object to record the latest
+log tail that's written to the disk. We discuss all major internal 
+designs as follows:<br>
+<ul>
+<li>BufMgr Class's Private Members
+<ul>
+<li>lsn_t BufMgr::wal_lsn<br>
+	To enforce WAL ( write after log) protocol , wal_lsn records
+the page_lsn corresponding to the latest disk write of the log tails.
+Communications between log manager and buffer manager are made possible 
+by void BufMgr::last_lsn_flushed(lsn_t last_lsn) and 
+Status LogMgr::bufmgr_flush(void) (see report of log manager for details) ,
+Every time when log manager flush it log tail , it will use last_lsn_flushed
+public interface of buffer manager in inform buffer manager and buffer
+manager will update its wal_lsn accordingly. Whenever a dirty page has to
+be written back to the disk , its pagelsn is compared to wal_lsn. If
+pagelsn is less than wal_lsn , page is written without calling log manager,
+otherwise , a call will be made to log manager's bufmgr_flush() method
+before writing of the page.
+
+<li>Semaphore BufMgr::lsnlock<br>
+	Used to protect the critical section when we update wal_lsn
+<li>Semaphore BufMgr::lock<br>
+	This lock is enforced to protect critical sections at BufMgr
+level
+<li>BufHashTbl BufMgr::hashTable<br>
+	It includes hash table lookup , insert and delete of a particular
+page , and an array of buffer descriptor table for the book-keeping of
+each individual page frame in the buffer pool.
+<li>Page BufMgr::bufPool[NUMBUF]<br>
+	The actual buffer pool container, when a page is pinned, a pointer
+pointing to the corresponding entry ( a Page object) is return to the user.
+<li>Clock BufMgr::replacer<br>
+	The replacer should be an independent replacement policy maker. 
+It has its own book-keeping about which frame is pinned and what the pin
+count number. Therefore every piece of information about the status change
+of each frame has to be passed to this class. It pick_victim() method will
+return a replaceable frame number if it exists.
+	
+</ul>
+<br>
+<li>BufDesc Class <br>
+This is the most basic class used in buffer manager. It contains all
+the necessary book-keeping information about status of the corresponding
+frame.
+<ul>
+<li>int     BufDesc::pageNo <br>
+	Page number of the page that is contained in this buffer frame.
+Page number is unique inside a DB class.
+<li>int     BufDesc::dirty<br>
+	This flag represents if this page has been modified. dirty=1 if
+the page is modified. 
+<li>lsn_t   BufDesc::RecLSN<br>
+	It contain the recovery lsn of current page in this frame. Whenever
+a new page is read from the disk. A call to recovery manager has been made
+to get the corresponding recovery lsn for this page. When dirtyPageTable()
+method of BufMgr is called by recovery manager, buffer manager will provide
+the dirty page table that will include this member for each dirty page.
+<li>int     BufDesc::reading<br>
+	This member flags the I/O status of current page. Since disk I/O
+calls consume considerable amount of time, we need to keep disk I/O
+process outside the critical section of the whole buffer pool's page
+search. But this causes problems of some race condition. For example,
+it's possible that two processes are almost at the same time want to pin 
+one page that is outside the buffer pool. If there were no concurrency
+control, the two processes might both encounter page miss and ask for
+a frame from buffer pool. What we really want is that, who ever first 
+find the page miss will do the page reading from the disk. Everybody else
+who are requesting the same page have to wait for the completion of the
+I/O incurred by the first comer. When the page is in, everybody requesting
+the same page will proceed. Although this situation is handled well in 
+current implementation ,  there is glitch if a third process wants to
+read the old dirty page that is inside the frame that's involved in I/O,
+It's possible for it to read the old version of that victim page from the
+disk instead of the dirty version ( current version ) of the same page
+because the dirty version might not be reflected on the disk if the writing
+isn't finished.
+<li>Semaphore       BufDesc::iolock<br>
+	This semaphore is for the synchronization of the situation metioned 
+in explanation of member reading. This iolock is enforced right before the 
+process release the the lock that's enforced on the whole BufMgr, after
+I/O process signal has been set in member reading.
+
+<li>int prevframe and int nextframe<br>
+	Both serve as double linked list pointers in the array. Initially
+all frame descriptors are linked in one free list. If one frame is pinned,
+its prevframe and nextframe are changed correspondingly to represent a
+frame in the hash table.
+	Actually we should really leave this two member out of the class 
+because they are used to maintain the list of hash table buckets. We thought
+maintaining a dynamic link list inside the shared memory would be very
+expensive and hard to manipulate. So we decided to implement the whole hash 
+table statically by using three array of integers. Since the biggest number of
+hash table buckets is at most the same as the number of frames in the buffer
+pool, so just combine two of the arraies with the buffer pool description 
+table (called BufDesc BufHashTbl::bufTable[NUMBUF] here). Later versions
+of Minirel could be improved by separating the hash table information from 
+the description table to achieve more code independence.
+</ul>
+<br>
+<li>BufHashTbl Class<br>
+<ul>
+<li>int BufHashTbl::hash ( int pageNo ) <br>
+	We used to have some nontrivial hash function when we wanted to 
+implement multiple DB objects sharing same buffer manager. Now, since
+DB is unique with respect to a buffer manager, this hash function 
+is just one line of code. We don't bother to eliminate it.
+
+<li>int	BufHashTbl::insert ( int pageNo , int frameNo )<br>
+	Insert the frameNo into the hash table slot that is related to 
+the hash value of the pageNo, and initialize the corresponding 
+frame descriptor, e.g., setting pageNo and initializing dirty flag.
+These modifications of the hash table is done atomically by the protection of
+Semaphore BufHashTbl::lock.
+
+<li>int	BufHashTbl::lookup ( int pageNo ) <br>
+	Search the hash table to see if this page (pageNo) is already
+in the hashtable. return -1 if it's hash table miss. This operation is 
+proteected by Semaphore BufHashTbl::lock.
+
+<li>int	BufHashTbl::remove ( int frameNo )  <br>
+	Disconnect the association between this frameNo and a hash table
+slot. Normally this interface is called if the page in this frameNo is
+picked as replacement victim. It initializes all members of the 
+BufDesc object associated with frameNo. This method is also done
+atomically by the protection of Semaphore BufHashTbl::lock.
+
+<li>int BufHashTbl::display ( void ) <br>
+	Print out whole hash table. A list of frames ( with a page number in
+and dirty flag ) are printed for every hash table value. "NONE" is printed
+is no frame is associated with a hash table value. This is also protected
+by Semaphore BufHashTbl::lock to make a consistent output.
+
+<li>int BufHashTbl::ht[HTSIZE] <br>
+	This array of integers represent the header for each hash value slot.
+Initialized -1 ( means no frame associated), it will be set to the frame number
+of the first page associated with this slot. At the same time , the preframe
+member in that descriptor also points to back to the ht entry. Basically
+ double linked lists are maintain here. Every ht entry is one of the end of
+each double linked list. Every lookup operation begin with a ht entry.
+
+<li>Semaphore BufHashTbl::lock <br>
+        Protect lookup , remove and insert operation from other process's
+intervention.
+
+<li>BufDesc BufHashTbl::bufTable[NUMBUF]<br>
+	This is the array of BufDesc objects. It records all frame and page
+information.
+</ul>
+<br>
+<li>Clock Class ( an example of replacer ) <br>
+	This class is independent from the BufMgr object. Different 
+replacement policy could be implemented using the same interface that
+Clock has. All BufMgr page operations are passed to Clock object via
+pin , unpin , free methods and Clock can do its own book-keeping independent 
+from BufMgr. An available frame is returned via pick_victim methods.
+<ul>
+<li>int	Clock::pin ( int frameNo ) <br>
+<li>int Clock::unpin ( int frameNo ) <br>
+<li>int Clock::free ( int frameNo ) <br>
+<li>int Clock::pick_victim ( void ) <br>
+<li>void Clock::info ( void ) <br>
+</ul>
+<br>
+<li>Global Variables Needed from Outside buffer manager<br> 
+<ul>
+<li>extern  lsn_t   invalid_lsn<br>
+<li>extern  global_error* minirel_error<br>
+<li>extern  DB* db
+</ul>
+<br>
+<li>Global Variables Only Inside buffer manager<br>
+<ul>
+<li>int     pending_free_array[]
+	If a transaction wants to free a dirty page, buffer manager 
+will do the real free operation at the commit time. So every transaction
+should call BufMgr::commit() during its commit operation.
+<li>int     num_pending_free
+	Counts the number of freed dirty pages by current transaction
+<li>#define NUMBUF 8<br>
+	It's the number of page frames in the buffer pool.
+<li>#define HTSIZE 5<br>
+	It's the hash table size. It is alway a prime number.
+</ul>
+<br>
+</ul>
+<a name="accomp"> <h2 ALIGN=CENTER>ACCOMPLISHMENTS</h2></a>
+We had to rewrite the buffer BufMgr class although new code inherit
+some basic data structure names and functionality. First of all,
+old code does not have independent replacement class, so we had to design
+an totally isolated and extensible relacement class. Second,
+we decided to try to avoid dynamic memory allocation inside the buffer 
+manager because we did not expect to be able to dynamically allocate 
+memory in the shared mode without any extra trouble. Third, 
+multi-user buffer manager class is much more complicated than the
+single user version, besides our overall architecture changed a lot 
+from the original single user minirel, therefore those three hundred lines
+of old buffer manager is not very attractive to us. However, old version
+of buffer manager did serve as a good example about how the interfaces
+look like and how buffer manager is structured. We successfully combined
+codes from space manager and os group and new error protocol and
+wrote a comprehensive test.C driver to test multi-user code.<br>
+
+<a name="testing"><h2 ALIGN=CENTER>TESTING</h2></a>
+We wrote a driver named test.C with independent friendly user interface 
+to test every public interfaces of our buffer manager code. For example,
+we intentionally created some break point in our code to check the correctness
+of the concurrency control. To test the case of multiple users are accessing
+the same page that is not in the buffer pool, we set a stop point inside
+one of the critical sections. Tests proved that our implementation can 
+correctly handle the case of multiple reading of a single page from the disk
+by different users. Unfortunately, however, we failed to prectect the 
+consistency of replaced page during a particular race situation. Therefore
+future enhancement has to be made.
+
+<a name="retro"><h2 ALIGN=CENTER>RETROSPECTIVE</h2></a>
+In the multi-user  version of minirel, the most important problem for
+buffer manager is to ensure mutual exclusion and synchronization at least
+price of concurrency. In retrospect, we did much work to make it functional
+ in multi-user version, but we also made some mistakes. 
+
+<P>
+Because disk I/O is very slow, we don't want to block all other processes
+when one process is doing disk read or write. This means when one process
+wants to do disk I/O, it will release the lock on the buffer manager, 
+and let other processes call any functions in buffer manager, thus 
+synchronization  problem is a big issue in this case. 
+
+<P>
+There are many problems related to disk I/O. One is read/read problem, i.e.
+if one process wants a page which is being read from the disk by other process,
+it has to be blocked until the disk read is completed. We solved this problem
+by adding a semaphore to each descriptor and let processes wait on this 
+semaphore when disk read is in progress. At the same time, lock on 
+buffer manager is released to improve concurrency. A potential problem to
+this approach is that maybe too many semaphores are needed in the case that
+there are many many page frames in the buffer pool, because we need one 
+semaphore for each page frame. Now we are going to change to another 
+approach in which we associate a waiting list to each page frame and put 
+each process to sleep on its own semaphore. In this approach, less semaphores 
+are needed. Actually, only two or three semaphores are needed in the buffer 
+manager class. 
+
+<P>
+Another problem related to disk I/O is more subtle than the previous one.
+And we overlooked it until Professor Carey pointed it out us. The problem is,
+when a process decides to do a disk read due to a miss in the pool, 
+
+
+Let's first describe the situation here. Every time when a victim frame
+is picked up,
+if the frame contains a dirty page, the victim page has to be 
+written to disk and 
+the new page needed is read from disk to the frame. Here both disk 
+write and disk read 
+are needed, and both will take a long time thus both need to be outside 
+the buffer manager critical section. Both operations could be delayed
+due to some reason, at the same time other process could get into 
+buffer manager asking for exactly the victim page which has not yet been
+written into disk and will get a miss in the buffer hash table and 
+read the page from disk , thus get an older version, leaving the database 
+in a inconsistent state.
+
+<P>
+We are going to solve this problem. Our solution is to associate the buffer
+manager a write-out list and semaphore to control the write list. 
+We will put all scheduled write-out page id in this list.
+If a miss happens when looking up a page id, the process will first grab a 
+victim frame, second check the write-out list, if the page is still in the 
+list, copy it into the frame,  otherwise read it from disk as usual. 
+The write-out list is updated just before the new page is read into the
+victim frame. Here we 
+just outlined the solution. We are still working on it.
+ 
+
+
+
+<a name="append"><h2 ALIGN=CENTER>APPENDIX</h2></a>
+<ul>
+<li><a href="bufferMgr/README">README</a>
+<li><a href="bufferMgr/Makefile">Makefile</a>
+<li><a href="bufferMgr/buf.h">buf.h</a>
+<li><a href="bufferMgr/buf.C">buf.C</a>
+</ul>
+</HTML>

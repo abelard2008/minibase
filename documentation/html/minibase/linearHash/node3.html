@@ -1,0 +1,75 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> LinearHashingFile</TITLE>
+<meta name="description" value=" LinearHashingFile">
+<meta name="keywords" value="report">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html81 HREF="node4.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A> <A NAME=tex2html79 HREF="node2.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A> <A NAME=tex2html73 HREF="node2.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html82 HREF="node4.html"> LinearHashingFile(Status&amp; statusconst </A>
+<B>Up:</B> <A NAME=tex2html80 HREF="node2.html"> External Interface</A>
+<B> Previous:</B> <A NAME=tex2html74 HREF="node2.html"> External Interface</A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00021000000000000000> LinearHashingFile</A></H2>
+<P>
+Here is the public interfaces of LinearHashingFile:
+<P>
+<PRE>class LinearHashingFile : public IndexFile {
+public:
+    // constructor for the LinearHashingFile class -- create the index
+    // name -- name of the index
+    // length, type -- describing the key attribute
+    // N -- the number of initial buckets, default = 1
+    LinearHashingFile(Status&amp; status, const char* name, const int length,
+                      const AttrType type, const int N = 1); 
+
+    // constructor for the LinearHashingFile class -- open the index
+    // assume the index already exists
+    // name -- name of the index
+    LinearHashingFile(Status&amp; status, const char * name);
+
+    // destructor
+    ~LinearHashingFile();
+
+    // destroy the index
+    Status destroyFile(void);
+    
+    // insert an entry &lt;value, rid&gt; to the index
+    Status insert(const void* value, const RID rid);
+
+    // delete an entry &lt;value, rid&gt; from the index
+    Status Delete(const void* value, const RID rid);
+    
+    // open an exact match scan with &quot;value&quot; as the key
+    IndexFileScan * new_scan(const void* value);
+
+#ifdef DEBUGLH
+    void PrintHeader();             // print the header info
+    void PrintBucket();             // print all the buckets
+    void PrintBucket(int BucNum);   // print bucket &quot;BucNum&quot;
+#endif DEBUGLH
+};</PRE>
+<P>
+<BR> <HR>
+<UL> 
+<LI> <A NAME=tex2html83 HREF="node4.html#SECTION00021100000000000000"> LinearHashingFile(Status&amp; status, const char* name, const
+int length,const AttrType type, const int N = 1) 
+<BR>LinearHashingFile(Status&amp; status, const char * name)</A>
+<LI> <A NAME=tex2html84 HREF="node5.html#SECTION00021200000000000000"> &#126;LinearHashingFile()</A>
+<LI> <A NAME=tex2html85 HREF="node6.html#SECTION00021300000000000000"> Status destroyFile(void)</A>
+<LI> <A NAME=tex2html86 HREF="node7.html#SECTION00021400000000000000"> Status insert(const void* value, const RID rid)</A>
+<LI> <A NAME=tex2html87 HREF="node8.html#SECTION00021500000000000000"> Status Delete(const void* value, const RID rid)</A>
+<LI> <A NAME=tex2html88 HREF="node9.html#SECTION00021600000000000000"> IndexFileScan * new_scan(const void* value)</A>
+<LI> <A NAME=tex2html89 HREF="node10.html#SECTION00021700000000000000"> void PrintHeader()<BR>void PrintBucket()<BR>void PrintBucket(int BucNum)<BR></A>
+</UL>
+<BR> <HR>
+<P><ADDRESS>
+<I> Weiqing Huang <BR>
+Sun May 14 16:22:27 CDT 1995</I>
+</ADDRESS>
+</BODY>

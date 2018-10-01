@@ -1,0 +1,138 @@
+<HTML>
+<HEAD>
+<TITLE>Transaction Manager</TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<H1>Transaction Manager</H1>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+The Transaction Manager keeps the all-important transaction table in
+shared memory and manages it. It manages two principal data structures
+which are used by other modules and information about the clients,
+which is used by the Minibase server.
+<p>
+The Transaction manager provides the following: <br>
+* Xaction_manager class : Keeps track of all transactions in the system.  <br>
+* Xaction class: Contains information about every transaction : The pages
+on which the transaction has locks, the minimum and the last LSN of the
+transaction, the process id and the validity of the transaction.
+<p>
+<IMG SRC="../pics/hline.gif">
+<h2>Class Structure and Implementation Details</h2><p>
+<h3>The Xaction_manager class  </h3><p>
+The transaction manager maintains pertinent information about the transactions
+in the system. It also provides methods to abort, commit, sleep and wake-up
+a transaction. There is a cap of the number of transactions in the system.
+This is defined by a global variable 'MINIBASE_MAX_TRANSACTIONS'. It is a
+derived class of the base SharedRegion class, as in a semaphore guards
+access to its contents. Only one person can modify the transaction table
+at one time. The data structures associated with the transaction manager
+are created by the Minibase server and are maintained in shared memory.<br>
+<p>
+Minibase has a global pointer to the Transaction Manager class. It is
+created by the Minibase server at server startup and is destroyed at
+server shutdown.
+<p>
+<pre>class Xaction_manager : public SharedRegion{
+public:
+
+	Xaction_manager();
+	~Xaction_manager();
+
+	Status  begin();
+	/* Is called only by the SystemDefs::init function :: A function
+	that takes care of system initialization */
+
+	Status  commit();
+	/* Will commit a transaction. This is called by the destructor
+	of the SystemDefs class */
+
+	Status  abort();
+	/* Aborts a transaction ==> will release all locks on the 
+	resources that it holds locks on and will delete the entry 
+	from the transaction table */
+
+	Status  sleep();
+	Status  wakeup(int xid);
+
+	Status  print();
+
+	int     get_key(int seq);               /* hash function */
+
+	// methods used by other modules..
+
+	Status  GetRecInfo(int xxid,RecInfo &recInfo);
+	/* Returns the information required by the recovery manager i.e.
+	the minimum and last LSN of the transaction. This required to
+	determine if the Undo operation must be performed. For more 
+	details about the details of recovery, refer to the home page 
+	about the Recovery Manager */
+	
+	Status  SetRecInfo(int xxid,RecInfo &recInfo);
+
+	Status  GetAllRecInfo(const char *db_name,int &num_entries,
+			      int xid[], RecInfo recInfoList[]);
+	Status  get_lock_info(trans_lock_info* &lock_info);
+
+	/* Provides information about the locks held by a transaction.
+	The Lock Manager requests this information from the
+	transaction manager */
+
+private:
+
+	int     _total_xaction;   // total transactions in the system
+	int     _current_seq;           //current xaction sequence number;
+	int     get_cur_seq();  /* get the current xaction sequence number */
+	int     get_total_xaction();    /*return  total number of xactions*/
+	Xaction* freelist;      //hold deleted Xaction objects;
+	Xaction* _xaction_array[MINIBASE_MAX_TRANSACTIONS];
+
+}</pre>
+
+<p>
+<h3>The Xaction class </h3>  <p>
+<p>
+The _xaction_array of the Xaction_manager class is composed of the 
+individual transactions in the system. This is again a derived class of
+the base SharedRegion. It should be noted that this is not because 
+every individual transaction may be accessed individually ( granularity
+of latching is not at the transaction level but at the level of the
+transaction table) but because we need a semaphore to make individual 
+transactions 'sleep' and 'wakeup'. 
+<p>
+Other details like the pages on which the transaction has locks on 
+and the minimum and last LSNs of the transaction as well as information
+like the process id and validity are encapsulated in this class. Methods
+are provided to access these private data members.
+<p>
+<pre>
+class Xaction : public SharedRegion {
+public:
+	Xaction();              //ctor for Xaction object
+	~Xaction();             //dtor for Xaction object;
+	int     get_pid();              //return process id;
+	int     get_xid();              //return private _xid;
+	void    sleep();                //put this process to sleep;
+	trans_lock_info* get_lock();    //return a lock ptr;
+	RecInfo* get_info();            //return a recinfo ptr;
+	Xaction* next;
+	Status  wakeup();               //wake up this process;
+
+private:
+        int     _xid;           //xaction id for this object;
+	int     _pid;
+        int     _valid;
+	trans_lock_info* _lockptr;      //for Lock Manager module
+	RecInfo* _infoptr;              //for Recovery Manager module
+
+};</pre>
+
+<p>
+<IMG SRC="../pics/hline.gif">
+<P>
+<B><A HREF="../project.html">Back to the List of Components</A></B><BR>
+<B><A HREF="../minibase.html">Back to the Minibase Home Page</A></B><BR>
+
+</body></html>

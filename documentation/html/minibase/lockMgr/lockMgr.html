@@ -1,0 +1,75 @@
+<HTML>
+<HEAD>
+<TITLE>Lock Manager </TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+<H1>Lock Manager </H1>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+The protocol followed by the Lock Manager supports page level locking . The 
+lock page class supports lock_page, unlock_page, unlock_all_pages,and 
+upgrade_lock. It support IS,IX,S,X lock modes.  
+Whenever a transaction commits or aborts, it is the
+responsibility of the OS Manager to call the 'unlockall()' function, to
+unlock all pages that the transaction had locked.
+
+<p>
+The Shared Memory manager is responsible for setting up the Lock Table
+and associated data structures in shared memory. The Lock Manager has
+its own shared memory management interface with which it allocates,
+deallocates and reuses shared memory as and when transactions enter
+and exit the system. Each process has its own instantiation of a
+Lock manager and a deadlock detector. The lock manager obtains locks
+on the lock table whenever it needs to modify its contents. 
+The Lock manager and the deadlock detector
+classes themselves are not stored in shared memory as they do not
+contain any shared data structures.
+<p>
+Currently, work is underway to change the deadlock detection mechanism.
+Deadlock detection will be done solely by the 
+<A HREF="../intro/multi_user.html"><B>Minibase server</B></A>. The
+Minibase server will wake up at frequent intervals and search for
+deadlocks and pick a victim if it finds a cycle. The Lock Manager
+will not call the deadlock detector class - it will merely assign
+locks to pages as and when they are requested.
+<p>
+<IMG SRC="../pics/hline.gif">
+<H2>Design Decisions</H2>
+The Lock Manager uses two main data structures created in shared memory,
+the trans_lock_info class and the lock_table class.
+
+<p>
+Trans_Lock_Info class: The trans_lock_info class is a member of each transactions entry in the transaction
+table. As such, each instance is automatically created by the operating system when the transaction executes
+the "begin" command. The trans_lock_info class maintains a locked_queue linked list. Each element in this list
+points to a locked page entry, called a lock_entry, which represents one of the pages on which it currently holds
+a lock.
+
+<p>
+Lock_Table class: The lock_table is created once in shared memory by the operating system, which also
+maintains a global pointer to it. This pointer is used only by the lock_manager and should not be used by other
+processes. The lock table keeps track of all the pages which have been locked by some transaction and which
+pages transactions are currently waiting to lock. More specifically, the lock table is a hash table of lock_entries.
+Each lock_entry in the table represents a page that has been locked. The lock table also maintains list of free
+shared memory that the lock manger previously allocated and are now available for reuse. The pointers are
+accessed and maintaind by the sh_alloc memory management class.
+
+<p>
+<IMG SRC="../pics/hline.gif">
+<P>
+Click here for the <A HREF="Interface.html"><B>public interface.</B></A>
+<BR>
+Click here for <A HREF="Project.html"><B>more details.</B></A><BR>
+
+<p>
+<IMG SRC="../pics/hline.gif">
+<P>
+<B><A HREF="../project.html">Back to the List of Components</A></B><BR>
+<B><A HREF="../minibase.html">Back to the Minibase Home Page</A></B><BR>
+
+</BODY>
+</HTML>
+

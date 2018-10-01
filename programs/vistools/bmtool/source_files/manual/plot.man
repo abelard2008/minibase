@@ -1,0 +1,32 @@
+.\" Copyright (c) 1994 University of Wisconsin - Madison.
+.\" All rights reserved.  
+.\"
+.TH Plot_Help 1 "Dec 19, 1994"
+.UC 4
+.SH STATISTICS
+.PP
+The following statistics are shown:
+.IP
+The ratio of pinned-to-total pages.
+.IP
+The hit ratio (percentage of times a requested page is already in the
+buffer). 
+.IP 
+The percentage of the number of \fIunpinned\f pages that are \fIdirty\f
+at the time of unpinning.
+.PP
+If you feel you do not get enough detail, you can \fBZOOM IN\f the graph by
+clicking the \fIleft mouse button.\f Click the \fIcenter mouse button\f
+to restore the original view.
+.fi
+.SH Notes
+The hit-ratio is sometimes greater than 1. This is due to the fact that
+the graph gets updated with every action taken by the \fIbuffer_manager,\f
+so there exists the possibility that the \fIbm\f will issue a number of
+READS before actually pinning the pages - the graph - which depicts the
+ratio READS/PINS will jump up and then go down again as the pages start
+to get pinned.
+.PP
+.fi
+.SH Bugs
+Unknown yet.

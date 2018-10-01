@@ -1,0 +1,72 @@
+<BODY BGCOLOR="#FFDDDD">
+
+<HTML>
+<HEAD>
+<TITLE>Introduction</TITLE>
+</HEAD>
+
+<BODY>
+
+
+<H1>Overview of the Subsystems</H1>
+
+<H2>Parser</H2>
+	The parser was inherited from Minibase, which in turn inherited
+it from the Gamma and Exodus projects.  It handles the full range of SQL
+queries, although some of them are not yet supported by Minirel II (such
+as relation creation, inserts, deletes).  It does type checking of the 
+query, consulting the Minirel II catalogs as it does so.  It does not
+actually call the real Minirel II catalogs.  A fake interface is currently
+used.
+
+<H2>Optimizer</H2>
+	The Minirel II optimizer was also inherited from Minibase, and it
+was expanded and altered to adapt to a new runtime planner.  The Minirel II
+optimizer currently supports two types of joins: nested loops and sort-merge.
+
+<H2>Runtime Planner</H2>
+	The runtime planner walks the optimized plan tree and creates
+iterators for the various joins, access methods and scans as needed.  Some
+of the interfaces between the optimizer and planner are inelegant, but these
+problems are a result of the previous design of the optimizer.
+
+<H2>Relational Operators</H2>
+	Selections, projections and joins all manipulate tuples and the 
+fields of the tuples.  Currently nested loops and sort-merge joins are 
+supported, although the code for a number of other joins exists.  Every
+join does selection and projection at the end of its operation.
+	The relational operators received access methods as arguments.
+These can be iterators on top of indicies or on top of the relation itself
+(the heap file).
+
+
+<H2>Heap Files</H2>
+	Heap Files store relations and catalog information.  They request pages
+from the global disk space manager system.
+	
+<H2>Indicies</H2>
+	Currently BTrees and linear hashing indicies are supported.  They
+are both derived from a common base class so that the relational operators
+can easily manipulate them.
+
+<H2>Buffer Manager</H2>
+	Manages a fixed size buffer pool, supporting the pinning and 
+unpinning of pages.
+
+<H2>Disk Space Map: </H2>
+	Some last minute changes (relating to concurrency) caused 
+some changes to the design of the disk space management interface.
+The entire databse is implemented as a UNIX file, with the disk space 
+manager allocating pages to heap files (where the relations are stored),
+to indicies, and to the catalogs.  
+
+<H2>Catalogs</H2>
+	Catalogs maintain information about the number of attributes
+in a relation, the indicies supported, and cardinality information.  They
+were expanded in Minirel II to provide more information faster with a
+simpler interface.
+
+
+
+</BODY>
+</HTML>

@@ -1,0 +1,57 @@
+<BODY BGCOLOR="#FFDDDD">
+<HTML>
+
+<TITLE>Meeting Summaries</TITLE>
+
+<BODY>
+
+<H3>Meeting Summaries</H3>
+
+<UL>
+<LI><EM><STRONG>May 5, 1995</STRONG></EM>
+<UL><LI>All transaction share access to one database only.  Only one
+	database will be open at a time.  If a transaction wants to
+	use another database, the OS infrastructure group will allocate
+	new shared memory structures for it.
+</UL>
+
+<LI><EM><STRONG>April 12, 1995 (private meeting with the Recovery Manager
+Group)</STRONG></EM>
+<UL><LI>Recovery Mgr Group agreed to derive from our base log record class.
+    <LI><TT>class logrecord</TT> will allocate the buffer needed for the
+	entire log record.
+    <LI>Two new methods added: <TT>log::read_next_logrec()</TT>,
+	<TT>log::get_next_lsn()</TT>.
+    <LI>Public interface files updated.
+</UL>
+
+<LI><EM><STRONG>April 7, 1995</STRONG></EM>
+<UL><LI>LSN structure modified: wrap-count, page ID, offset.
+    <LI>Recovery group in charge of updating last LSN field in transaction
+	table and updating master log record after writing a checkpoint
+	record.
+    <LI>Master log record will be stored in the header page.
+    <LI>Heap file group to provide function to allocate pages with
+	contiguous page IDs.
+</UL>
+
+<LI><EM><STRONG>March 31, 1995</STRONG></EM>
+<UL><LI>A log record has a small fixed portion followed by a
+	variable portion that is defined by the writer of the log record.
+    <LI>Refined log manager interface presented.
+</UL>
+
+<LI><EM><STRONG>March 24, 1995</STRONG></EM>
+<UL><LI>Log manager responsible for updating last LSN field in the
+	transaction table.
+    <LI>Preliminary log manager interface presented.
+</UL>
+</UL>
+
+<HR>
+
+<A HREF="http://www.cs.wisc.edu/~ajitk/cs764/index.html">Back to the Log Manager project page.</A>
+
+</BODY>
+
+</HTML>

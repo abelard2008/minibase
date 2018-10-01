@@ -1,0 +1,69 @@
+<BODY BGCOLOR="#FFDDDD">
+<HTML>
+<HEAD>
+<TITLE>Recovery Manager Page</TITLE>
+</HEAD>
+
+<BODY>
+<H1>Recovery Manager </H1>
+
+<P>
+<IMG SRC="../hline.gif">
+<P>
+
+<H2>Introduction</H2>
+The Recovery Protocol for MINIBASE is based on ARIES.  It uses WAL (write
+ahead logging), and it supports the use of the Steal/No-force policy by 
+the Buffer Manager.
+<p>
+The Recovery Manager ensures durability to the database. It operates in
+two modes. It runs in the  Normal Mode during normal database operation
+and in the Restart Mode, during crash restart.
+<p>
+While running in the Normal Mode, the Recovery Manager supports
+transaction atomicity by supporting rollbacks for aborted transactions.
+It also performs checkpoints to assist in recovery from crashes. 
+The Restart Mode is invoked by the system after a crash. The Recovery
+Manager ensures that the system is brought back to a consistent state.
+
+<H2>Design Decisions </H2>
+
+The Recovery Manager provides methods for checkpointing, rollback
+and restart. It primarily interacts with the Log Manager. One of 
+the functions of the Recovery Manager is to generate records to log 
+different actions (abort, update, commit). The Recovery Manager creates
+the log records which are written to the log file by the Log Manager. 
+
+<p>
+The Recovery Manager also interacts to a lesser degree with the Buffer 
+Manager and the Transaction Manager. It is invoked by the Transaction Manager
+for transaction rollback. It requests the Buffer Manager for the Dirty 
+Page list and the Transaction Manager for the Transaction table. 
+
+<P>
+<IMG SRC="../hline.gif">
+<P>
+Click here for the <A HREF="public.txt"><B>public interface</B></A>.
+<P>
+
+<P>
+<IMG SRC="../hline.gif">
+<P>
+
+<A HREF="../project.html">Back to the List of Components</A><BR>
+<A HREF="../minibase.html">Back to the Minibase Home Page</A><BR>
+<A HREF="report/rec.html">764 Report</A>
+
+<P>
+<IMG SRC="../hline.gif">
+<P>
+
+<ADDRESS>
+Ranjani Ramamurthy<br>
+<A HREF="http://www.cae.wisc.edu/cgi-bin/finger?ranjani@cae.wisc.edu">
+[ranjani@cae.wisc.edu]</A>
+</ADDRESS>
+
+</BODY>
+</HTML>
+

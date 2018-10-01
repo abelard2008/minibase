@@ -1,0 +1,479 @@
+CONTENTS
+========
+
+1.  Overview: What is QBE?
+2.  Example Tables
+3.  Simple Conditions
+4.  Example Elements
+5.  Calculated Columns
+6.  Conditions Boxes
+7.  Target Tables
+8.  Aggregate Queries
+9.  Negated Tables
+10  Complex Conditions in Attribute Columns
+11. Syntax Summary
+
+
+
+
+1. OVERVIEW: What Is QBE?
+=========================
+
+
+  QBE stands for Query by Example.  It is a way of writing a database
+query that uses a tabular screen layout to simplify the process.
+
+  This implementation of QBE is geared entirely toward translating the
+resulting query into SQL, so that it can be processed by a database
+that understands SQL.
+
+  QBE is an IBM trademark.  See the "Notes" help for a list of the
+differences between this implementation and IBM's.
+
+
+
+
+2. EXAMPLE TABLES
+=================
+
+
+  You express a query by adding one or more "example tables" that
+correspond to relations in your database.  For example, to write a
+query that shows all the sailors in the Sailors relation, you begin by
+adding a Sailors example table.  Choose "Tables -> Add Relation
+Skeleton -> Sailors" to accomplish this.  You will end up with a table
+that has five columns, one for each attribute of Sailors (sid, sname,
+rating, and age), and one more for the name of the relation:
+
+     +---------+--------+--------+--------+--------+
+     | Sailors |  sid   | sname  | rating |  age   |
+     +---------+--------+--------+--------+--------+
+     |         |        |        |        |        |
+     +---------+--------+--------+--------+--------+
+
+Now you type "commands" and "conditions" into the empty boxes.  To
+print all the attributes (like "SELECT *" in SQL), you can just type
+the `P.' command under the name of the relation:
+
+     +---------+--------+--------+--------+--------+
+     | Sailors |  sid   | sname  | rating |  age   |
+     +---------+--------+--------+--------+--------+
+     | P.      |        |        |        |        |
+     +---------+--------+--------+--------+--------+
+
+The equivalent SQL query would be "SELECT * FROM Sailors".
+
+
+  If you only wanted to know the sailors' names and ratings, you would
+just type P. in those columns, rather than under the relation name:
+
+     +---------+--------+--------+--------+--------+
+     | Sailors |  sid   | sname  | rating |  age   |
+     +---------+--------+--------+--------+--------+
+     |         |        | P.     | P.     |        |
+     +---------+--------+--------+--------+--------+
+
+
+
+
+3. SIMPLE CONDITIONS
+====================
+
+
+  Suppose you are only interested in those sailors who are over 65.
+You can enter a "condition" under age to achieve this:
+
+     +---------+--------+--------+--------+--------+
+     | Sailors |  sid   | sname  | rating |  age   |
+     +---------+--------+--------+--------+--------+
+     |         |        | P.     | P.     | > 65   |
+     +---------+--------+--------+--------+--------+
+
+This is equivalent to "SELECT sname, rating FROM Sailors WHERE age >
+65".
+
+
+  If you want to know the most accomplished senior citizen sailors,
+you could enter something like this:
+
+     +---------+--------+--------+--------+--------+
+     | Sailors |  sid   | sname  | rating |  age   |
+     +---------+--------+--------+--------+--------+
+     |         |        | P.     | P. > 5 | > 65   |
+     +---------+--------+--------+--------+--------+
+
+This is equivalent to "SELECT sname, rating FROM Sailors WHERE age >
+65 AND rating > 5".
+
+
+  If you want a more complicated condition, like sailors over 65 OR
+whose rating is over 5, see CONDITIONS BOXES, below.
+
+
+
+
+4. EXAMPLE ELEMENTS
+===================
+
+
+  Along with the example tables are "example elements," which are
+names that you assign to attributes in order to use them elsewhere.
+An example element name starts with an underscore character (`_').
+
+
+  Here we want to find the sailors whose rating exceeds their age:
+
+     +---------+--------+--------+--------+--------+
+     | Sailors |  sid   | sname  | rating |  age   |
+     +---------+--------+--------+--------+--------+
+     |         |        | P.     | P. >_a | _a     |
+     +---------+--------+--------+--------+--------+
+
+The SQL: "SELECT sname, rating FROM Sailors WHERE rating > age".  This
+query equates the example element `_a' with the "age" attribute, and
+then uses it in the condition for "rating."
+
+NOTE: this example would not be possible in IBM's implementation of
+QBE.  See CAVEATS, below.
+
+
+  You can use example elements to effect a join between two example
+tables.  This example adds a Reserves table, and finds all the sailors
+who have reserved a boat on July 4th, 1996:
+
+     +---------+--------+--------+--------+--------+
+     | Sailors |  sid   | sname  | rating |  age   |
+     +---------+--------+--------+--------+--------+
+     |         | _s     | P.     | P.     |        |
+     +---------+--------+--------+--------+--------+
+     +------------+---------+---------+------------+
+     |  Reserves  |   sid   |   bid   |    date    |
+     +------------+---------+---------+------------+
+     |            | _s      |         | "7/4/1996" |
+     +------------+---------+---------+------------+
+
+The SQL for this:
+	SELECT S.sname, S.rating
+	FROM Sailors S, Reserves R
+	WHERE S.sid = R.sid AND R.date = "7/4/1996"
+
+
+
+
+
+5. CALCULATED COLUMNS
+=====================
+
+
+  If you want your query to return information that is not simply an
+attribute of a relation, you must use a calculated column.  (IBM's
+term for these columns is `unnamed columns.')  These columns may
+contain constant values, example elements, or arithmetic expressions.
+You add a calculated column to an example table by choosing Add Calc
+Column from the Column menu.
+
+
+  For example, if you notice that a sailor's rating generally
+increases about 1 point for every decade of sailing, you can estimate
+how old each sailor was when they started sailing with the following
+query:
+
+     +---------+--------+--------+--------+--------+---------------+
+     | Sailors |  sid   | sname  | rating |  age   |    -Calc-     |
+     +---------+--------+--------+--------+--------+---------------+
+     |         |        | P.     | _r     | _a     | P. _a - 10*_r |
+     +---------+--------+--------+--------+--------+---------------+
+
+The SQL equivalent of this query:
+	SELECT sname, age - 10 * rating FROM Sailors
+
+
+  The most common use for calculated columns is to present aggregate
+information, like sums and averages.  In QBE you use the operators
+SUM. and AVG. for these two functions.  See also the AGGREGATE QUERIES
+section for more information.
+
+
+  Here is an example that shows the average age of sailors.  This
+example is extended in the later section to show the average age of
+sailors for each different rating.
+
+     +---------+--------+--------+--------+--------+---------------+
+     | Sailors |  sid   | sname  | rating |  age   |    -Calc-     |
+     +---------+--------+--------+--------+--------+---------------+
+     |         |        |        |        | _a     | P. AVG._a     |
+     +---------+--------+--------+--------+--------+---------------+
+
+The SQL equivalent of this query: SELECT avg(age) FROM Sailors
+
+
+
+
+6. CONDITIONS BOXES
+===================
+
+
+  Sometimes you need to limit your queries in complicated ways.  For
+example, you might want to know all sailors whose rating is less than
+4 OR who are younger than 30.  It's easy to do this if you want the
+two conditions connected by AND---you just put each restriction under
+the appropriate attribute.  But to connect with OR, or do even more
+complicated tests, you must use conditions boxes.  (But see also the
+section on complex queries in attribute columns.)
+
+
+  You add a conditions box table by selecting Add Conditions Box from
+the Table menu.  This adds a new table to the query, which initially
+consists of a single column marked "Conditions."  You may add
+additional columns to this table by selecting Add Condition from the
+Column menu.  (All separate conditions, in conditions boxes and in
+attribute columns, are connected by AND.)
+
+
+  Here is the example mentioned above: all sailors whose rating is
+less than 4 or who are younger than 30.
+
+     +---------+--------+--------+--------+--------+
+     | Sailors |  sid   | sname  | rating |  age   |
+     +---------+--------+--------+--------+--------+
+     | p.      |        |        | _r     | _a     |
+     +---------+--------+--------+--------+--------+
+     +---------------------------------------------+
+     |                 Conditions                  |
+     +---------------------------------------------+
+     | _r < 4 or _a < 30                           |
+     +---------------------------------------------+
+
+
+
+
+7. TARGET TABLES
+================
+
+
+  If you are presenting information from several different tables, or
+are presenting a lot of calculated fields, you may wish to organize
+all the output in one place.  A target table lets you do that---it is
+an example table that consists entirely of calculated columns, and
+that is not connected to any relation.  You add one by selecting Add
+Target Table from the Table menu.
+
+
+  Here is an example.  We want to show the names and dates of
+reservations for all sailors whose rating is 5.  The target table is
+the top one---the one with no relation name.  Note the P. in the head
+column, which means to print all the fields in the target table.
+
+     +----------------+---------------+------------+
+     |                |    -Calc-     |   -Calc-   |
+     +----------------+---------------+------------+
+     | P.             | _name         | _date      |
+     +----------------+---------------+------------+
+     +---------+--------+--------+--------+--------+
+     | Sailors |  sid   | sname  | rating |  age   |
+     +---------+--------+--------+--------+--------+
+     |         | _s     | _name  | 5      |        |
+     +---------+--------+--------+--------+--------+
+     +------------+---------+---------+------------+
+     |  Reserves  |   sid   |   bid   |    date    |
+     +------------+---------+---------+------------+
+     |            | _s      |         | _date      |
+     +------------+---------+---------+------------+
+
+The corresponding SQL would look something like this:
+	SELECT S.sname, R.date
+	FROM Sailors S, Reserves R
+	WHERE S.rating = 5 AND S.sid = R.sid
+
+
+  Incidentally, this query could have been written without any
+calculated columns, just by putting a P. command in the sname and date
+columns.  However, this is an extension to IBM's version of QBE, which
+prohibits P. from appearing in more than one example table.
+
+
+
+
+8. AGGREGATE QUERIES
+====================
+
+
+  We saw a simple aggregate query above, that returned the average age
+of all sailors.  Suppose that we wanted to find the average age for
+each different rating.  For this we must indicate that we want to
+break the set of sailors into groups---one group for each different
+rating.  We do this using the G. command in the rating column:
+
+     +---------+--------+--------+--------+--------+---------------+
+     | Sailors |  sid   | sname  | rating |  age   |    -Calc-     |
+     +---------+--------+--------+--------+--------+---------------+
+     |         |        |        | g.p.   | _a     | P. AVG._a     |
+     +---------+--------+--------+--------+--------+---------------+
+
+The SQL for this:
+	SELECT rating, avg(age)
+	FROM Sailors
+	GROUP BY rating
+
+
+  In addition to AVG., there is SUM. to add up sets of numbers,
+MIN. and MAX. to find the smallest and largest number in a group, and
+COUNT. to find the number of tuples in each group.  AVG. and SUM. may
+be followed by UNQ. if you want the average or sum to only take into
+account the unique values in each group, and ignore any duplicates.
+COUNT. may only be followed by an example element, and never counts
+duplicates.
+
+
+  You can group by more than one column.  This divides the tuples into
+one group for each different combination of values.  For example, you
+could group by rating and age, and find out how many of each
+combination there are.  You can even put conditions on the groups, and
+only print those combinations of rating and age that include more than
+5 sailors.  We count `sid' because it is a key for the relation.
+
+     +---------+--------+--------+--------+--------+---------------+
+     | Sailors |  sid   | sname  | rating |  age   |    -Calc-     |
+     +---------+--------+--------+--------+--------+---------------+
+     |         | _s     |        | g.p.   | g.p.   | p. count._s   |
+     +---------+--------+--------+--------+--------+---------------+
+     +-------------------------------------------------------------+
+     |                         Conditions                          |
+     +-------------------------------------------------------------+
+     | count._s > 5                                                |
+     +-------------------------------------------------------------+
+
+The SQL for this:
+	SELECT rating, age, count(distinct sid)
+	FROM Sailors
+	GROUP BY rating, age
+	HAVING count(distinct sid) > 5
+
+
+  In an aggregated query, you may only print columns that define the
+groups, or aggregation functions of other columns.  Any column may
+participate in a condition.
+
+
+
+
+9. NEGATED TABLES
+=================
+
+
+  If you wanted to find all sailors who had not reserved any boat for
+July 4th, 1996, you would use a negated table:
+
+     +---------+--------+--------+--------+--------+
+     | Sailors |  sid   | sname  | rating |  age   |
+     +---------+--------+--------+--------+--------+
+     |         | _s     | p.     |        |        |
+     +---------+--------+--------+--------+--------+
+     +------------+---------+---------+------------+
+     |  Reserves  |   sid   |   bid   |    date    |
+     +------------+---------+---------+------------+
+     | ~          | _s      |         | "7/4/1996" |
+     +------------+---------+---------+------------+
+
+The `~' under the table name means to negate the table.  The
+corresponding SQL:
+	SELECT sname FROM Sailors S
+	WHERE not exists (SELECT * FROM Reserves R
+			  WHERE S.sid = R.sid
+			    AND R.date = "7/4/1996")
+
+
+  You may also use the word `NOT' in place of the ~, to the same
+effect.
+
+
+  You may not print any information from a negated table (the tuples
+in question do not exist!).
+
+
+
+
+10. COMPLEX CONDITIONS IN ATTRIBUTE COLUMNS
+===========================================
+
+
+  This implementation of QBE allows arbitrary conditions in attribute
+columns.  The syntax is a little quirky.
+
+
+  Every attribute column has a built-in example element with the
+reserved name `_' (just a single underscore character).  You may use
+this when you write a condition in an attribute column.  Here is an
+example of this: we want all sailors under 10 or over 70:
+
+     +---------+--------+--------+--------+------------------+
+     | Sailors |  sid   | sname  | rating |        age       |
+     +---------+--------+--------+--------+------------------+
+     | p.      |        |        |        | _ < 10 or _ > 70 |
+     +---------+--------+--------+--------+------------------+
+
+
+  In keeping with how you specify simpler conditions, you may omit the
+first _:
+
+     +---------+--------+--------+--------+------------------+
+     | Sailors |  sid   | sname  | rating |        age       |
+     +---------+--------+--------+--------+------------------+
+     | p.      |        |        |        | < 10 or _ > 70   |
+     +---------+--------+--------+--------+------------------+
+
+
+  If you want the condition to start with something *other* than a
+reference to the attribute, put the whole condition in parentheses:
+
+     +---------+--------+--------+--------+------------------+
+     | Sailors |  sid   | sname  | rating |        age       |
+     +---------+--------+--------+--------+------------------+
+     |         |        |        | g.p.   | (avg._ < 20)     |
+     +---------+--------+--------+--------+------------------+
+
+(This finds those ratings for which the average age of sailors with
+the rating is less than 20.)
+
+
+  Finally, you may include an example element definition in front of
+the condition.  This query finds the same information as the above
+one, except it limits its search to those sailors whose sid's are
+less than their age.  (I'm running out of example ideas!)
+
+     +---------+--------+--------+--------+------------------+
+     | Sailors |  sid   | sname  | rating |        age       |
+     +---------+--------+--------+--------+------------------+
+     |         | <_age  |        | g.p.   | _age (avg._ < 20)|
+     +---------+--------+--------+--------+------------------+
+
+
+
+
+
+11. SYNTAX SUMMARY
+==================
+
+
+  There are four kinds of columns, each with its own rules about what
+can go in it.
+
+  1. A `head' column is the first column of an example table.  It may
+     contain P., meaning to print all columns of the table.  It may
+     also contain UNQ., which means to eliminate duplicates from the
+     answer, and ALL., which means the opposite of UNQ. (ALL. is the
+     default if you don't specify either).  Finally, a head column of
+     a relation table (but not a target table) may contain `~' or
+     `NOT', meaning the table is to be negated.
+
+  2. An attribute column may contain P. (print), G. (group by),
+     AO. (ascending order), and DO. (descending order).  It may define
+     an example element (a variable starting with an underscore).  It
+     may include a condition---see the COMPLEX CONDITIONS IN ATTRIBUTE
+     COLUMNS section above.
+
+  3. A calculated column may contain P. and an expression, possibly
+     involving example elements defined in attribute columns.
+
+  4. A condition column may contain a conditional expression, possible
+     involving example elements defined in attribute columns.

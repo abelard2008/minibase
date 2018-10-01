@@ -1,0 +1,66 @@
+<body background = "pics/fiber.gif">
+<HTML>
+<HEAD>
+<TITLE>Minibase To Do Page</TITLE>
+</HEAD>
+
+<BODY>
+<H1>Minibase To Do Page - Grossly Outdated..</H1>
+
+<IMG SRC="pics/hline.gif">
+<P>
+<B><A HREF="minibase.html">Back to the Minibase Home Page</A></B><BR>
+<B><A HREF="project.html">Back to the Progress Page</A></B><BR>
+
+
+<H2>General</H2>
+<UL>
+ <LI>Check and make sure that the AM pages are all bigger than 
+	the DATASIZE of a page - recsize
+ <LI>On entering values (utility functions) "5" with a space after it is not the same as "5".  
+      Need to fix the type checking & atoi algorithm.
+ <LI>Prompt the user for the working directory.  This is where all the
+   databases will be. <B>Problem solved differently</B>
+ <LI>Doing joins on empty relations can crash:<BR>
+     <I>select emp.ename, dept.dname<BR>
+     from emp, dept<BR>
+     where emp.ename = "John" and emp.did = dept.did;<BR></I>
+ <LI>The answer tuple's fields do not always correspond to the query:<BR>
+     <I>select e.did, d.dname<BR>
+     from Emp e, Dept d<BR>
+     where e.did = d.did;<BR></I>
+     <B>{toy, 3}</B>
+ <LI>Buffer Manager Free Page should NOT put page on free list
+ before checking pin count.
+ <LI>Change linearHash Tests gen_rec back to the original one.
+     Don't think that I was crazy by using the very simple one, but
+     I was having all sorts of purify errors and I was getting
+     desperate.  Then the errors all fixed themselves, so we can go back.
+ <LI>Use LinearHashingFile::destroyFile(void) as the basis for scanning the entire
+     Linear Hash index.
+</UL>
+
+<H2>Catalogs</H2>
+<UL>
+ <LI>create.C = Line 72 = checking tuple size doesn't really work
+ <LI>Catalog info is stored as tuples.  But all the work in the
+      catalog calls is done as structs.  This is not a problem, but
+      if we had known more about the final product, we might have
+      rewritten things to make it a little clearer.
+ <LI>Load doesn't work yet (should be a very minor change)
+</UL>
+
+<IMG SRC="pics/hline.gif">
+
+<P>
+<ADDRESS>
+Ranjani Ramamurthy<br>
+<A HREF="http://www.cae.wisc.edu/cgi-bin/finger?ranjani@cae.wisc.edu">
+[ranjani@cae.wisc.edu]</A>
+</ADDRESS>
+
+
+</BODY>
+</HTML>
+
+

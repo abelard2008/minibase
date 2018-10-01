@@ -1,0 +1,4 @@
+setComment {All mgrs who manage 3 or more depts on the same floor}
+addRelationTable {Emp unq.} {eid _e} {ename g.p.} {salary {}}
+addRelationTable {Dept {}} {did _d} {dname {}} {managerid g._e} {floornum g.}
+addConditionsBox {count._d >= 3}

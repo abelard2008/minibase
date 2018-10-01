@@ -1,0 +1,82 @@
+This is TeX, Version 3.141 (C version d) (format=nfss2ltx 93.9.23)  13 MAY 1995 16:57
+**3269_images.tex
+(3269_images.tex
+LaTeX Version 2.09 <25 March 1992> with NFSS2
+
+(/usr/sup/TeX/lib/tex/macros/latex/sty/article.sty
+Standard Document Style `article' <14 Jan 92>.
+(/usr/sup/TeX/lib/tex/macros/latex/sty/art11.sty
+NFSS Note: External font `cmex10' loaded for size <10.95> on input line 42.
+NFSS Note: External font `cmex10' loaded for size <8> on input line 42.
+NFSS Note: External font `cmex10' loaded for size <6> on input line 42.
+)
+\c@part=\count81
+\c@section=\count82
+\c@subsection=\count83
+\c@subsubsection=\count84
+\c@paragraph=\count85
+\c@subparagraph=\count86
+\c@figure=\count87
+\c@table=\count88
+) (/usr/sup/TeX/lib/tex/macros/psfig/psfig.sty
+\@unused=\write3
+psfig/tex 1.9
+\ps@stream=\read1
+\p@intvaluex=\dimen104
+\p@intvaluey=\dimen105
+) (/afs/cs.wisc.edu/u/students/r/ramamurt/public/html/defpaper.sty
+\c@theorem=\count89
+\c@lemma=\count90
+\c@prop=\count91
+\c@corollary=\count92
+\c@ex=\count93
+\c@alg=\count94
+\c@defin=\count95
+\c@conj=\count96
+\c@claims=\count97
+\c@assump=\count98
+\c@linenumber=\count99
+) (/usr/sup/TeX/lib/tex/macros/lcontrib/subfigure.sty
+\c@subfigure=\count100
+\c@lofdepth=\count101
+\c@subtable=\count102
+\c@lotdepth=\count103
+) (3269_images.aux)
+NFSS Note: Check substitution defaults for OT1/cmr/m/n on input line 26.
+NFSS Note: ... okay on input line 26.
+NFSS Note: Check substitution defaults for OML/cmm/m/it on input line 26.
+NFSS Note: ... okay on input line 26.
+NFSS Note: Check substitution defaults for OMS/cmsy/m/n on input line 26.
+NFSS Note: ... okay on input line 26.
+NFSS Note: Check substitution defaults for OMX/cmex/m/n on input line 26.
+NFSS Note: ... okay on input line 26.
+NFSS Note: Check substitution defaults for U/cmr/m/n on input line 26.
+NFSS Note: ... okay on input line 26.
+NFSS Note: Check substitution defaults for T1/cmr/m/n on input line 26.
+NFSS Note: Try loading font information for T1+cmr on input line 26.
+(/usr/sup/TeX/lib/tex/macros/nfss2/fd/T1cmr.fd
+Fontdef file produced from: `cmrfonts.fdd' v2.0e <93/08/03> (FMi and RmS)
+)
+NFSS Note: ... okay on input line 26.
+psfig: searching interaction.ps for bounding box
+psfig: including interaction.ps 
+[1]
+psfig: searching data.ps for bounding box
+psfig: including data.ps 
+[2]
+NFSS Note: Try loading font information for OT1+cmtt on input line 54.
+(/usr/sup/TeX/lib/tex/macros/nfss2/fd/OT1cmtt.fd
+Fontdef file produced from: `cmrfonts.fdd' v2.0e <93/08/03> (FMi and RmS)
+) [3] [4] (3269_images.aux)
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+ ) 
+Here is how much of TeX's memory you used:
+ 675 strings out of 11733
+ 7517 string characters out of 82735
+ 43390 words of memory out of 262141
+ 2833 multiletter control sequences out of 9500
+ 6547 words of font info for 24 fonts, out of 100000 for 255
+ 15 hyphenation exceptions out of 607
+ 22i,4n,17p,299b,218s stack positions out of 300i,40n,60p,3000b,4000s
+
+Output written on 3269_images.dvi (4 pages, 1944 bytes).

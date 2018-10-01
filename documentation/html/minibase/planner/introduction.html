@@ -1,0 +1,60 @@
+<BODY BGCOLOR="#FFDDDD">
+
+<HTML>
+<HEAD>
+<TITLE> Introduction </TITLE>
+</HEAD>
+
+<BODY>
+
+<H1> Introduction </H1>
+
+<HR>
+The task of the runtime plan interpreter is to walk the optimizer's plan tree
+recursively and constructs the appropriate objects that will
+execute the query.
+These objects turn out to be the C++ constructors of the various access 
+methods.
+In this sence, plan interpreter is a link between optimizer and the access 
+methods.
+Task of the plan interpreter is very much like the task of the code generator
+in the case of the language compilers.
+<P>
+As we said, the interpreter main routine is the recursive one.
+For the recursion to be possible, all the access method should have the same
+general form. 
+This is achieved by considering all the access methods to be the iterators
+that are producing stream of tuples.
+This way we can build the access methods on top of each other, i.e.
+output of one iterator will be piped into the input of the next one.
+<P>
+Some of the iterators are unary, i.e. they just take one streams of tuples
+as the input. Example of this would be the sort iterator. It takes only
+one iterator as an input. On the other hand, typical join operation is
+a binary iterator since it takes inner and outer relations as its input.
+<P>
+In our implementation of the various iterators we did not have conceptually
+cleanest interface (in which all the joins would be binary iterators) 
+because we were dependent on the given optimizer.
+Optimizer was complex program that we started with and it was only slightly
+changed during the course of project.
+For example, indexed nested loops join is not implemented as the pure
+binary operator beacause we did not want to introduce random access iterator,
+the one that would be neede for the inner relation of join.
+Because of this, index nested loops iterator takes only one (outer) iteator
+as input and the whole inner relation for the other stream.
+This little nonuniformity has added aditional (slight) complications to the
+planner code, since it has more "if" statement than is necesary.
+<p>
+Conceptually, planner routine is the big recursive "switch" statements.
+Sometimes it's not only enough to look into the current optimizer node to
+conclude which oiterator to construct, i.e. we have to look what the
+right hand child is. Example of this is the nested loops join.
+To see what kind of nested loop join to construct we have to lookup the 
+acces method of the right hand child. If the right hand child is the index 
+scan than we have index nested loop join, otherwise we have simple nested
+loop join.
+
+<HR>
+</BODY>
+</HTML>

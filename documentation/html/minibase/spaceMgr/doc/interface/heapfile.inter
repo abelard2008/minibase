@@ -1,0 +1,64 @@
+//************************************************
+// HEAPFILE INTERFACE
+//************************************************
+
+// structure declaration for a record identifier
+
+typedef struct {
+    Page_id  pageNo;
+    int  slotNo;
+} RID;
+
+class Scan;
+// class definition of heapFile
+class HeapFile : public PageFile {
+friend class Scan;
+public:
+    // Constructor
+    HeapFile(char* name, Status& returnStatus); 
+
+    // Destructor
+    ~HeapFile(); 
+
+    // return number of records in file
+    int getRecCnt();
+
+    // insert record into file
+    Status insertRecord(char* recPtr, int recLen, RID& outRid); 
+
+    // Delete record from file
+    Status deleteRecord(const RID& rid); 
+
+    // updates the specified record in the heapfile.
+    Status updateRecord(const RID& rid, char* recPtr, int reclen);
+
+    // read record from file... copies out the record
+    Status getRecord( const RID& rid, char* recPtr, int& recLen); 
+
+    // initiate a sequential scan
+    Scan* openScan(Status& status);
+
+    // Delete a heapfile
+    Status deleteFile();
+};
+
+//***********************************************************
+// A Scan object is created ONLY through the function openScan
+// of a HeapFile. It supports the getNext interface which will 
+// simply retrieve the next record in the heapfile.
+
+class Scan
+{
+private:
+	// Constructor 
+	Scan(HeapFile* hf, Status& status);
+public:
+	// Destructor
+	~Scan();
+
+	// retrieve the next record in a sequential scan
+	// Also returns the RID of the retrieved record.
+	Status getNext(RID& rid, char* recPtr, int& recLen );
+}
+
+//***********************************************************

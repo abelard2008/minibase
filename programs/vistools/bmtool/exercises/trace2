@@ -1,0 +1,139 @@
+STARTUP     1024 64 LRU
+PAGE_READ   0 0
+PAGE_PIN    0 0
+PAGE_READ   1 1
+PAGE_PIN    1 1
+PAGE_READ   2 10 test-file
+PAGE_PIN    2 10 test-file
+PAGE_UNPIN  2 10 test-file
+PAGE_READ   3 11 test-file
+PAGE_PIN    3 11 test-file
+PAGE_UNPIN  3 11 test-file
+PAGE_READ   4 12 test-file
+PAGE_PIN    4 12 test-file
+PAGE_UNPIN  4 12 test-file
+PAGE_READ   5 13 test-file
+PAGE_PIN    5 13 test-file
+PAGE_UNPIN  5 13 test-file
+PAGE_READ   6 14 test-file
+PAGE_PIN    6 14 test-file
+PAGE_UNPIN  6 14 test-file
+PAGE_READ   7 15 test-file
+PAGE_PIN    7 15 test-file
+PAGE_UNPIN  7 15 test-file
+PAGE_READ   8 16 test-file
+PAGE_PIN    8 16 test-file
+PAGE_UNPIN  8 16 test-file
+PAGE_READ   9 17 test-file
+PAGE_PIN    9 17 test-file
+PAGE_DIRTY  9 17 test-file
+PAGE_UNPIN  9 17 test-file
+PAGE_READ   10 18 test-file
+PAGE_PIN    10 18 test-file
+PAGE_UNPIN  10 18 test-file
+PAGE_READ   11 19 test-file
+PAGE_PIN    11 19 test-file
+PAGE_UNPIN  11 19 test-file
+PAGE_READ   12 20 test-file
+PAGE_PIN    12 20 test-file
+PAGE_UNPIN  12 20 test-file
+PAGE_READ   13 21 test-file
+PAGE_PIN    13 21 test-file
+PAGE_UNPIN  13 21 test-file
+PAGE_READ   14 22 test-file
+PAGE_PIN    14 22 test-file
+PAGE_UNPIN  14 22 test-file
+PAGE_READ   15 23 test-file
+PAGE_PIN    15 23 test-file
+PAGE_UNPIN  15 23 test-file
+PAGE_READ   16 24 test-file
+PAGE_PIN    16 24 test-file
+PAGE_UNPIN  16 24 test-file
+PAGE_READ   17 25 test-file
+PAGE_PIN    17 25 test-file
+PAGE_UNPIN  17 25 test-file
+PAGE_READ   18 26 test-file
+PAGE_PIN    18 26 test-file
+PAGE_UNPIN  18 26 test-file
+PAGE_READ   19 27 test-file
+PAGE_PIN    19 27 test-file
+PAGE_DIRTY  19 27 test-file
+PAGE_UNPIN  19 27 test-file
+PAGE_READ   20 28 test-file
+PAGE_PIN    20 28 test-file
+PAGE_UNPIN  20 28 test-file
+PAGE_READ   21 29 test-file
+PAGE_PIN    21 29 test-file
+PAGE_UNPIN  21 29 test-file
+PAGE_READ   22 30 test-file
+PAGE_PIN    22 30 test-file
+PAGE_UNPIN  22 30 test-file
+PAGE_READ   23 31 test-file
+PAGE_PIN    23 31 test-file
+PAGE_UNPIN  23 31 test-file
+PAGE_READ   24 32 test-file
+PAGE_PIN    24 32 test-file
+PAGE_UNPIN  24 32 test-file
+PAGE_READ   25 33 test-file
+PAGE_PIN    25 33 test-file
+PAGE_UNPIN  25 33 test-file
+PAGE_READ   26 34 test-file
+PAGE_PIN    26 34 test-file
+PAGE_UNPIN  26 34 test-file
+PAGE_READ   27 35 test-file
+PAGE_PIN    27 35 test-file
+PAGE_UNPIN  27 35 test-file
+PAGE_READ   28 36 test-file
+PAGE_PIN    28 36 test-file
+PAGE_UNPIN  28 36 test-file
+PAGE_READ   29 37 test-file
+PAGE_PIN    29 37 test-file
+PAGE_DIRTY  29 37 test-file
+PAGE_UNPIN  29 37 test-file
+PAGE_READ   30 38 test-file
+PAGE_PIN    30 38 test-file
+PAGE_UNPIN  30 38 test-file
+PAGE_READ   31 39 test-file
+PAGE_PIN    31 39 test-file
+PAGE_UNPIN  31 39 test-file
+PAGE_READ   32 40 test-file
+PAGE_PIN    32 40 test-file
+PAGE_UNPIN  32 40 test-file
+PAGE_READ   33 41 test-file
+PAGE_PIN    33 41 test-file
+PAGE_UNPIN  33 41 test-file
+PAGE_READ   34 42 test-file
+PAGE_PIN    34 42 test-file
+PAGE_UNPIN  34 42 test-file
+PAGE_READ   35 43 test-file
+PAGE_PIN    35 43 test-file
+PAGE_UNPIN  35 43 test-file
+PAGE_READ   36 44 test-file
+PAGE_PIN    36 44 test-file
+PAGE_UNPIN  36 44 test-file
+PAGE_READ   37 45 test-file
+PAGE_PIN    37 45 test-file
+PAGE_UNPIN  37 45 test-file
+PAGE_READ   38 46 test-file
+PAGE_PIN    38 46 test-file
+PAGE_UNPIN  38 46 test-file
+PAGE_READ   39 47 test-file
+PAGE_PIN    39 47 test-file
+PAGE_DIRTY  39 47 test-file
+PAGE_UNPIN  39 47 test-file
+PAGE_READ   40 48 test-file
+PAGE_PIN    40 48 test-file
+PAGE_UNPIN  40 48 test-file
+PAGE_READ   41 49 test-file
+PAGE_PIN    41 49 test-file
+PAGE_UNPIN  41 49 test-file
+PAGE_DIRTY  0 0
+PAGE_UNPIN  0 0
+PAGE_DIRTY  1 1
+PAGE_UNPIN  1 1
+PAGE_WRITE  0 0
+PAGE_WRITE  1 1
+PAGE_WRITE  9 17
+PAGE_WRITE  19 27
+PAGE_WRITE  29 37
+PAGE_WRITE  39 47

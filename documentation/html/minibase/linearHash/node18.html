@@ -1,0 +1,81 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> Data Structure</TITLE>
+<meta name="description" value=" Data Structure">
+<meta name="keywords" value="report">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html247 HREF="node19.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A> <A NAME=tex2html245 HREF="node16.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A> <A NAME=tex2html239 HREF="node17.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html248 HREF="node19.html"> Create/Open index</A>
+<B>Up:</B> <A NAME=tex2html246 HREF="node16.html"> Internal Design</A>
+<B> Previous:</B> <A NAME=tex2html240 HREF="node17.html"> Algorithm</A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00032000000000000000> Data Structure</A></H2>
+<P>
+<P><A NAME=83>&#160;</A><IMG ALIGN=BOTTOM SRC="_2017_figure80.gif">
+<BR><STRONG>Figure 1:</STRONG> Data Structures of Linear Hashing<BR>
+<P>
+<P>
+Figure 1 shows an overview of the structure of linear hashing.
+Since Buffer Manager only supports the handling of a page, the basic
+storage unit in linear hashing is a page. However, there are several
+different kinds of pages in linear hashing:
+<DL ><DT><DD>BucketPage (see class <em>Bucket</em>)<BR>
+ BucketPage is used to store records. Each BucketPage contains
+<em>RecCnt</em> as the count of how many records are in it, <em>OverflowPageNo</em> as the PageId of the overflow page (after it). If
+no overflow page exists, the number is set to -1. The remaining space
+is slotted to store the records. (We assume all records are of the
+same length.) Records are stored one after another. As records are
+deleted, the resulting hole will be compacted. See the description of
+deletion for details.
+<P>
+<DT><DD>DirPage<BR> 
+DirPage is used to store the PageId's of the
+primary pages of buckets. The internal structure of DirPage is very
+simple - array of PageId's.  The PageId's of all the DirPage's
+are consecutive. See the description of directory handling for
+details.
+<P>
+<DT><DD>HeaderPage (see class <em>LHHeaderPage</em>)<BR>
+HeaderPage is used to store header information about the index. The
+information includes:
+<UL><LI> FileName: The index's name. 
+<LI> length: The length of the key
+<LI> type: The AttrType of the key. 
+<LI> level: The current level of linear hashing. 
+<LI> next: The number of the bucket to be split next. 
+<LI> N: The number of initial buckets. 
+<LI> first_dir_pageno: The PageId of the first DirPage.
+<LI> NumDirPage: The number of DirPage's. 
+</UL>
+<P>
+<DT><DD>RootPage (see class <em>LHRootPage</em>)<BR> RootPage is the root of
+the whole index. It only contains the PageId of the HeaderPage.  When
+the index is created, its PageId is given to <em>db</em> to associate it
+with the name of the index. When the index is opened, <em>db</em> looks
+up the index's name and returns the PageId of the RootPage. Given the
+RootPage, we can access the HeaderPage, and therefore all the pages
+in the index.  One might have noticed that the HeaderPage can be
+considered as the root of the index and RootPage is not needed at all
+(because it's only used to find the HeaderPage).  Indeed RootPage is
+used only for the purpose of concurrency control. See the description
+of concurrency control for details.
+<P>
+ </DL>
+<P>
+<BR> <HR><A NAME=tex2html247 HREF="node19.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A> <A NAME=tex2html245 HREF="node16.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A> <A NAME=tex2html239 HREF="node17.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html248 HREF="node19.html"> Create/Open index</A>
+<B>Up:</B> <A NAME=tex2html246 HREF="node16.html"> Internal Design</A>
+<B> Previous:</B> <A NAME=tex2html240 HREF="node17.html"> Algorithm</A>
+<BR> <HR> <P>
+<BR> <HR>
+<P><ADDRESS>
+<I> Weiqing Huang <BR>
+Sun May 14 16:22:27 CDT 1995</I>
+</ADDRESS>
+</BODY>

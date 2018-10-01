@@ -1,0 +1,23 @@
+TESTS_SRCS = \
+	BMTester.C \
+	db_driver.C \
+	heap_driver.C \
+	linearHash.C \
+	joins.C \
+	joins-test.C \
+	btree_driver.C \
+	test_driver.C
+
+TESTS_HDRS = \
+	BMTester.h \
+	component-tests.h \
+	db_driver.h \
+	heap_driver.h \
+	joins-example.h \
+	joins_tests.h \
+	lHtests.h \
+	btree_driver.h \
+	test_driver.h
+
+TESTS_OBJS = $(TESTS_SRCS:.C=.o)
+

@@ -1,0 +1,127 @@
+<HTML>
+<HEAD>
+<TITLE>Multi-User Minibase</TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+<IMG SRC="../pics/hline.gif">
+<BR>
+<H1>The Minibase Multi-User Model</H1>
+
+<p>
+<CENTER>
+<a href="../pics/model2.gif"><IMG SRC="../pics/model.gif"></A>
+</CENTER>
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+
+The components that are specific to a multi-user system are the
+concurrency control modules. These include the 
+<A HREF="../os/transaction.html">transaction manager,</A>
+<A HREF="../lockMgr/lockMgr.html">lock manager,</A>
+<A HREF="../recoveryMgr/recoveryMgr.html">recovery manager</A> and
+<A HREF="../logMgr/logMgr.html">log manager.</A>
+In addition to these four
+modules, operating system support is required. This can be
+provided by a client-server protocol, or as in the case of
+Minibase, a 
+<A HREF="../os/os.html">shared memory</A>
+system.
+
+<P>
+In conventional multi-user client-server RDBMS systems, 
+the server is a heavy 
+process which performs all operations related to concurrency control.
+The client is a lightweight process which merely obtains the SQL
+input from the user and communicates this to a server (possibly
+through sockets or some other communication mechanism). 
+Minibase works on a shared memory model. The server 
+instantiates shared memory structures and performs
+periodic deadlock resolution and dead process detection.
+The clients are not lightweight, in that they perform many of the
+tasks associated with concurrency.
+This design was adopted largely to make the development of
+multi-user Minibase from single-user Minibase as straightforward
+as possible.
+<P>
+In multi-user Minibase, every process is a transaction. The
+Minibase server is process 0 and clients are numbered from 1 onwards.
+Thus the words <i>transaction</i> and <i>process</i> 
+mean the same thing in Minibase.
+<P>
+<IMG SRC="../pics/hline.gif">
+<H2>The Server</H2> 
+The Minibase server instantiates the shared memory area. This shared
+memory area contains the buffer pool, lock table, transaction table
+and the log tail. Varying levels of granularity exist for access to
+the shared components. Semaphores ( acting as latches ) ensure
+consistency. On startup, the server executes a  restart operation 
+initially, to ensure that the system is a consistent state. 
+It maintains information of the clients in the system : the transaction
+ids, process ids and a flag to indicate validity of the transaction.
+The validity flag is required as the server performs the all-important
+task of deadlock detection. 
+<p>
+After performing the restart operation, the server does three tasks in
+a loop. <p>
+<UL>
+<LI> Checks for defunct transactions and invalidates them. <br>
+<LI> Checks for deadlock, and on finding a cycle picks a transaction for
+eviction and invalidates its entry in the transaction table.<br>
+<LI> Sleeps for a period of time ( say 20 seconds) and goes back to step 1.<br>
+</UL>
+<p>
+Step 1 is required to take care of those processes that die
+but do not clean up on exit --- for example a transaction  that has been 
+killed by a 'ctrl-c'. These processes may still hold locks on resources
+and may be using shared memory and so, need to be aborted.
+<p>
+Deadlock detection and resolution is performed in the following manner.
+The server checks for deadlocks and picks a victim on finding a cycle. The
+victim's <i>valid</i> field is invalidated. Invalidation is equivalent to
+forcing the process to abort. The server then wakes up the victim process.
+Code in the 
+<a HREF="../lockMgr/lockMgr.html"> Lock Manager</a>
+ensures that a process always checks for its
+status after returning from a lock operation. The process will proceed 
+after a request for a lock only if it is still a valid transaction.
+<p>
+The server
+keeps track of the number of clients in the system and needs to be
+explicitly shut down. At server shutdown, the buffer pool is flushed
+to disk, all semaphores and shared memory is destroyed and the database
+is left in a consistent state.
+<P>
+<IMG SRC="../pics/hline.gif">
+
+<H2>The Client</H2> 
+
+Every client attaches itself to the shared memory region .i.e. it
+obtains pointers to the objects in shared memory. The client also
+instantiates pointers to other global objects which operate in its
+own space: for example, pointers to the DB object, catalogs, recovery
+manager and the lock manager. When it exits, its entry is removed
+from the transaction table by the minibase server.
+<P>
+The <a href="single_user.html"> query evaluation </a>
+path is the same in both single- and multi-user versions except
+that in the multi-user version, 
+latches and locking are used to maintain the consistency
+of the database. 
+Log records are written before any updates to disk, 
+and locking is used on write operations, in accordance with Strict 2PL.
+<br>
+<p>
+<IMG SRC="../pics/hline.gif">
+<P>
+<B><A HREF="../project.html">Back to the List of Components</A></B><BR>
+<B><A HREF="../minibase.html">Back to the Minibase Home Page</A></B><BR>
+
+</BODY>
+
+</HTML>
+
+
+

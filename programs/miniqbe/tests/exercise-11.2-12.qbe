@@ -1,0 +1,4 @@
+setComment {Biggest order for each bulk supplier}
+addRelationTable {Suppliers {}} {sid g._s} {sname {}} {city {}} {{} p.max._q}
+addRelationTable {Orders {}} {sid _s} {pid {}} {quantity _q}
+addConditionsBox {min._q > 100}

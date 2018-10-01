@@ -1,0 +1,1 @@
+nroff -man manual/plot.man | less

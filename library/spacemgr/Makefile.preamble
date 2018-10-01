@@ -1,0 +1,16 @@
+SPACE_SRCS = \
+	db.C \
+	heapfile.C \
+	hfpage.C \
+	page.C \
+	scan.C
+
+SPACE_HDRS = \
+	db.h \
+	heapfile.h \
+	hfpage.h \
+	page.h \
+	scan.h
+
+SPACE_OBJS = $(SPACE_SRCS:.C=.o)
+

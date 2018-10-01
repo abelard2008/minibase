@@ -1,0 +1,134 @@
+<BODY BGCOLOR="#FFDDDD">
+<h2 ALIGN=CENTER>Internal Design</h2>
+
+<P>
+<CENTER>
+<IMG SRC="data_structures.gif" ALIGN="Center">
+</CENTER>
+<H4 ALIGN=CENTER> A graphical overview of the lock manager data structures in shared memory</H4>
+
+<H3 ALIGN=CENTER>Main Data Structures</H3>
+      
+The lock manager uses two main data structures created in shared memory.  The
+first is the trans_lock_info class and the second is the lock_table class.<P>
+
+<b>Trans_Lock_Info class:  </b>
+The trans_lock_info class is a member of each transactions entry in the
+transaction table.  As such, each instance is automatically created by the
+operating system when the transaction executes the "begin" command. The
+trans_lock_info class maintains a locked_queue linked list.  Each element in
+this list points to a locked page entry, called a lock_entry, which represents
+one of the pages on which it currently holds a lock.<P>
+
+<b>Lock_Table class:</b>
+The lock_table is created once in shared memory by the operating system, which
+also maintains a global pointer to it.  This pointer is used only by the
+lock_manager and should not be used by other processes.  The lock table keeps
+track of all the pages which have been locked by some transaction and which pages
+transactions are currently waiting to lock.  More specifically, the lock table is
+a hash table of lock_entries.  Each lock_entry in the table represents a page that
+has been locked.  The lock table also maintains list of free shared memory that
+the lock manger previously allocated and are now available for reuse.  The
+pointers are accessed and maintaind by the sh_alloc memory management class.<P>
+
+<b>Lock_Entry class:</b>
+A lock_entry maintains a locked_queue, which points to transactions which have
+locked this page, and a waiting_queue, which points to the transactions which are
+waiting to lock this page.<P>
+
+<b>Lock_Manager & Deadlock_Detector class:</B>
+The lock manager itself does not reside in shared memory but in the transactions
+own local space. It is in fact created by the transaction after a begin call. 
+As a data member it contains the deadlock_detector class.  This class is
+reponsible for traversing the waiting lists in a lock_entry, and the locked lists
+in a trans_lock_info entry to find if there are any cycles.  If so, then then
+two or more transactions are in deadlock and one of them must be restarted. <P>
+
+<H3 ALIGN=MIDDLE>Secondary Data Structures</H3>
+<b>Sh_Alloc class:</b>
+To manage shared memory that has already been allocated, the sh_alloc class was
+created.  It keeps trak of list entries and lock entries which are no longer in
+use so that they can be reused when the need arises.<P>
+
+To make the comparison of different lock modes easer, the lock_mode_class was
+created to overload the >,<,=,== functions.  Greater Than and Less Than rank
+lock modes in terms of exclusiveness.  An exclusive lock therefore holds the
+highest value and no lock, None, holds the lowest.  The equality operator ,==,
+comparares two lock modes to determine if they are compatible.  It returns true
+if they are compatible and false otherwise.<P>
+
+A second class, page_id_class was created to make the comparison of page id's
+easier.  A page id consists of a page number and the filename in with that page
+resides.  The functions = and == were overloaded on this class.<P>
+
+To maintain the locked lists and waiting lists the classes lock_list and
+trans_list were created.  Lock lists are maintained by the transaction, within
+the trans_lock_info class, are are used to point to lock entries in the
+lock table.  Trans lists are maintained by lock entries to keep track of who is
+waiting to lock them, and who has already obtained a lock.  Trans lists point
+back to trans_lock_info entries.  Both of these lists inherit publically from
+the list class which actually contains most of the code for managing lists.<P>
+
+<H3 ALIGN=MIDDLE>The Locking Protocol</H3>
+
+When a transaction requests a lock on a page, the lock_page function for that
+page(lock_entry), is called.  The function first checks to see if the
+transaction already holds a lock on the page.  If it does, the system assumes
+that an implicit upgrade has been requested.<P>
+
+<B>Implicit Upgrades:</B><P>
+If the upgrade is compatible with the highest lock mode held on that page, then
+the current lock entry is upgraded to the new mode.  If the new lock mode is
+incompatible with the higest lock mode on that page, then a new entry is created
+for the request and it is placed at the front of the waiting queue. The
+transaction is then put to sleep.<P>
+
+If the lock mode that we want to upgrade to is incompatible with the current
+highest lock mode held on that page, and someone in my current compatibility
+group is already waiting for an upgrade, then we are restarted.  This is done
+because there is no way that both us and the transaction waiting for the upgrade
+can get a lock without violating 2PL.  If granted this would also form a
+dependency cycle between the two transactions waiting for an upgrade.<P>
+
+When the lock queue drains of locks and becomes empty, then then next compatible
+group from the waiting queue is removed and they are woken up.  If one of
+these transaction was waiting for an upgrade, its entry which is still in the
+locked queue is upgraded at this time.<P>
+
+<B>Normal Locks:</B><P>
+If we are not doing an upgrade, then the waiting queue is checked to see if
+there are already people waiting to get on the locked queue.  If so, then we are
+put on the end of the waiting queue and put to sleep.<P>
+ 
+If there is no one on the waiting queue, and our lock mode is compatible with
+the current highest lock held on that page, then we are granted a lock and added
+to the lock list for this page.  The transactions lock list is also updated to
+indicate the fact that it has now locked this page.<P>
+
+If the lock mode we are requesting is incompatible with the lock mode on the
+page, then we go to the end of the waiting queue and are put to sleep.<P>
+
+<B>Sleeping Transactions:</B><P>
+
+Transactions which are sleeping because they are waiting for a lock or waiting
+for an upgrade to come through, are woken up when their requested lock mode
+makes them compatible with the current higest lock held on a page.  This
+checking is done everytime a transaction unlocks a page.  When a transaction is
+woken up, the lock_page function in the lock manager will then re-request the
+lock on that page.<P>
+
+
+<H3 ALIGN=MIDDLE>Deadlock Detection</H3>
+
+The deadlock detection function is run whenever a transaction has requested a
+lock on a page and told it must go to sleep.  At this point, it's request has
+been placed on the waiting queue.  The deadlock algorithm then checks the
+sub-graph dealing with that page to see if it finds any cycles.  <P>
+
+To do this, the transaction starts with the transactions locked list which
+contains pointers to all the lock entries which the transaction holds a lock on.
+These entries are traversed down to the corresponding lock entries.  The wait
+queue in each lock entry is then traversed to see if they contain a path back to
+the transaction.  If so, then a cycle has been found and all the transactions
+locks are released and it is requested to restart.<P>
+

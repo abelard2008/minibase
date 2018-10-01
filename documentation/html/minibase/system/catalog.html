@@ -1,0 +1,658 @@
+<BODY BGCOLOR="#FFDDDD">
+<HTML>
+
+<HEAD>
+<TITLE>Minirel Catalog & Utilities Report</TITLE>
+</HEAD>
+<h1 ALIGN=CENTER>Minirel Catalog & Utilities Report</h1>
+<hr>
+Prepared by <a href="http://www.cs.wisc.edu/~feakins/feakins.html">Peter Feakins</a>
+(<a HREF="mailto:feakins@cs.wisc.edu">feakins@cs</a>)
+and
+<a href="http://www.cs.wisc.edu/~kimmel/kimmel.html">Bill Kimmel</a>
+(<a HREF="mailto:Kimmel@cs.wisc.edu">Kimmel@cs</a>) May 13 ,1995<br>
+<ul>
+<li><a href="#intro">INTRODUCTION</a>
+<li><a href="#extern">EXTERNAL INTERFACES</a>
+<li><a href="#intern">INTERNAL DESIGN</a>
+<li><a href="#accomp">ACCOMPLISHMENTS</a>
+<li><a href="#testing">TESTING</a>
+<li><a href="#retro">RETROSPECTIVE</a>
+<li><a href="#append">APPENDIX</a>
+</ul>
+<br>
+<hr>
+
+
+<a name="intro"> <h2 ALIGN=CENTER>INTRODUCTION</h2> </a>
+This part of the Minirel project involved two aspects: 1) implementing a
+catalog to maintain information on relations, attributes and indexes;
+and, 2) implementing utility functions to load, insert, and delete records. 
+<br>
+<br>
+
+The catalog is implemented through four classes:
+<br>
+<ul>
+<li>Catalog 
+<li>RelCatalog 
+<li>AttrCatalog 
+<li>IndexCatalog
+</ul>
+The Catalog class provides the external interface to catalog services.
+The RelCatalog, AttrCatalog and IndexCatalogs maintain descriptions of
+relations, attributes and indexes. 
+<br>
+The Catalog class provides an external interface to the catalog for such
+functions as:
+<br>
+<ul>
+<li>adding a relation
+<li>adding an index to a relation
+<li>dropping an index from a relation
+<li>destroying a relation
+<li>providing catalog information on:
+<ul>
+    <li>a relation
+    <li>an attribute
+    <li>all attributes for a relation
+    <li>an index
+    <li>all indexes for an attribute 
+    <li>all indexes for a relation 
+</ul>
+<li>providing an interface to the optimizer
+</ul>
+<br>
+In addition, the Catalog class also wraps the above functions in transactions
+so that changes to the database are performed atomically.  The Catalog
+class invokes functions from the RelCatalog, AttrCatalog and IndexCatalog
+classes to provide the actual services.
+<br>
+<br>
+RelCatalog, AttrCatalog, and IndexCatalog are implemented as heapfiles,
+and are responsible for maintaining information on relations, attributes and
+indexes respectively. Functions which change the database are implemented as
+private members. Functions which return catalog information are implemented
+as public members. The designation of methods as public members is an 
+accomodation for the utility functions which need access to catalog information.
+<br>
+<br>
+Three utilities are provided:      
+<br>
+<ul>
+<li>insert a record into the database
+<li>delete record(s) from the database
+<li>load a file of records into the database
+</ul>
+<br>
+The load utility inserts a designated file of records into the database.
+The utility inserts records into the specified relation and also inserts
+key,RID pairs into each index. The entire utility is wrapped in transaction
+so that all updates either commit or abort atomically.
+<br>
+<br>
+The insert utility inserts a record into the database. The utility inserts
+the record in to the specified relation (heapfile) and also inserts key,RID
+pairs into each index. The entire utility is wrapped in a transaction so that
+all updates either commit or abort atomically.
+<br>
+<br>
+The delete utility deletes a record(s) from the database. Currently the utility
+deletes records based on a single matching predicate (attribute = value). Any 
+attribute may be used in the predicate. The utility deletes each record from the
+specified relation for which the predicate holds. Each index entry is deleted.
+The utility is wrapped in a transaction so that all deletions are performed 
+atomically.
+<br>
+<br>
+<a name="extern"> <h2 ALIGN=CENTER>EXTERNAL INTERFACES</h2> </a>
+The Catalog class provides a public interface to catalog services. Each method
+of the Catalog is performed as an atomic transaction. The Catalog methods invoke
+methods from the RelCatalog, AttrCatalog and IndexCatalog to carry out the actual
+work. 
+<br>
+<br>
+<li>Catalog Header File
+<pre>
+
+class Catalog   {
+ friend RelCatalog;
+ friend AttrCatalog;
+ friend IndexCatalog;   
+
+ public:
+
+  // open relation catalog (creates or finds )
+  Catalog(Status &status);
+ 
+  // get rid of catalog (invokes destructors for each catalog)
+  ~Catalog();
+
+  // get catalog entry for a relation
+  Status getRelationInfo(char* relation, RelDesc& record);
+
+  // create a new relation
+  Status createRel(char* relation, int attrCnt, attrInfo attrList[]);
+
+  // destroy a relation
+  Status destroyRel(char* relation);
+
+  // add a index to a relation
+  Status addIndex(char* relation, char* attrname, IndexType accessType,
+			       int buckets);
+
+  // drop an index from a relation
+  Status dropIndex(char* relation, char* attrname, IndexType accessType);
+
+  // get a catalog entry for an attribute
+  Status getAttributeInfo(char *relation, char *attrName, AttrDesc &record);
+
+  // get catalog entries for all attributes of a relation
+  Status getRelAttributes(char *relation, int &attrCnt, AttrDesc *&attrs);
+  
+  // get catalog entries for all indexes for a relation
+  Status getRelIndexes(char* relation, int &indexCnt, IndexDesc *&indexes);
+
+  // get catalog entries for all indexes on an attribute 
+  Status getAttrIndexes(char* relation, char *attrName, int &indexCnt,
+				IndexDesc *&indexes);
+ 
+  // get catalog entry on an index
+  Status getIndexInfo(char* relation, char* attrName, IndexType accessType,
+			     IndexDesc &record);
+
+  // dump catalogs to a disk file for optimizer
+  Status dumpCatalog();
+
+};
+
+</pre>
+<br>
+<li>Catalog Class External Interfaces
+<ul>
+<li>Creating a relation: Catalog::createRel
+<br>
+The method createRel creates a relation. It accepts a relation
+name and an array of attributes (struct attrInfo). It wraps all
+updates in a single atomic transaction:
+<ul>
+<br>
+<li>creates a heapfile for the relation
+<li>creates a catalog entry for the relation
+<li>creates catalog entries for each attribute
+</ul>
+<br>
+<li>Adding an index: Catalog::addIndex
+<br>
+The method addIndex creates an index. It accepts a relation name,
+an attribute name, and an index type. It wraps all updates in a
+single atomic transaction:
+<ul>
+<br>
+<li>increments relation index count
+<li>increments attribute index count
+<li>creates catalog entry for index
+<li>creates an index file
+<li>inserts index records for each record in the relation 
+</ul>
+<br>
+<li>Dropping an index: Catalog::dropIndex
+<br>
+The method dropIndex drops an index. It accepts a relation name,
+an attribute name, and an index type. It wraps the following actions
+in a transaction:
+<ul>
+<br>
+<li>decrements relation index count
+<li>decrements attribute index count
+<li>deletes catalog entry for index
+<li>destroys underlying indexfile
+</ul>
+<br>
+<li>Destroying a relation: Catalog::destroyRel
+<br>
+The method DestroyRel destroys a relation. It accepts a relation name.
+It wraps the following in a transaction:
+<ul>
+<br>
+<li>destroys indexfiles
+<li>removes index file entries from catalog
+<li>removes attribute entries from catalog
+<li>removes relation entry from catalog
+<li>destroys relation file (heapfile)
+</ul>
+</ul>
+<br>
+
+<li>Utility Header File
+<pre>
+// utility header file
+
+
+struct
+ {
+  char * attrName;
+  char * attrValue;
+ } typedef attrNode;
+
+ // WRAPS DELETE UTILITY IN TX
+ Status deleteRecordUT(char *relation, attrNode item);
+
+ // DELETES RECORDS
+ Status deleteRecUT(char *relation, attrNode item);
+
+ // DELETES INDEX ENRIES FOR RECORDS
+ Status deleteRecIndexesUT(char* relation, RID rid, Tuple* &tuple);
+
+ // WRAPS INSERT UTILITY  IN TX
+ Status insertRecordUT(char *relation, int attrCnt, attrNode attrList[]);
+
+ // INSERTS RECORDS
+ Status insertRecUT(char *relation, int attrCnt, attrNode attrList[]);
+
+ // WRAPS LOAD UTILITY IN TX
+ Status loadUT(char *relation, char *fileName);
+
+ // LOADS RECORDS
+ Status loadRecordsUT(char *relation, char *fileName);
+
+ // LOADS INDEXES
+ Status loadIndexesUT(Tuple *&tuple, const int attrCnt, const int indexCnt,
+     const AttrDesc *&attrs, const IndexDesc *&indexes, void **&iFiles, const RID &rid );
+
+</pre>
+
+<li>Utility External Interfaces
+<ul>
+<li>Loading a relation: loadUT
+<br>
+The function loadUT loads a file of records into a relation. The
+function accepts a relation name and the name of a unix file.
+The entire utility is wrapped in a single atomic transaction:
+<ul>
+<br>
+<li>opens and reads records from a unix file
+<li>inserts each record into the relation (heapfile)
+<li>inserts combination of key and rid into each indexfile
+</ul>
+<br>
+<li>Inserting a record: insertRecordUT
+<br>
+The function insertRecordUT inserts a record into a specified relation.
+The function accepts a relation name and an array of structs (attrNode)
+which contain attibutes names and pointers to character strings. All
+updates are wrapped in a single transaction.
+<ul>
+<br>
+<li>inserts record into heapfile
+<li>inserts combination of key and rid into each indexfile
+</ul>
+<br>
+<li>Deleting a record: deleteRecordUT
+<br>
+The function deleteRecordUT deletes a record(s) from a relation based on a
+single matching predicate. Any of the relation's attributes may be used in
+the predicate. If there are multiple matches each record will be deleted.
+The following updates are wrapped in a single update:
+<ul>
+<br>
+<li>deletes each corresponding index record
+<li>deletes record from underlying relation
+</ul>
+</ul>
+<a name="intern"> <h2 ALIGN=CENTER>INTERNAL DESIGN</h2></a>
+The methods of the RelCatalog, AttrCatalog and IndexCatalog classes
+are responsible for maintaining and retrieving catalog information.
+They are invoked by Catalog class methods and utility functions.
+<br>
+<br>
+<li>RelCatalog
+<br>
+<ul>
+<li>Maintains   :   relation descriptions
+<li>Unique key  :   relation name
+<li>Schema      :   RelDesc
+</ul>
+<li>AttrCatalog
+<ul>
+<li>Maintains   :   attribute descriptions
+<li>Unique key  :   relation name, attribute name
+<li>Schema      :   AttrDesc
+</ul>
+<li>IndexCatalog:   
+<br>
+<ul>
+<li>Maintains   :   index descriptions
+<li>Unique key  :   relation name, attribute name, index type
+<li>Schema      :   IndexDesc
+</ul>
+Entries in these catalogs are not currently
+indexed. As a result, any catalog access involves a sequential scan of
+the underlying heapfile.
+<br>
+<br>
+Fields for relevant statistics are included in each record type. These
+values are currently set to default values. Functions to calculate these
+statistics do not currently exist.
+<br>
+<br>
+The index catalog currently only supports indexes on single attributes. 
+A future enhancement would be to extend the catalog to support indexes
+on multiple attributes (ie GRID files etc).
+<br>
+<br>
+Index names are calculated rather than stored by IndexCatalog:buildIndexName.
+<br>
+<br>
+The function attrCatalog::getTupleStructure provides the attrType and string
+size arrays needed to support the Tuple class. This could be simplified 
+if the Tuple class used a size array or all attributes rather than just
+strings. The function AttrCatalog::getRelInfo does return an array of
+attribute descriptions (AttrDesc) in positional order. This supports
+the getTupleStructure function.
+
+<br>
+<br>
+<ul>
+<li>Catalog Header File
+<pre>
+#define RELCATNAME   "relcat"           // name of relation catalog
+#define ATTRCATNAME  "attrcat"          // name of attribute catalog
+#define INDEXCATNAME "indcat"
+#define RELNAME      "relname"          // name of indexed field in rel/attrcat
+#define MAXNAME      32                 // length of relName, attrName
+#define MAXSTRINGLEN 255                // max. length of string attribute
+#define NUMTUPLESFILE  2000             // default statistic = no recs in file
+#define NUMPAGESFILE     50             // default statistic = no pages in file
+#define DISTINCTKEYS   2000             // default statistic: no of distinct keys
+#define INDEXPAGES       10             // default statisitc no of index pages
+#define MINSTRINGVAL "A"                // default statisitic
+#define MAXSTRINGVAL "Z"                // default statisitic
+#define  MINNUMVAL   0                    // default statistic
+#define  MAXNUMVAL   999999999            // default statisitic
+
+// attrData struct for minimum and maximum attribute values
+
+typedef struct {
+  char strVal[10];
+  int intVal;
+  float floatVal ;
+} attrData;
+
+
+//   RelDesc struct: schema of relation catalog:
+
+
+typedef struct {
+  char relName[MAXNAME];                // relation name
+  int attrCnt;                          // number of attributes
+  int indexCnt;                         // number of indexed attrs
+  int numTuples;                        // number of tuples in the relation
+  int numPages;                         // number of pages in the file
+} RelDesc;
+
+
+// attrInfo struct used for creating relations
+
+typedef struct {
+  char attrName[MAXNAME];               // attribute name
+  AttrType attrType;                    // INTEGER, FLOAT, or STRING
+  int attrLen;                          // length
+} attrInfo; 
+
+
+// AttrDesc struct : schema of attribute catalog:
+
+
+typedef struct {
+  char relName[MAXNAME];                // relation name
+  char attrName[MAXNAME];               // attribute name
+  int attrOffset;                       // attribute offset
+  int attrPos;                          // attribute position 
+  AttrType attrType;                   // attribute type
+  int attrLen;                          // attribute length
+  int indexCnt;                        // number of indexes
+  attrData minVal;                     // min max key values
+  attrData maxVal;
+
+} AttrDesc;
+
+// IndexDesc Struct : schema for index catalog  
+
+typedef struct {
+  char relName[MAXNAME];                // relation name
+  char attrName[MAXNAME];               // attribute name
+  IndexType accessType;                 // access method 
+  TupleOrder order;                     // order of keys   
+  int clustered;                        //  
+  int distinctKeys;                     // no of distinct key values 
+  int indexPages;                       // no of index pages 
+
+} IndexDesc;
+
+class RelCatalog : public HeapFile {
+ friend Catalog;
+ friend AttrCatalog;
+ friend IndexCatalog;
+
+ public:
+  // CONSTRUCTOR
+  RelCatalog(Status &status);
+
+  // GET RELATION DESCRIPTION FOR A RELATION
+  Status getInfo(char* relation, RelDesc& record);
+
+  // DESTRUCTOR
+  ~RelCatalog();
+
+private:
+  // CREATE A NEW RELATION
+  Status createRel(char* relation, int attrCnt, attrInfo attrList[]);
+
+  // DESTROY A RELATION
+  Status destroyRel(char* relation);
+
+  // ADD AN INDEX TO A RELATION
+  Status addIndex(char* relation, char* attrname, IndexType accessType, int buckets = 1);
+
+  // DROP AN INDEX FROM A RELATION
+  Status dropIndex(char* relation, char* attrname, IndexType accessType);
+
+  // DUMPS A CATALOG TO A DISK FILE (FOR OPTIMIZER)
+  Status dumpCatalog();
+
+  // OUTPUTS A RELATION TO DISK FOR OPTIMIZER
+  Status dumpRelation(fstream &outFile, RelDesc &relRec, int tupleSize); 
+
+  // OUTPUTS ATTRIBUTES TO DISK FOR OPTIMIZER
+  Status dumpRelAttributes (fstream &outFile,AttrDesc *&attrRecs, int attrCnt);
+
+  // OUTPUTS ACCESS METHODS TO DISK FOR OPTIMIZER
+  Status dumpRelIndex(fstream &outFile,IndexDesc *&indexRecs, int indexCnt);
+
+  // ADD INFORMATION ON A RELATION TO  CATALOG
+  Status addInfo(RelDesc record);
+
+  // REMOVE INFORMATION ON A RELATION FROM CATALOG
+  Status removeInfo(char *relation);
+};
+
+
+
+class AttrCatalog : public HeapFile {
+ friend Catalog;
+ friend RelCatalog;
+ friend IndexCatalog;
+
+ public:
+  // OPEN ATTRIBUTE CATALOG
+  AttrCatalog(Status &status);
+
+  // GET ATTRIBUTE DESCRIPTION
+  Status getInfo(char *relation, char *attrName, AttrDesc &record);
+
+  // GET ALL ATTRIBUTES OF A RELATION
+  Status getRelInfo(char *relation, int &attrCnt, AttrDesc *&attrs);
+
+  // RETURNS ATTRTYPE AND STRINGSIZE ARRAYS FOR CONSTRUCTING TUPLES
+  Status getTupleStructure(char * relation, int &attrCnt, AttrType *&typeArray, short *&sizeArray);
+  
+  // CLOSE ATTRIBUTE CATALOG
+  ~AttrCatalog();
+  
+ private:
+  // ADD ATTRIBUTE ENTRY TO CATALOG
+  Status addInfo(AttrDesc record);
+
+  // REMOVE AN ATTRIBUTE ENTRY FROM CATALOG
+  Status removeInfo(char *relation, char *attrName);
+
+  // REMOVE ALL ATTRIBUTE ENTRIES FOR A RELATION
+  Status dropRelation(char* relation);
+
+  // ADD AN INDEX TO A RELATION
+  Status addIndex(char* relation, char* attrname, IndexType accessType);
+
+
+};
+
+
+class IndexCatalog : public HeapFile {
+ friend Catalog;
+ friend RelCatalog;
+ friend AttrCatalog;
+
+ public:
+ // OPEN INDEX CATALOG
+ IndexCatalog(Status &status);
+
+ // GET ALL INDEXES FOR A RELATION
+ Status getRelInfo(char* relation, int &indexCnt, IndexDesc *&indexes);
+
+ // RETURN INFO ON AN INDEX
+ Status getInfo(char* relation, char* attrName, IndexType accessType, IndexDesc &record);
+
+ // GET ALL INDEXES INLUDING A SPECIFIED ATTRIBUTE
+ Status IndexCatalog::getAttrIndexes(char* relation, char *attrName, int &indexCnt, IndexDesc *&indexes);
+
+ // CREATES A FILE NAME FOR AN INDEX 
+ Status buildIndexName(char* relation, char* attrName, IndexType accessType, char  *&indexName);
+
+ // DESTRUCTOR
+ ~IndexCatalog();
+
+ private:
+ // ADD INDEX ENTRY TO CATALOG
+ Status addInfo(IndexDesc record);
+
+ // REMOVE INDEX ENTRY FROM CATALOG
+ Status removeInfo(char* relation, char* attrName, IndexType accessType);
+
+ // ADD INDEX TO A RELATION
+ Status addIndex(char* relation, char* attrName, IndexType accessType, int buckets = 1);
+
+ // DROP INDEX FROM A RELATION
+ Status dropIndex(char* relation, char* attrName, IndexType accessType);
+
+ // DROP ALL INDEXES FOR A RELATION
+ Status IndexCatalog::dropRelation(char *relation);
+
+
+};
+
+</pre>
+
+    
+	
+<a name="accomp"> <h2 ALIGN=CENTER>ACCOMPLISHMENTS</h2></a>
+The project involved a substantial rewrite of the old minirel catalogs. The changes 
+involved three factors: changes in the catalog structure to add an index
+catalog; changes in heapfile and scans; and changes to accomodate the tuple
+class. Additional code was also required to support transaction logic and
+the new error protocol.
+<br>
+<br>
+In retrospect, the decision to alter the structure of the catalogs late in
+the project proved to be a larger problem than was anticipated. 
+<br>
+<br>
+The project also involved the creation of utilities to insert records, delete
+records, and to load a relation. Each of these utilities is completely new.
+<br>
+<br>
+An interface to the optimizer, that dumps catalog information to a disk file, was also provided.
+<br>
+
+
+<a name="testing"><h2 ALIGN=CENTER>TESTING</h2></a>
+We wrote a driver named main.C which tested each of the functions
+provided in both the catalog classes and the utilities. The program
+performed the following functions: 
+<br>
+<br>
+<ul>
+<li> creating a relation
+<li> creating an index
+<li> loading a relation
+<li> adding a second index
+<li> inserting a record
+<li> deleting a record
+<li> dumping a catalog to disk
+<li> dropping a relation
+<li> destroying a relation
+</ul>
+<br>
+In addition, each of the functions which return information was tested.
+
+<a name="retro"><h2 ALIGN=CENTER>RETROSPECTIVE</h2></a>
+Originally, modification of the catalogs involved changing the way
+in which catalog records were stored and located due to the new
+heapfile class. The original structure of the catalogs was retained.
+<br>
+<br>
+Two things occured later in the project that affected this structure.
+First, an index catalog was added in order to eventually support
+indexes on multiple attributes. Second, a new Catalog class was
+added to in order to provide an external interface to the catalogs
+and to wrap catalog services in an atomic transaction.
+<br>
+<br>
+In the original minirel catalog, operations which affected both the
+relation and attribute catalogs (ie add an index) were invoked by
+a call to a relation catalog method. This function would in turn
+call the necessary attribute catalog functions. This structure was
+retained with the introduction of the index catalog.
+<br>
+<br>
+The Catalog class was introduced later, and now provides the external
+interface to catalog services. When multiple catalogs are involved in an
+operation (add an index), the Catalog class simply wraps a call to
+the original relation catalog method in a transaction. Thus the 
+relation catalog functions for adding indexes, dropping indexes and
+destroying relations invoke the necessary functions of the other catalogs.
+<br>
+<br>
+A cleaner implementation would be to have the Catalog class invoke
+the attribute and index catalog calls for these operations.
+This is a relatively minor change, but one we did not have time to make.
+<br>
+<br>
+
+
+<a name="append"><h2 ALIGN=CENTER>APPENDIX</h2></a>
+<ul>
+<li>main.C - test driver
+<li>maincatalog.h
+<li>catalog.h
+<li>utility.h
+<li>maincatalog.C
+<li>catalog.C
+<li>create.C
+<li>build.C
+<li>drop.C
+<li>destroy.C
+<li>utility.C
+<li>load.C
+<li>dump.C
+</ul>
+</HTML>

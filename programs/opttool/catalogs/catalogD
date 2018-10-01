@@ -1,0 +1,75 @@
+11
+relcat 5 2000 48 50
+    relName 1 T A Z 32 0 0
+    attrCnt 2 I 0 999999999 4 32 0
+    indexCnt 3 I 0 999999999 4 36 0
+    numTuples 4 I 0 999999999 4 40 0
+    numPages 5 I 0 999999999 4 44 1
+        FileScan 50 R 0
+attrcat 9 2000 104 50
+    relName 1 T A Z 32 0 0
+    attrName 2 T A Z 32 32 0
+    attrOffset 3 I 0 999999999 4 64 0
+    attrPos 4 I 0 999999999 4 68 0
+    attrType 5 I 0 999999999 4 72 0
+    attrLen 6 I 0 999999999 4 76 0
+    indexCnt 7 I 0 999999999 4 80 0
+    minVal 8 T A Z 10 84 0
+    maxVal 9 T A Z 10 94 1
+        FileScan 50 R 0
+indcat 7 2000 84 50
+    relName 1 T A Z 32 0 0
+    attrName 2 T A Z 32 32 0
+    accessType 3 I 0 999999999 4 64 0
+    order 4 I 0 999999999 4 68 0
+    clustered 5 I 0 999999999 4 72 0
+    distinctKeys 6 I 0 999999999 4 76 0
+    indexPages 7 I 0 999999999 4 80 1
+        FileScan 50 R 0
+emp1 3 2000 229 224
+    ename 1 T A Z 4 0 1
+        B_Index 200 A 1 1 100 3 2 ind % title %
+    title 2 T A Z 4 4 0
+    dname 3 T A Z 4 8 1
+        FileScan 224 R 0
+emp2 3 2000 229 224
+    ename 1 I 0 100 4 0 0
+    title 2 I 0 100 4 4 1
+        B_Index 400 A 1 1 100 5 2 ind % dname %
+    dname 3 I 0 100 4 8 1
+        FileScan 224 R 0
+emp3 3 2000 229 224
+    ename 1 T A Z 4 0 0
+    title 2 T A Z 4 4 1
+        B_Index 100 A 1 1 100 4 2 ind % ename %
+    dname 3 T A Z 4 8 1
+        FileScan 224 R 0
+emp4 3 2000 229 224
+    ename 1 T A Z 4 0 0
+    title 2 T A Z 4 4 0
+    dname 3 T A Z 4 8 2
+        B_Index 200 A 1 1 100 4 2 ind % title ename %
+        FileScan 224 R 0
+emp5 3 2000 229 224
+    ename 1 I 0 100 4 0 1
+        B_Index 400 A 1 1 100 5 2 ind % title dname %
+    title 2 I 0 100 4 4 0
+    dname 3 I 0 100 4 8 1
+        FileScan 224 R 0
+Dept1 3 2000 229 224
+    did 1 I 0 100 4 0 1
+        B_Index 200 A 1 1 100 3 2 ind % projid %
+    projid 2 I 0 100 4 4 0
+    budget 3 I 0 100 4 8 1
+        FileScan 224 R 0
+Dept2 3 2000 229 224
+    did 1 I 0 100 4 0 0
+    projid 2 I 0 100 4 4 1
+        B_Index 400 A 1 1 100 4 2 ind % did %
+    budget 3 I 0 100 4 8 1
+        FileScan 224 R 0
+Proj 2 2000 229 224
+    projid 1 I 0 100 4 0 1
+        B_Index 200 A 1 1 100 5 2 ind 
+    code 2 I 0 100 4 4 1
+        FileScan 224 R 0

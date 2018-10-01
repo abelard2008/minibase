@@ -1,0 +1,3 @@
+setComment {Orders of red parts}
+addRelationTable {Orders {}} {sid {}} {pid _pid} {quantity p.} {{} p._pname}
+addRelationTable {Parts {}} {pid _pid} {pname _pname} {color red}

@@ -1,0 +1,154 @@
+<HTML>
+<HEAD>
+<TITLE>Disk Space Manager</TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+
+<H1> Disk Space Manager </H1>
+<IMG SRC="../pics/hline.gif">
+<P>
+
+   The <strong>disk space manager (DSM)</strong> (implemented as part
+   of the DB class) is 
+   the component of Minibase that takes
+   care of the allocation and deallocation of pages within a database.
+   It also performs reads and writes of pages to and from disk, and
+   provides a logical <i>file</i> layer within the context of a
+   database management system.
+
+<P>
+
+   A Minibase database is implemented as a single Unix file.  Its
+   pages are simply page-sized blocks of bytes within this file.  The
+   higher-level structures of a Minibase database, such as heap files
+   and B+ tree files, are actually logical files consisting of
+   collections of database pages.  In discussing the DSM,
+   whenever necessary
+   we will refer to page-sized blocks of bytes in the underlying
+   Unix file as ``pages'', and pages in higher-level structures
+   such as heap files as, for example, ``heap file pages'' in
+   order to avoid confusion.
+
+<P>
+<IMG SRC="../pics/hline.gif">
+<H2>The Page Class</H2>
+
+   The abstraction of a page is provided by the Page class. All higher
+   level applications use this Page class.  In the multi-user version of
+   Minibase, a Page contains a log serial number (LSN) and a data
+   part; in the single-user version, it only has the data part.
+   Higher layers impose their own structure on pages simply by casting
+   page pointers to their own record types.  The data part of a page
+   is guaranteed to start at the beginning of the block.
+
+<P>
+<IMG SRC="../pics/hline.gif">
+<H2> The Database (DB) Class</H2>
+
+   The DB class provides the abstraction of a single database stored
+   on disk.  It shields the rest of the software from the fact that
+   the database is implemented as a single Unix file.
+   It provides methods for allocating additional pages (from the
+   underlying Unix file) for use in the database and deallocating
+   pages (which may then be re-used in response to subsequent
+   allocation requests).  (The DB class actually supports allocation 
+   and deallocation of a consecutive run of pages,
+   though the higher-level code usually just asks for one page at a time.) 
+
+<P>
+
+   There is one instance of the DB class for every database used.  (In
+   Minibase, a transaction is allowed to have at most one active
+   database, so there is just one instance of this class.)  The
+   operations on this class include creating and destroying databases,
+   and, as noted above, allocating and deallocating pages.  Further,
+   existing databases can be opened and closed, and there are
+   methods to retrieve certain characteristic properties of the
+   database, like the number of pages and page size.
+
+<P>
+<IMG SRC="../pics/hline.gif">
+<H2>File Directory</H2>
+
+   The DB class also provides a <strong> file naming
+   service</strong>, which is used by higher-level code to create
+   logical ``files of pages''.  This service is implemented using records
+   consisting of file names and their header page ids. There are
+   functions to insert, look up, and delete file entries.
+   The set of file entries is collectively referred to as the
+   <strong>file directory.</strong>
+
+<P>
+<IMG SRC="../pics/hline.gif">
+<H2>Space Management</H2>
+
+   The DB class keeps 
+   track of allocated space within the database using a fixed
+   set of pages called the <strong>space map.</strong>  
+   They can be thought of as containing a bit
+   map: one bit per database page, with ``0'' denoting that the corresponding
+   page is free and ``1'' denoting that it is allocated.
+
+<P>
+
+   The DB class maintains the space map, in addition to its other
+   duties, updating it whenever pages are allocated or deallocated.  
+
+
+<P>
+<IMG SRC="../pics/hline.gif">
+<H2>Limitations, or Room for Improvement</H2>
+
+   The current implementation creates fixed-size databases; the space
+   map is set when the database is created, and never grows.  This
+   limitation would be fairly easy to remedy, either by setting a
+   maximum database size (still fixing the size of the space map, but
+   allowing the database to grow to fit the maximum number of pages
+   representable in the map), or by having the space map be a linked
+   list of pages and grow as needed.
+
+<P>
+   In multi-user Minibase, the DB class logs all changes to the space
+   map and the file directory of a database.  It also locks the pages
+   that hold these structures whenever it changes them.  Since these
+   structures are global to the whole database, this often limits
+   multi-user Minibase to a single writer at a time.
+   Unfortunately, any complete remedy to this problem is likely to be
+   complicated.
+
+<P>
+
+   Here is an idea for a partial solution that might increase
+   concurrency somewhat, while still being easy to implement.  Instead
+   of locking the space map pages themselves, lock the pages that are
+   being allocated or freed.  Then in the page allocator, treat all
+   locked pages as if they were already allocated, even if their bit
+   in the space map is clear.  Of course this would require a
+   semaphore to single-thread updates to the space map.  This idea
+   leaves the locking in place for the file-directory pages, so two
+   transactions that both needed to create or delete a logical file
+   would still be serialized.  But the more common allocating and
+   freeing of pages within already-created logical files would
+   <i>not</i> require serialization.
+
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+Click here for the <A HREF="public.db.txt"><B>public interface for the DB  
+class</B></A>
+<P>
+
+
+<IMG SRC="../pics/hline.gif">
+<P>
+<A HREF="../project.html">Back to the List of Components</A><BR>
+<A HREF="../minibase.html">Back to the Minibase Home Page</A><BR>
+<!A HREF="doc/report/html/project.html">
+<!764 Report</A>
+<BR>
+
+</BODY>
+</HTML>
+

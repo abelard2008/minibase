@@ -1,0 +1,191 @@
+##################################################################
+# 
+# Below is the configuration file for the buffer_manager visuali-
+# tion. Mostly colors and sizes are defined here (NOTE: they are
+# defined together ie the color(s) and the font of a button are
+# defined at the same place). Also the directory where the bitmaps
+# and the log-files are stored, as well as which replacement stra-
+# tegies should be shown are determined.
+#
+# Author: Harry Stavropoulos (harryst@cs.wisc.edu)
+# 
+###################################################################
+
+
+
+
+#
+# The background color of the root window...
+#
+
+set bg_color #b5c4a2
+
+
+#
+# Colors of the unusable frames
+#
+
+set bg_unusable_frame black
+set fg_unusable_frame red2
+
+
+#
+# ...the replacement-startegy-listing colors... LRU is for the 
+# LRU and the other is for the general replacement startegy...
+#
+
+set bg_current_replacement_strategy_label navyblue
+set fg_current_replacement_strategy_label white
+set bg_current_replacement_strategy white
+set fg_current_replacement_strategy navyblue
+
+set bg_LRU_replacement_list white
+set fg_LRU_replacement_list red
+set font_LRU_replacement_list 6x13
+
+set bg_replacement_list white
+set fg_replacement_list red
+set font_replacement_list 6x13
+
+
+#
+# Set the following flag to 1 if you want to show the replacement
+# list for a strategy OTHER than LRU - PROVIDED you are using it...
+# It will be reset to 0 if the strategy is LRU
+#
+
+set show_replacement_strategy_list 1
+
+
+#
+# Set the following to zero if you do not want to see the LRU list. 
+# It will be set to 1 if the strategy is LRU
+#
+
+set show_lru_list 1
+
+
+#
+# If show_no_list is set, nothing will appear...
+#
+
+set show_no_list 0
+
+
+#
+# The colors that the help & show_man_page menu buttons have,
+# as well as the colors of the man page
+#
+
+set bg_help_color           yellow 
+set bg_show_man_page_color  yellow
+set bg_man_color            black
+set fg_man_color            cyan
+
+#
+# The color that the info for each frame is displayed, and the 
+# width of the info...
+#
+
+set fg_info_label red
+set info_label_width 11
+
+
+#
+# act_button_width is the width of the Next, Step etc buttons
+# fg_button_act is the color of the number of actions to move,
+# either forward - with Next - or backwards - with Prev. Below
+# the parameters for these buttons are set.
+# 
+
+set act_button_width 12
+set act_button_entry_width 3
+set bg_button_act cyan
+set fg_button_act red
+
+set bg_button_steps white
+set fg_button_steps red
+
+
+#
+# The parameters for the Cont button are set below. The color and
+# text displayed change when the buton is pressed
+#
+
+set cont_button_act_fg    red
+set cont_button_act_bg    white
+set cont_button_noact_fg  black
+
+
+
+# 
+# sizes of frames
+#
+
+set frame_height 60
+set frame_width  60
+
+
+#
+# colors used for the frames and the pin
+#
+
+set bg_light_green #cee0ba
+set untouched_frame_color white
+set dirty_page_color red2
+set clean_page_color #cee0ba
+set pin_color yellow
+
+set bg_action_list white
+set fg_action_list red
+
+
+#
+# configuration options for the window listing the log-file
+# do not change the geometry coz the listbox will not adapt
+# or you will also have to change the num_of_listed_actions
+#
+
+set action_list_geom 50x25
+set action_list_font 6x13
+set num_of_listed_actions 25
+
+
+# 
+# The colors to distinguish the files (ie the color of the blob)...
+# maximum_num_openedfiles should be equal to the number of colors
+#
+
+set maximum_num_openedfiles 10
+set list_of_file_colors {black cyan white yellow orange1 \
+                         mediumorchid2 springgreen1 \
+                         peachpuff2 thistle2 hotpink4}
+
+#
+# colors for the log-file prompt window
+#
+
+set message_prompt_color yellow
+set file_prompt_color red
+set welcome_color white
+
+#
+# Directory where the log_files are - as of know they are in
+# subdirectory LOG_FILES of the current directory. If you want
+# to change this, do it here...
+#
+
+##set dir_w_bm_logs [pwd]/LOG_FILES
+set dir_w_bm_logs $bm_trace_dir
+
+#
+# Directory where the bitmaps are - as of know they are in
+# subdirectory /BITMAPS of the current directory. If you want
+# to change this, do it here...
+#
+
+##set bitmap_dir [pwd]/BITMAPS
+set bitmap_dir $bm_code_dir/source_files/BITMAPS
+
+set pin_bitmap             @$bitmap_dir/pin.bpm
+set unusable_frame_bitmap  @$bitmap_dir/unusable_frame.bmp

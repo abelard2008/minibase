@@ -1,0 +1,57 @@
+  Schema: 0x7c43e8
+    Primitive: 0x9b93e0 of-type: ChildToIsA
+      Attr: ChildEntity == @
+      Attr: IsABox ==  0x9bb9a8
+    Primitive: 0x9b95a8 of-type: ChildToIsA
+      Attr: ChildEntity ==  0x9bbfc8
+      Attr: IsABox ==  0x9bbb30
+    Primitive: 0x9b9770 of-type: ChildToIsA
+      Attr: ChildEntity ==  0x9c09a8
+      Attr: IsABox ==  0x9bbcb8
+    Primitive: 0x9b9938 of-type: ChildToIsA
+      Attr: ChildEntity == @
+      Attr: IsABox ==  0x9bbe40
+    Primitive: 0x9b9b00 of-type: Attribute
+      Attr: Name == Student ID
+      Attr: AssociatedWith ==  0x9bbfc8
+      Attr: Key == Is-Key
+      Attr: Type == int
+    Primitive: 0x9b9d70 of-type: Attribute
+      Attr: Name == Name
+      Attr: AssociatedWith ==  0x9bdda8
+      Attr: Key == Is-Not-Key
+      Attr: Type == char
+    Primitive: 0x9b9fe0 of-type: Attribute
+      Attr: Name == Department
+      Attr: AssociatedWith ==  0x9c09a8
+      Attr: Key == Is-Not-Key
+      Attr: Type == char
+    Primitive: 0x9bb730 of-type: Attribute
+      Attr: Name == Social Security Number
+      Attr: AssociatedWith ==  0x9bdda8
+      Attr: Key == Is-Key
+      Attr: Type == char
+    Primitive: 0x9bb9a8 of-type: IsA
+      Attr: ParentEntity ==  0x9bbfc8
+    Primitive: 0x9bbb30 of-type: IsA
+      Attr: ParentEntity ==  0x9bdda8
+    Primitive: 0x9bbcb8 of-type: IsA
+      Attr: ParentEntity ==  0x9bdda8
+    Primitive: 0x9bbe40 of-type: IsA
+      Attr: ParentEntity ==  0x9c09a8
+    Primitive: 0x7e5688 of-type: Entity
+      Attr: Name == Assistant Teacher
+      Attr: Strength == Strong
+      Attr: OwnedThroughRel == @
+    Primitive: 0x9bbfc8 of-type: Entity
+      Attr: Name == Student
+      Attr: Strength == Weak
+      Attr: OwnedThroughRel == @
+    Primitive: 0x9bdda8 of-type: Entity
+      Attr: Name == Person
+      Attr: Strength == Weak
+      Attr: OwnedThroughRel == @
+    Primitive: 0x9c09a8 of-type: Entity
+      Attr: Name == Professor
+      Attr: Strength == Weak
+      Attr: OwnedThroughRel == @

@@ -1,0 +1,625 @@
+\documentstyle{article}
+\newcommand{\eat}[1]{}
+
+\addtolength{\oddsidemargin}{-0.75in}
+\setlength{\textwidth}{6.25in}
+
+
+\font\bigheadfont=cmss12 at 12truept
+\font\medheadfont=cmss10 at 10truept
+\font\smallheadfont=cmssq8 at 8truept
+
+\def\uwhead{{\vglue -\voffset \vglue -2.1truecm
+\bigheadfont\centerline{UNIVERSITY OF WISCONSIN--MADISON}
+\medheadfont\baselineskip=.43truecm\centerline{COMPUTER SCIENCES DEPARTMENT}
+\vskip.15truecm
+\centerline{CS 564:  DATABASE MANAGEMENT SYSTEMS}
+\bigheadfont\baselineskip=1.2em \vskip.25truecm
+\centerline{Solutions to Assignment 7:  Relational Query Optimization}
+\medheadfont \vskip .2 truecm
+\centerline{Instructor:  Raghu Ramakrishnan}
+\vskip .2truecm}}
+
+\def\endash{{\the\textfont0--}} %% Need these because PostScript fonts do not
+\def\emdash{{\the\textfont0---}}%% make these dashes join together.
+\renewcommand{\baselinestretch}{1.2}
+\begin{document}
+
+\uwhead
+
+\section{The Exercises}
+
+\begin{enumerate}
+%1. << type 1 question >>
+\item
+Open Catalog A and run the tool on the following query.  
+\begin{quote}
+        SELECT * FROM job\\
+        WHERE jname = "Boss"
+\end{quote}
+
+Answer the following questions, looking at level 0 access methods.
+\begin{enumerate}
+\item
+What are the attributes of the {\em Job} relation?
+
+Answer: {\em jno}, {\em jname} and {\em jdesc}.
+
+\item
+How many tuples are in the {\em Job} relation?
+
+Answer: 2000.
+
+\item
+How many different values of the {\em jname} attribute are there in
+the {\em Job} relation?
+
+Answer: 2000.
+
+\item
+What is the largest job ID number held by any employee?
+
+Answer: 2500.
+\end{enumerate}
+
+
+\item
+%2. << type 1 question >>
+Use the same catalog, Catalog A, and the following query:
+\begin{quote}
+        SELECT * FROM emp\\
+        WHERE ename = "Doe"
+\end{quote}
+
+Answer the following questions, looking at level 1 plans.
+\begin{enumerate}
+\item
+What is the estimated total cost of running the (estimated) best plan?
+
+Answer: 4.02
+
+\item
+What is the sorting cost associated with this plan?  What would the sort
+cost be for {\em any} plan for this query?
+
+Answer: 0. All plans have zero sort-cost since there is no grouping
+demanded by the query.
+
+\item
+What is the estimated result cardinality for this plan?
+
+Answer: 1.
+
+\item
+The estimated result cardinality is the number of employees that the
+optimizer estimates are named "Doe".  Given your knowledge about the
+number of different {\em ename} values (see earlier exercise), is the
+estimate the optimizer makes a reasonable one? Explain very briefly.
+
+Answer: Number of tuples is 40,000.  Number of distinct keys is 39,000.
+Approx. one key per tuple.  Hence result cardinality of 1 is reasonable.
+\end{enumerate}
+
+
+\item
+%3. << type 1 question: levels 0 and 1 >>
+Use the same catalog, Catalog A, and the same query as before:
+\begin{quote}
+        SELECT * FROM emp\\
+        WHERE ename = "Doe"
+\end{quote}
+
+Answer the following questions, looking at both Level 1 plans and Level
+0 access methods.
+
+\begin{enumerate}
+\item
+Find the (estimated) best plan.  Which access method does this plan use?
+
+Answer: BIndex on ename.
+
+\item
+In what order would the tuples be returned by this plan?  Why?
+
+Answer: In ename order, since a BIndex is ordered.
+
+\item
+Disable the access method used by the best plan by double-clicking the
+RIGHT mouse button on its Level 0 box.  (The box will then be displayed
+in gray, on a color monitor.)  Which access method does the optimizer
+consider to be the best now?
+
+Answer: FileScan.
+
+\item
+Compare the new best plan with the other plans still shown.  What is it about the way the best
+plan acces
+ses tuples that makes it substantially cheaper than the others?
+
+Answer: FileScan reads each page only once and processes many tuples.
+Other indexes (being unclustered) may read a page multiple times and
+process only one tuple per page.
+\end{enumerate}
+
+
+\item
+%4. << type 2 question: show understanding of the difference between levels 0 and 1 >>
+Open Catalog A, and run the tool on the following query.
+\begin{quote}
+        SELECT * FROM job\\
+        WHERE (jno $>$ 100) AND (jno $<$ 1000)
+\end{quote}
+
+Answer the following questions.
+\begin{enumerate}
+\item
+How many Job tuples does the optimizer think there are?  Where on the
+tool's display is this information shown?
+
+Answer: 2000.  Each Level 0 box shows this.
+
+\item
+How many jobs whose number is greater than 100 and less than 1000 does
+the optimizer think there are?  Where on the display does this appear?
+
+Answer: 767.  Appears in Level 1 boxes.
+
+\item
+How does the optimizer arrive at its estimate of the number of jobs whose
+number satisfies the predicate in the query?  That is, what calculations
+does it perform, and where does the supporting data come from?
+
+Answer: Reduction factor is computed as the ratio of the range of matching
+tuples to the range of all tuples.  Number of matching tuples is product
+of reduction factor and the number of all tuples in relation.
+
+\item
+Open Catalog B, then run the same query against this catalog.  {\em
+(WARNING: opening the new catalog does NOT automatically re-run the
+current query.  You must re-run the query manually.)}  What is the new
+estimate of the number of jobs whose number is greater than 100 and less
+than 1000?  Why is it different from before?
+
+Answer: 100.  The range and number of job tuples are different.
+\end{enumerate}
+
+
+\item
+%5. << type 1 question >>
+Open Catalog A, and run the following query.
+
+\begin{quote}
+        SELECT * FROM emp, dept\\
+        WHERE emp.dno = dept.dno
+\end{quote}
+
+Answer the following questions looking at Level 2 plans.  (NOTE: be sure
+not to confuse LEVEL 2 with the line NUMBERED 2.  The NUMBER of the line
+of plans you are to look at is 3, the top line of the display.)
+
+\begin{enumerate}
+\item
+What kind of join is the best plan?
+
+Answer: Hash Join.
+
+\item
+What is the estimated total cost of running this plan?
+
+Answer: 6356.
+
+\item
+How many tuples does the optimizer estimate will result from this query?
+
+Answer: 40,000.
+
+\item
+How big are the tuples that result from this query?  (i.e., how many
+bytes does each tuple occupy?)
+
+Answer: 90.
+
+\item
+How many pages will be filled by the result tuples?
+
+Answer: 3516.
+
+\item
+What access methods does the best plan use?
+
+Answer: FileScan on dept and FileScan on emp.
+\end{enumerate}
+
+
+\item
+%6. << type 2 question: show difference between levels 1 and 2 >>
+Open Catalog A, and run the tool on this query. 
+\begin{quote}
+        SELECT ename, jname FROM emp, job\\
+        WHERE emp.jno = job.jno AND emp.sal $>$ 20000
+\end{quote}
+
+Answer the following questions, looking at the best plan.
+\begin{enumerate}
+\item
+What kind of join is the best plan?
+
+Answer: Hash join.
+
+\item
+How many tuples does the optimizer estimate it will retrieve from the
+Employee relation?  At what level is this information shown?
+
+Answer: 40,000. Level-1 boxes.
+
+\item
+Why are the Primary Predicate Selectivity and Predicate Selectivity the
+same at this node (the same node as in the previous question)?
+
+Answer: Trick question.  There is no primary predicate when indexing the
+Employee relation on the {\em sal} attribute.  However, both the primary
+reduction factor (RF(Primary)) and predicate reduction factor (RF0)
+are identical (equal to 1.0).  This is because a BIndex is available
+on {\em sal} that can be used to retrieve matching tuples from the
+Employee relation.
+
+\item
+What calculation does the optimizer do to arrive at the selectivity
+estimate for this node?  Where does the underlying information come from?
+
+Answer: Optimizer estimates reduction factor (assuming uniform 
+distribution of attribute values).  Product of reduction factor and
+number of tuples in relation give selectivity of an access plan.
+Underlying information comes from the catalog.
+
+\item
+How much memory does the optimizer estimate it will take to retrieve the
+tuples needed from the Employee relation?
+
+Answer: 2 buffer pool pages.
+
+\item
+How much memory does the optimizer estimate it will take to run the
+whole query?
+
+Answer: 45 buffer pool pages.
+\end{enumerate}
+
+
+\item
+%14. << type 2 question: show difference between kinds of joins >>
+Open Catalog B, then answer the following questions referring to these
+queries:
+    
+\begin{quote}
+     SELECT ename, dname FROM emp, dept, job\\
+     WHERE emp.dno = dept.dno AND emp.jno = job.jno\\
+             AND dept.dname = job.jname
+\end{quote}
+    
+\begin{enumerate}
+\item
+Run this query and describe the best plan: list the joins and access
+methods it uses, and the order in which the relations are joined. 
+    
+Answer: FileScan on job (index nested) joined with BIndex on dept.dname.
+Result (index nested) joined with Hash on emp.dno.
+    
+\item
+Modify the query by replacing the last `=' (comparing names) with `$<$',
+and optimize it again.  Describe the best plan.
+    
+Answer: FileScan on job (page oriented nested loop) joined with FileScan
+on dept.  Result (hash) joined with FileScan on emp. 
+    
+\item
+Explain why there is such a big difference in the plans produced for
+the query and for its (slightly) modified version.
+    
+Answer: Many more tuples satisfy range queries than equality queries.
+Nested loop scans can no longer use only the indexes.  Hence page oriented
+nested loops are used to answer the name comparison sub-query.
+\end{enumerate}
+
+
+\item
+%8. << type 2 question: how index-only plans work >>
+Run the tool on the following query, which lists the number of employees
+that hold each job if that number is less than 10.  Use Catalog A.
+
+\begin{quote}
+	SELECT jno, count(*) FROM emp\\
+	GROUP BY jno\\
+	HAVING count(*) $<$ 10
+\end{quote}
+
+\begin{enumerate}
+\item
+Why is this query a candidate for an index-only plan?
+
+Answer: BIndex available on emp.jno.  Query can be answered without
+retrieving any of the underlying tuples.
+
+\item
+What is the estimated cost of this query when index-only plans are
+allowed?
+
+Answer: 642.
+
+\item
+You can infer the algorithm that the optimizer assumes by the cost
+formula it displays.  Describe the algorithm assumed by the optimizer
+for the best plan when index-only plans are allowed.
+
+Answer: Use BIndex to scan emp.  Since index is ordered ascending,
+compute count on the fly.  Select jno and count values when count is
+greater than 5.
+
+\item
+What is the cost of this query when index-only plans are disallowed?
+
+Answer: 2628.
+
+\item
+Describe the algorithm assumed by the optimizer for the best plan when
+index-only plans are disallowed.
+
+Answer: Use FileScan to get all tuples.  Sort to cluster jnos.
+Compute count and select.
+\end{enumerate}
+
+
+\item
+%9. << type 3 question: modify a query to get a result >>
+Run the following query using Catalog A.
+\begin{quote}
+	SELECT * FROM emp, job\\
+	WHERE emp.jno = job.jno AND emp.dno $<$ 2000
+\end{quote}
+
+\begin{enumerate}
+\item
+Find the largest number such that replacing the 2000 with it in the
+above query makes the best plan into an Index Nested Loops join with a
+file scan for the {\em Emp} table.
+
+Answer: 1195.
+
+\item
+Find the largest number such that replacing the 2000 with it makes the
+best plan into an Index Nested Loops join using the index on the {\em
+dno} column of the {\em Emp} table.
+
+Answer: Trick question.  This will never happen.  Note that the index
+on {\em dno} is a Hash index, which is useless for answering range and
+non-equality queries.
+
+\item
+Repeat the previous two questions using Catalog B.
+
+Answer: 2 (for part a).  Note that any larger value leads to page oriented
+loops.  As before, there is no answer for part b of this question.
+
+\end{enumerate}
+
+
+\item
+%7. << type 3 question: differences between different join methods >>
+
+Run the following variant of the query from the previous exercise, using
+Catalog A as before.
+\begin{quote}
+        SELECT ename, dname FROM emp, dept\\
+        WHERE emp.dno = dept.dno AND emp.jno < 500
+\end{quote}
+
+Now suppose you knew that the run-time environment for this query was
+limited to 10 pages of memory.  Find the best (left-deep) plan that
+fits this requirement and describe its join method, access methods, and
+total cost.
+
+Answer: Index nested loop joins require 3 buffer pool pages.  Sort merge
+and Hash join plans require more than 10.  Turn off sort merge and
+hash joins.
+
+
+\item
+%10. << type 3 question: modify a catalog to get a particular result >>
+
+Consider the following query, as run against Catalog B.  The query lists
+the number of employees hired before their manager for each of the first
+100 departments.
+
+\begin{quote}
+	SELECT M.ename, M.empid, count(*)\\
+	FROM emp E, emp M, dept D
+	WHERE E.dno = D.dno AND D.mgrid = M.empid
+		AND E.dno $<=$ 100 AND E.empid $<$ M.empid
+	GROUP BY M.empid, M.ename
+\end{quote}
+\begin{enumerate}
+\item
+Why does the best plan not use the index on {\em E.dno}?
+
+Answer: {\em E.dno} has a Hash index which cannot be efficiently used
+to answer range queries.
+
+\item
+Make a copy of Catalog B and modify your copy so that the best plan
+uses an index on {\em E.dno} when run against your modified catalog.
+
+Answer: Change the index on {\em E.dno} into a BIndex.
+
+\item
+Find one single access method such that, when you disable it, the best
+plan uses only file scans.
+
+Answer: The index on {\em M.empid} is the critical one.
+
+\end{enumerate}
+
+\end{enumerate}
+
+\section{Multi-Column Index Exercises}
+
+\begin{enumerate}
+%1. << Simple Query >>
+\item
+Type in the following query.  
+\begin{quote}
+        SELECT * FROM emp1\\
+        WHERE ename = "Dilbert"
+\end{quote}
+
+Answer the following questions looking at Level 1 plans.
+\begin{enumerate}
+\item
+What query plans are produced for this query?
+
+Answer: BIndex on {\em emp1.ename, emp1.title}.
+
+\item
+What would be the cost of executing the query?
+
+Answer: 7.24.
+
+\item
+What fields of the relation are used in the query plan?
+
+Answer: All fields ({\em ename}, {\em title} and {\em dname}.
+
+\end{enumerate}
+
+Now type in the following query.
+\begin{quote}
+        SELECT * FROM emp1\\
+        WHERE ename = "Dilbert" AND title = "Bozo"
+\end{quote}
+
+Answer the following questions looking at Level 1 plans.
+\begin{enumerate}
+\item
+What query plans are produced for this query?
+
+Answer: BIndex on {\em emp1.ename, emp1.title}.
+
+\item
+What would be the cost of executing the query?
+
+Answer: 7.24.
+
+\item
+What fields of the relation are used in the query plan?
+
+Answer: All fields ({\em ename}, {\em title} and {\em dname}.
+
+Trick second part question.  Although the reduction factors change, the
+query touches so few pages that the cost of executing the more selective
+query does not change.
+\end{enumerate}
+
+
+\item
+%2. << Index-Only Query >>
+Type in the following query.
+\begin{quote}
+        SELECT ename, title FROM emp4\\
+        WHERE dname = "Programming" AND ename = "Dogbert"
+\end{quote}
+
+Answer the following questions looking at Level 1 plans.
+\begin{enumerate}
+\item
+What query plans are produced for this query?
+
+Answer: BIndex on {\em dname,title, ename}.
+
+\item
+What would be the cost of executing the query?
+
+Answer: 6.
+
+\end{enumerate}
+
+Now type in the following query.
+\begin{quote}
+        SELECT ename, title FROM emp4\\
+        WHERE dname = "Programming" AND title = "Hacker"
+\end{quote}
+
+Answer the following questions looking at Level 1 plans.
+\begin{enumerate}
+\item
+What query plans are produced for this query?
+
+Answer: BIndex on {\em dname,title, ename}.
+
+\item
+What would be the cost of executing the query?
+
+Answer: 6.
+
+\item
+Is there any effect of specify different columns in the query plans
+and cost?
+
+Answer: No.  Selection using {\em dname} does not change the reduction
+factors.
+\end{enumerate}
+
+
+\item
+%3. << Sorting Query >>
+Type in the following query.
+\begin{quote}
+        SELECT title, count(*) FROM emp3\\
+        GROUP BY title
+\end{quote}
+
+Answer the following questions, looking at level 1 plans.
+\begin{enumerate}
+\item
+Is the query plan index-only?  What indexes are used?
+
+Answer: Yes. BIndex on {\em title, ename}.
+
+\item
+Is there a primary predicate?
+
+Answer: No.
+
+\item
+Is sorting required?
+
+Answer: No.
+
+\end{enumerate}
+
+Now type in the following query.
+\begin{quote}
+        SELECT title, count(*) FROM emp1\\
+        GROUP BY title
+\end{quote}
+
+Answer the following questions, looking at level 1 plans.
+\begin{enumerate}
+\item
+Is the query plan index-only?  What indexes are used?
+
+Answer: Yes. BIndex on {\em ename, title}.
+
+\item
+Is there a primary predicate?
+
+Answer: No.
+
+\item
+Is sorting required?
+
+Answer: No.
+
+\end{enumerate}
+
+\end{enumerate}
+
+\end{document}

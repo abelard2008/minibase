@@ -1,0 +1,36 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!Converted with LaTeX2HTML 95 (Thu Jan 19 1995) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds >
+<HEAD>
+<TITLE>5.3  class shm_log</TITLE>
+</HEAD>
+<BODY>
+<meta name="description" value="5.3  class shm_log">
+<meta name="keywords" value="main">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+<P>
+ <BR> <HR><A NAME=tex2html178 HREF="node13.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html176 HREF="node9.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html170 HREF="node11.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html179 HREF="node13.html">5.4  class log</A>
+<B>Up:</B> <A NAME=tex2html177 HREF="node9.html">5 Implementation</A>
+<B> Previous:</B> <A NAME=tex2html171 HREF="node11.html">5.2  class logrecord</A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00053000000000000000>5.3  class shm_log</A></H2>
+<P>
+<A NAME=subsectionimpllogshm>&#160;</A>
+<P>
+The shared memory structure <tt> class shm_log</tt> has a constructor
+that will be called by the OS infrastructure code for the first <em>
+Minirel</em> process.  This constructor must initialize the shared memory
+structure.  In our case, it has to set the number of transactions
+field to zero.  It must also call the constructor for the semaphore
+member <tt> sl_sem</tt>.
+<P>
+	The class has no other methods because manipulation of the
+members is done by <tt> class log</tt>.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+ajitk@cs.wisc.edu, cjin@cs.wisc.edu
+</ADDRESS>
+</BODY>

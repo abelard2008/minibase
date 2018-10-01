@@ -1,0 +1,21 @@
+include $(OPTIMIZER_DIR)/optimizer/Makefile.preamble
+include $(OPTIMIZER_DIR)/parserinterface/Makefile.preamble
+include $(OPTIMIZER_DIR)/utils/Makefile.preamble
+include $(OPTIMIZER_DIR)/temporary/Makefile.preamble
+
+OPTIMIZER_OBJS := $(SUB_OPTIMIZER_OBJS) \
+	$(PARSERINTERFACE_OBJS) \
+	$(UTILS_OBJS) \
+	$(TEMPORARY_OBJS)
+
+OPTIMIZER_HDRS := \
+	StringUtils.h arithops.h boguscatalogs.h compiler_tables.h \
+	da_types.h dlist.h dmk.h dmk_str.h dmkarray.h ext_globals.h \
+	ext_sym_tabs.h ext_token.h globals.h hashing.h hashjoin.h \
+	ii_convertparsetree.h ii_systemcatalogs.h ioroutines.h \
+	joinmeth.h listbase.h listnode.h mr_syserr.h ndlist.h nestloop.h \
+	not_handler.h opt_globals.h optimizer.h parse_func_defs.h \
+	parse_routines.h parser.h parser_func_defs.h real_parse_stack.h \
+	scan_func_defs.h scan_routines.h scanner_func_defs.h sol_tbl.h \
+	sortmerge.h sym_tabs.h token.h typechk.h
+

@@ -1,0 +1,100 @@
+  Schema: 0x647098
+    Primitive: 0x703b00 of-type: Relates
+      Attr: Name == 
+      Attr: Name2 == 
+      Attr: Relationship ==  0x456620
+      Attr: Entity ==  0x651520
+      Attr: Total == Partial
+      Attr: Cardinality1 == ManyTo
+      Attr: Cardinality2 == ManyTo
+      Attr: SelfRelates == Does Not
+    Primitive: 0x6481f8 of-type: Relates
+      Attr: Name == 
+      Attr: Name2 == 
+      Attr: Relationship ==  0x456620
+      Attr: Entity ==  0x4564b0
+      Attr: Total == Partial
+      Attr: Cardinality1 == ManyTo
+      Attr: Cardinality2 == ManyTo
+      Attr: SelfRelates == Does Not
+    Primitive: 0x802b68 of-type: Relates
+      Attr: Name == 
+      Attr: Name2 == 
+      Attr: Relationship ==  0x64f250
+      Attr: Entity ==  0x651520
+      Attr: Total == Partial
+      Attr: Cardinality1 == ManyTo
+      Attr: Cardinality2 == ManyTo
+      Attr: SelfRelates == Does Not
+    Primitive: 0x809ec0 of-type: Relates
+      Attr: Name == 
+      Attr: Name2 == 
+      Attr: Relationship ==  0x64f250
+      Attr: Entity ==  0x64cdb0
+      Attr: Total == Partial
+      Attr: Cardinality1 == ManyTo
+      Attr: Cardinality2 == ManyTo
+      Attr: SelfRelates == Does Not
+    Primitive: 0x648f18 of-type: Attribute
+      Attr: Name == Times Taught
+      Attr: AssociatedWith ==  0x456620
+      Attr: Key == Is-Not-Key
+      Attr: Type == int
+    Primitive: 0x7ee778 of-type: Attribute
+      Attr: Name == Room
+      Attr: AssociatedWith ==  0x651520
+      Attr: Key == Is-Not-Key
+      Attr: Type == char
+    Primitive: 0x651858 of-type: Attribute
+      Attr: Name == Course ID
+      Attr: AssociatedWith ==  0x651520
+      Attr: Key == Is-Key
+      Attr: Type == int
+    Primitive: 0x6551e8 of-type: Attribute
+      Attr: Name == Graduate Credit?
+      Attr: AssociatedWith ==  0x64f250
+      Attr: Key == Is-Not-Key
+      Attr: Type == int
+    Primitive: 0x64d560 of-type: Attribute
+      Attr: Name == Student ID
+      Attr: AssociatedWith ==  0x64cdb0
+      Attr: Key == Is-Key
+      Attr: Type == int
+    Primitive: 0x64dd58 of-type: Attribute
+      Attr: Name == Year
+      Attr: AssociatedWith ==  0x64cdb0
+      Attr: Key == Is-Not-Key
+      Attr: Type == char
+    Primitive: 0x64e2c8 of-type: Attribute
+      Attr: Name == Name
+      Attr: AssociatedWith ==  0x4564b0
+      Attr: Key == Is-Not-Key
+      Attr: Type == char
+    Primitive: 0x64e580 of-type: Attribute
+      Attr: Name == Department
+      Attr: AssociatedWith ==  0x4564b0
+      Attr: Key == Is-Not-Key
+      Attr: Type == char
+    Primitive: 0x456620 of-type: Relationship
+      Attr: Name == Teaches
+      Attr: RelatesWeakToOwner == Does Not
+    Primitive: 0x64f250 of-type: Relationship
+      Attr: Name == Takes
+      Attr: RelatesWeakToOwner == Does Not
+    Primitive: 0x4564b0 of-type: Entity
+      Attr: Name == Professor
+      Attr: Strength == Strong
+      Attr: OwnedThroughRel == @
+    Primitive: 0x651520 of-type: Entity
+      Attr: Name == Course
+      Attr: Strength == Strong
+      Attr: OwnedThroughRel == @
+    Primitive: 0x64cdb0 of-type: Entity
+      Attr: Name == Student
+      Attr: Strength == Strong
+      Attr: OwnedThroughRel == @
+    Primitive: 0x64e010 of-type: Attribute
+      Attr: Name == Student Name
+      Attr: AssociatedWith ==  0x64cdb0
+      Attr: Key == Is-Not-Key
+      Attr: Type == char

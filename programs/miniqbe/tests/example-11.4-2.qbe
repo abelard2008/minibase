@@ -1,0 +1,3 @@
+setComment {Negated table with conditions}
+addRelationTable {Sailors {}} {sid _Id} {sname P._S} {rating {}} {age {}}
+addRelationTable {Sailors not} {sid _Id} {sname {}} {rating >4} {age <30}

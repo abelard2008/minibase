@@ -1,0 +1,4 @@
+setComment {(Original used two rows in same table.)  Same relation repeated.}
+addRelationTable {Sailors {}} {sid _Id} {sname P._S} {rating {}} {age {}}
+addRelationTable {Reserves {}} {sid _Id} {bid _B} {date {}}
+addRelationTable {Reserves {}} {sid 22} {bid _B} {date {}}

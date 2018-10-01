@@ -1,0 +1,36 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!Converted with LaTeX2HTML 95 (Thu Jan 19 1995) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds >
+<HEAD>
+<TITLE>5.4.7  log::read_next_logrec</TITLE>
+</HEAD>
+<BODY>
+<meta name="description" value="5.4.7  log::read_next_logrec">
+<meta name="keywords" value="main">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+<P>
+ <BR> <HR><A NAME=tex2html264 HREF="node21.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html262 HREF="node13.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html256 HREF="node19.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html265 HREF="node21.html">5.4.8  log::flush and  log::bufmgr_flush</A>
+<B>Up:</B> <A NAME=tex2html263 HREF="node13.html">5.4  class log</A>
+<B> Previous:</B> <A NAME=tex2html257 HREF="node19.html">5.4.6  log::read</A>
+<BR> <HR> <P>
+<H3><A NAME=SECTION00054700000000000000>5.4.7  log::read_next_logrec</A></H3>
+<P>
+<A NAME=subsubsectionimpllogreadnext>&#160;</A>
+<P>
+These methods use the <tt> read</tt> method to accomplish the actual read.
+The method which takes the LSN of the current record reads the log
+record at that LSN and supplies it to the other <tt>
+read_next_logrec</tt>.  This method uses the length of the log record to
+compute the LSN of the next log record and reads that in.
+<P>
+	It is obvious that it would be more efficient to call the
+second method if the current log record is available rather than
+getting its LSN and calling the first method.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+ajitk@cs.wisc.edu, cjin@cs.wisc.edu
+</ADDRESS>
+</BODY>

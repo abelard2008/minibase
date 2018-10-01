@@ -1,0 +1,5 @@
+BUFMGR_SRCS = buf.C mru.C lru.C
+BUFMGR_HDRS = buf.h mru.h lru.h
+
+BUFMGR_OBJS = $(BUFMGR_SRCS:.C=.o)
+

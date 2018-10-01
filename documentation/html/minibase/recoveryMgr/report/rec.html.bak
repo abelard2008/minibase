@@ -1,0 +1,46 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> MINIREL : Recovery Manager </TITLE>
+
+<H3>MINIREL : Recovery Manager
+<A NAME=tex2html1 HREF="footnode.html#11"><IMG ALIGN=BOTTOM ALT="gif" SRC="http://www.cs.wisc.edu/latex2html//foot_motif.gif"></A>
+</H3>
+<meta name="description" value="MINIREL : Recovery Manager
+<P>
+">
+<meta name="keywords" value="rec">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html6 HREF="node1.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A> <IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif_gr.gif"> <IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif_gr.gif">   <BR>
+<B> Next:</B> <A NAME=tex2html7 HREF="node1.html"> Introduction :</A>
+<BR> <HR> <P>
+<P>
+<H1><H3>MINIREL : ARIES Recovery Manager
+</H3></H1>
+<P><STRONG>Ranjani Ramamurthy  & Kar Shun Tsoi </STRONG><P>
+<BR> <HR>
+<UL> 
+<LI> <A NAME=tex2html8 HREF="node1.html#SECTION00010000000000000000"> Introduction :</A>
+<LI> <A NAME=tex2html9 HREF="node2.html#SECTION00020000000000000000"> External Interface:</A>
+<LI> <A NAME=tex2html10 HREF="node3.html#SECTION00030000000000000000"> Internal Design:</A>
+<UL> 
+<LI> <A NAME=tex2html11 HREF="node4.html#SECTION00031000000000000000"> A Brief Description of ARIES:</A>
+<LI> <A NAME=tex2html12 HREF="node5.html#SECTION00032000000000000000"> Internal Data Structures of the Recovery Manager</A>
+</UL> 
+<LI> <A NAME=tex2html13 HREF="node6.html#SECTION00040000000000000000"> Accomplishments:</A>
+<LI> <A NAME=tex2html14 HREF="node7.html#SECTION00050000000000000000"> Testing:</A>
+<LI> <A NAME=tex2html15 HREF="node8.html#SECTION00060000000000000000"> Retrospective:</A>
+<LI> <A NAME=tex2html16 HREF="node9.html#SECTION00070000000000000000">References</A>
+<LI> <A NAME=tex2html17 HREF="node10.html#SECTION00080000000000000000">  <em>About this document ...</em> </A>
+</UL>
+<BR> <HR>
+<P><ADDRESS>
+<I> ranjani ramamurthy <BR>
+Sat May 13 16:56:49 CDT 1995</I>
+</ADDRESS>
+</BODY>

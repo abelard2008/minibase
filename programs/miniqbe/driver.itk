@@ -1,0 +1,17 @@
+# -*- tcl -*-
+# (setq tcl-default-application "itkwish")
+
+
+source qbe.itcl
+source menubar.itk
+source qbe.itk
+wm withdraw .
+
+::qbe::display::init \
+	{Sailors sid sname rating age} \
+	{Reserves sid bid date} \
+	{Boats bid bname color} \
+	{Emp eid ename salary} \
+	{Works eid did} \
+	{Dept did dname managerid floornum}
+

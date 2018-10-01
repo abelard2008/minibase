@@ -1,0 +1,6 @@
+setComment {Overpaid emps}
+addRelationTable {Emp unq.} {eid _e} {ename p.} {salary _es}
+addRelationTable {Emp {}} {eid _m} {ename {}} {salary _ms}
+addRelationTable {Works {}} {eid _e} {did _d}
+addRelationTable {Dept {}} {did _d} {dname {}} {managerid _m} {floornum {}}
+addConditionsBox {_es > _ms}

@@ -1,0 +1,37 @@
+
+       =======================================================
+			     EDITING TIPS
+       =======================================================
+
+
+Run this program with a color monitor
+-------------------------------------
+
+  This program shows columns that have errors or inconsistencies by
+coloring their labels (blue for an inconsistency, red for an error).
+These don't show up on a black-and-white monitor.
+
+
+The deal with the asterisks
+---------------------------
+
+  When you type into a column, you will notice that its label gets an
+asterisk (*) after it.  This is just a visual cue that you have
+changed this column.  You can cancel these changes by hitting the
+Escape key.  You can get the system to accept the changes by hitting
+Return (or Enter), or by tabbing or clicking to another column.
+
+
+`Inconsistencies' vs `errors'
+-----------------------------
+
+  An `error,' which is shown with a red label, means you must go edit
+that column before you will be able to generate SQL for the query.
+
+  An `inconsistency,' shown with a blue label, means that something
+about this column is inconsistent in the current context of the rest
+of the query---for example, a condition that refers to an example
+element that is not currently defined.  You might have misspelled that
+example element, or you might not have defined it yet.  If you define
+it somewhere else, the inconsistency is resolved, and the label is
+returned to normal.

@@ -1,0 +1,2 @@
+setComment {Original used two rows.  Same result, different technique.}
+addRelationTable {Sailors {}} {sid {}} {sname p.} {rating {}} {age {BETWEEN 20 AND 30}}

@@ -1,0 +1,50 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> Testing:</TITLE>
+<meta name="description" value=" Testing:">
+<meta name="keywords" value="rec">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html86 HREF="node8.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A> <A NAME=tex2html84 HREF="rec.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A> <A NAME=tex2html78 HREF="node6.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html87 HREF="node8.html"> Retrospective:</A>
+<B>Up:</B> <A NAME=tex2html85 HREF="rec.html">MINIREL : Recovery Manager
+<P>
+</A>
+<B> Previous:</B> <A NAME=tex2html79 HREF="node6.html"> Accomplishments:</A>
+<BR> <HR> <P>
+<H1><A NAME=SECTION00050000000000000000> Testing:</A></H1>
+ <A NAME=sectesting>&#160;</A>
+We created test scripts of increasing complexity to test our code. Initially,
+we tested the basic aborts, rollbacks and checkpoints. We then tested the
+restart. Since we implemented page flush and buffer pool commands, we were
+able to make sure that if a transaction did not commit, but its page was
+flushed to disk, the restart phase would undo the changes of that transaction.
+The final tests tried multiple crashes during restart.  During testing,
+we found situations which seldom arise in practice,  but could cause 
+problems. For
+example : We provide a function <em>GetRecoveryLSN() </em> which is invoked
+by the Buffer Manager.  
+This function is used by the Buffer Manager to 
+initialize the 'recovery lsn' field in the Dirty Page Table.
+The recovery lsn indicates the point where the 'Redo' phase would
+begin, for the specified page, in the event of a crash.
+During the Normal Mode of operation of the Recovery Manager, the
+recovery lsn value is supplied by the Log Manager. The Log Manager returns
+the  next valid lsn of the log. We discovered that this was not true if
+the Recovery Manager was running in the Restart Mode.
+<A NAME=tex2html5 HREF="footnode.html#110"><IMG ALIGN=BOTTOM ALT="gif" SRC="http://www.cs.wisc.edu/latex2html//foot_motif.gif"></A>
+The page is not in a consistent state during Restart and the value from 
+the log will not provide the correct value. So, we retrieve the value
+of the 'recovery lsn' from the local Dirty Page Table.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+<I> ranjani ramamurthy <BR>
+Sat May 13 16:56:49 CDT 1995</I>
+</ADDRESS>
+</BODY>

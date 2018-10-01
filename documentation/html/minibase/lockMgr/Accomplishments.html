@@ -1,0 +1,23 @@
+<BODY BGCOLOR="#FFDDDD">
+<h2 ALIGN=CENTER>Accomplishments</h2>
+Since the lock manager did not exist in the previous mini-rel version, we had to
+write the lock manager completely from scratch.  The lock in protocol and
+especially the upgrade protocols had some very subtle details which took a while to
+figure out and implement correctly.  The lock manager turned out to involve a
+substantial amount of coding.  The program was longer due to the fact that it was
+written in C++ which although more elegant, required a proliferation of functions.
+The code was also complicated by the fact that it had to handle its own memory
+management. <P>
+     
+To make testing easier, almost all classes in the lock manager contain print
+functions. This was put to good use by the test driver which made it easy to see
+if the lock manager was working correctly.  It tested and ran well with the OS
+code in a multi-user environment with up to four instances of the lock manager
+running concurrently.   <P>
+
+Basically, we spent a good deal of time on the lock manager, codeing and recoding
+to fit new specifications as we were made aware of them.  But probably the
+majority of the time was spent trying to link it properly with other groups and
+then debugging the really subtle and also blatant errors that came up during
+testing.
+

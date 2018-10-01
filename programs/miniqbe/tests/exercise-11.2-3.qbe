@@ -1,0 +1,4 @@
+setComment {Suppliers of large quantities of gaudy parts}
+addRelationTable {Suppliers unq.} {sid _s} {sname p.} {city p.}
+addRelationTable {Parts {}} {pid _p} {pname {}} {color in(yellow,purple)}
+addRelationTable {Orders {}} {sid _s} {pid _p} {quantity >150}

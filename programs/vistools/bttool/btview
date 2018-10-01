@@ -1,0 +1,21 @@
+#!/bin/csh -f
+
+set BTPATH = $MINIBASE_ROOT/programs/vistools/btreetool
+
+ipcrm -S 1111  >& /tmp/.trash
+ipcrm -M 1114  >& /tmp/.trash
+ipcrm -M 1115  >& /tmp/.trash
+/usr/bin/rm -f /tmp/.trash
+
+set PWD = `pwd`
+set TMPDIR = /tmp/view_btree_$$
+
+setenv TCL_LIBRARY $MINIBASE_ROOT/packages/tcl/$PLATFORM/lib/tcl7.4
+setenv TK_LIBRARY $MINIBASE_ROOT/packages/tcl/$PLATFORM/lib/tk4.0
+
+mkdir $TMPDIR
+cd $TMPDIR
+mkdir p
+$MINIBASE_ROOT/bin/btree_wish -f $BTPATH/source_files/main.tcl $BTPATH $PWD >temp_node_contents
+cd $PWD
+rm -rf $TMPDIR

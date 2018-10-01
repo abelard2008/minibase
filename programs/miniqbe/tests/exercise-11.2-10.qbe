@@ -1,0 +1,6 @@
+setComment {Parts from Madison but not Berkeley}
+addRelationTable {Parts {}} {pid _p} {pname p.} {color {}}
+addRelationTable {Orders {}} {sid _s1} {pid _p} {quantity {}}
+addRelationTable {Suppliers {}} {sid _s1} {sname {}} {city Madison}
+addRelationTable {Orders {}} {sid _s2} {pid _p} {quantity {}}
+addRelationTable {Suppliers ~} {sid _s2} {sname {}} {city Berkeley}

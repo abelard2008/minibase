@@ -1,0 +1,74 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE><b>CS764 Project Report - Linear Hashing in MINIREL</b></TITLE>
+<meta name="description" value="CS764 Project Report - Linear Hashing in MINIREL">
+<meta name="keywords" value="report">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html4 HREF="node1.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A> <IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif_gr.gif"> <IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif_gr.gif">   <BR>
+<B> Next:</B> <A NAME=tex2html5 HREF="node1.html"> Introduction</A>
+<BR> <HR> <P>
+<P>
+<H1><b>CS764 Project Report - Linear Hashing in MINIREL</b></H1>
+<P><STRONG>Weiqing Huang <BR><BR>Computer Sciences Department<BR>University of Wisconsin<BR>Madison, WI 73706<BR>whuang@cs.wisc.edu</STRONG><P>
+<P><STRONG>May 12, 1995</STRONG><P>
+=0 pt
+<P>
+<BR> <HR>
+<UL> 
+<LI> <A NAME=tex2html6 HREF="node1.html#SECTION00010000000000000000"> Introduction</A>
+<LI> <A NAME=tex2html7 HREF="node2.html#SECTION00020000000000000000"> External Interface</A>
+<UL> 
+<LI> <A NAME=tex2html8 HREF="node3.html#SECTION00021000000000000000"> LinearHashingFile</A>
+<UL> 
+<LI> <A NAME=tex2html9 HREF="node4.html#SECTION00021100000000000000"> LinearHashingFile(Status&amp; status, const char* name, const
+int length,const AttrType type, const int N = 1) 
+<BR>LinearHashingFile(Status&amp; status, const char * name)</A>
+<LI> <A NAME=tex2html10 HREF="node5.html#SECTION00021200000000000000"> &#126;LinearHashingFile()</A>
+<LI> <A NAME=tex2html11 HREF="node6.html#SECTION00021300000000000000"> Status destroyFile(void)</A>
+<LI> <A NAME=tex2html12 HREF="node7.html#SECTION00021400000000000000"> Status insert(const void* value, const RID rid)</A>
+<LI> <A NAME=tex2html13 HREF="node8.html#SECTION00021500000000000000"> Status Delete(const void* value, const RID rid)</A>
+<LI> <A NAME=tex2html14 HREF="node9.html#SECTION00021600000000000000"> IndexFileScan * new_scan(const void* value)</A>
+<LI> <A NAME=tex2html15 HREF="node10.html#SECTION00021700000000000000"> void PrintHeader()<BR>void PrintBucket()<BR>void PrintBucket(int BucNum)<BR></A>
+</UL> 
+<LI> <A NAME=tex2html16 HREF="node11.html#SECTION00022000000000000000"> LinearHashingScan</A>
+<UL> 
+<LI> <A NAME=tex2html17 HREF="node12.html#SECTION00022100000000000000"> &#126;LinearHashingScan()</A>
+<LI> <A NAME=tex2html18 HREF="node13.html#SECTION00022200000000000000"> Status get_next(RID&amp; rid)</A>
+<LI> <A NAME=tex2html19 HREF="node14.html#SECTION00022300000000000000"> Status delete_current()</A>
+</UL> 
+<LI> <A NAME=tex2html20 HREF="node15.html#SECTION00023000000000000000"> Downward interfaces</A>
+</UL> 
+<LI> <A NAME=tex2html21 HREF="node16.html#SECTION00030000000000000000"> Internal Design</A>
+<UL> 
+<LI> <A NAME=tex2html22 HREF="node17.html#SECTION00031000000000000000"> Algorithm</A>
+<LI> <A NAME=tex2html23 HREF="node18.html#SECTION00032000000000000000"> Data Structure</A>
+<LI> <A NAME=tex2html24 HREF="node19.html#SECTION00033000000000000000"> Create/Open index</A>
+<LI> <A NAME=tex2html25 HREF="node20.html#SECTION00034000000000000000"> Destroy index</A>
+<LI> <A NAME=tex2html26 HREF="node21.html#SECTION00035000000000000000"> Directory handling</A>
+<LI> <A NAME=tex2html27 HREF="node22.html#SECTION00036000000000000000"> Insert records</A>
+<LI> <A NAME=tex2html28 HREF="node23.html#SECTION00037000000000000000"> Delete records</A>
+<LI> <A NAME=tex2html29 HREF="node24.html#SECTION00038000000000000000"> Open an exact match scan</A>
+<LI> <A NAME=tex2html30 HREF="node25.html#SECTION00039000000000000000"> Get the next record satisfies the scan</A>
+<LI> <A NAME=tex2html31 HREF="node26.html#SECTION000310000000000000000"> Delete the currently scanned record</A>
+<LI> <A NAME=tex2html32 HREF="node27.html#SECTION000311000000000000000"> Concurrency Control</A>
+<LI> <A NAME=tex2html33 HREF="node28.html#SECTION000312000000000000000"> Recovery</A>
+</UL> 
+<LI> <A NAME=tex2html34 HREF="node29.html#SECTION00040000000000000000"> Accomplishments</A>
+<LI> <A NAME=tex2html35 HREF="node30.html#SECTION00050000000000000000"> Testing</A>
+<LI> <A NAME=tex2html36 HREF="node31.html#SECTION00060000000000000000"> Retrospective</A>
+<LI> <A NAME=tex2html37 HREF="node32.html#SECTION00070000000000000000"> Appendix</A>
+<LI> <A NAME=tex2html38 HREF="node33.html#SECTION00080000000000000000">References</A>
+<LI> <A NAME=tex2html39 HREF="node34.html#SECTION00090000000000000000">  <em>About this document ...</em> </A>
+</UL>
+<BR> <HR>
+<P><ADDRESS>
+<I> Weiqing Huang <BR>
+Sun May 14 16:22:27 CDT 1995</I>
+</ADDRESS>
+</BODY>

@@ -1,0 +1,63 @@
+<BODY BGCOLOR="#FFDDDD">
+<HTML>
+<HEAD>
+<TITLE> Tuple Class </TITLE>
+</HEAD>
+
+<BODY>
+
+<H1> Tuple Class </H1>
+Donko Donjerkovic, donjerko@cs.wisc.edu <BR>
+
+<HR>
+
+<H3> Description (Taken from header file) </H3>
+
+Tuples (or Records) will be typeless, i.e. we could not say what is
+in tuple just by looking at it.
+This means that whenever the tuples are passed around, additional
+type information should be given separately.
+Tuple is able to return stored data provided we ask for 
+specific type.
+To create the Tuple you WILL NOT use the constructor but
+something like this:	<BR> <BR>
+
+	Tuple* tuple = (Tuple*) new char[Tuple::max_size]; 	<BR> <BR>
+
+Where int Tuple::max_size is defined GLOBALLY.
+For error messages see the file error.h 	<BR>
+
+-------------------- WARNING ------------------------
+<BR>
+This class is written using low level pointer arithmetic and
+if not used correctly may cause lot of trouble.
+
+<H3> How to start using the Tuple Class </H3>
+
+Some functions of this class are returning error status which I have
+defined in the files error.C and error.h. These are the original Minibase
+files augmented with couple of my definitions (which are at the begining
+of each file).
+To test the class I have provided main routine in file tuple_test.C.
+This test program also serves as an example on how to use the class.
+to compile all this type:	<BR> <BR>
+
+	g++ tuple_test.C tuple.C error.C
+
+<BR> <BR>
+Please report all the bugs back to me.
+
+<H3> Relevant files, version of April 7 </H3>
+ <UL>
+  <LI> <A HREF="tuple.h"> tuple.h </A>
+  <LI> <A HREF="tuple.C"> tuple.C </A>
+  <LI> <A HREF="tuple_test.C"> tuple_test.C </A>
+  <LI> <A HREF="error.h"> error.h </A>
+  <LI> <A HREF="error.C"> error.C </A>
+ </UL>
+
+<HR>
+
+</BODY>
+
+</HTML>

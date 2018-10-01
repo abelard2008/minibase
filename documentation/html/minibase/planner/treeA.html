@@ -1,0 +1,67 @@
+<HTML>
+<HEAD>
+<TITLE>Sample Iterator Trees</TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+
+<H1>Sample Iterator Trees</H1>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+
+<CENTER>
+<A HREF="treeA.gif"><IMG SRC="treeA.gif"></A>
+</CENTER>
+<P>
+<IMG SRC="../pics/hline.gif">
+
+<H2>Tree A:</H2> The call to get_next calls on the File Scan Iterator to 
+retrieve tuples one at a time from the Heap File.
+<P>
+<I>The details:</I> The heap file is opened and a <I>scan</I> object is created.
+get_next is then called on the scan object.
+<UL>
+ <LI>FileScanIter::FileScanIter
+ <UL>
+   <LI>HeapFile::HeapFile
+   <LI>HeapFile::openScan
+ </UL>
+ <LI>FileScanIter::get_next
+ <UL>
+  <LI>Scan::get_next
+ </UL>
+</UL>
+<P>
+<IMG SRC="../pics/hline.gif">
+
+<H2>Tree B:</H2> The call to get_next calls on the Index Scan Iterator to
+retrieve tuples one at a time from the Heap File after the rid has been retrieved
+from the <A HREF="../AM/am.html"><B>Access Method</B></A>.
+<P>
+<I>The details:</I> The access method is opened and a <I>scan</I> object is created.
+get_next is then called on the scan object. 
+<UL>
+ <LI>IndexScanIter::IndexScanIter
+ <UL>
+  <LI>BTreeFile::BTreeFile or LinearHashingFile::LinearHashingFile
+  <LI>HeapFile::HeapFile
+  <LI>BTreeFile::openScan or LinearHashingFile::openScan
+ </UL>
+ <LI>IndexScanIter::get_next
+ <UL>
+  <LI>BTreeScan::get_next or LinearHashingScan::get_next
+  <LI>HeapFile::getRecord
+ </UL>
+</UL>
+
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+<A HREF="iterator.html">Back to the Iterator Page</A><BR>
+<A HREF="../project.html">Back to the List of Components</A><BR>
+<A HREF="../minibase.html">Back to the Minibase Home Page</A><BR>
+
+</BODY>
+</HTML>

@@ -1,0 +1,5 @@
+setComment {Extend the aggregation to include the desired attribute}
+addRelationTable {Sailors {}} {sid p.g._id} {sname g.p.} {rating {}} {age {}}
+addRelationTable {Reserves {}} {sid _id} {bid _b1} {date {}}
+addRelationTable {Reserves {}} {sid {}} {bid _b2} {date {}}
+addConditionsBox {count._b1 = cnt._b2}

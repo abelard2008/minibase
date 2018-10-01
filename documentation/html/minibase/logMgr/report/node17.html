@@ -1,0 +1,41 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!Converted with LaTeX2HTML 95 (Thu Jan 19 1995) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds >
+<HEAD>
+<TITLE>5.4.4  log::~log</TITLE>
+</HEAD>
+<BODY>
+<meta name="description" value="5.4.4  log::~log">
+<meta name="keywords" value="main">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+<P>
+ <BR> <HR><A NAME=tex2html234 HREF="node18.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html232 HREF="node13.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html226 HREF="node16.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html235 HREF="node18.html">5.4.5  log::write</A>
+<B>Up:</B> <A NAME=tex2html233 HREF="node13.html">5.4  class log</A>
+<B> Previous:</B> <A NAME=tex2html227 HREF="node16.html">5.4.3  log::log (The Open </A>
+<BR> <HR> <P>
+<H3><A NAME=SECTION00054400000000000000>5.4.4  log::~log</A></H3>
+<P>
+<A NAME=subsubsectionimpllogdtor>&#160;</A>
+<P>
+The destructor behaves differently depending on whether the open
+constructor or the create constructor was used.  If the create
+constructor was used, nothing need be done.  If the open constructor
+was used, the destructor checks to see if this transaction is the last
+one using the database.  If so, it flushes the log tail.  In any case,
+the log file is closed.  The destructor determines the constructor
+that was used by checking the <tt> open_called</tt> flag.  The open
+constructor sets this flag to <tt> true</tt>, the create constructor sets
+it to <tt> false</tt>.  The destructor determines if this is the last
+transaction by examining <tt> sl_n_xact</tt>.  This is admittedly a
+naive approach.  If a transaction exited uncleanly without invoking
+its <tt> log</tt> destructor, this value will be wrong.  This required us
+to assume that every transaction cleanly exits by releasing its locks
+and semaphores, and calling appropriate destructors.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+ajitk@cs.wisc.edu, cjin@cs.wisc.edu
+</ADDRESS>
+</BODY>

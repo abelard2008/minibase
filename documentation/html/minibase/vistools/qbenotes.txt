@@ -1,0 +1,84 @@
+
+       =======================================================
+       KNOWN DIFFERENCES BETWEEN THIS IMPLEMENTATION AND IBM'S
+       =======================================================
+
+
+1. MAJOR LIMITATIONS
+--------------------
+
+ - You can't write "update queries" (an oxymoron in any case).
+
+ - You can't have more than one row in any table in the query (that's
+   *query* table, not *result* table---if you ran these queries, you
+   might well get many rows back).  This one is in fact not a
+   limitation on the expressiveness of QBE, just a difference in form.
+
+ - It is possible to write queries and generate SQL that will be
+   rejected by the SQL database.  The most obvious set of errors that
+   are overlooked by this QBE implementation is type errors.  This
+   implementation knows nothing about the types of attributes or
+   expressions, and will cheerfully let you enter such nonsense as
+   `avg._age = "Henry"'.
+
+There is also a list of more minor or arcane limitations below.
+
+
+
+2. IMPROVEMENTS
+---------------
+
+ - You may use P. anywhere except a conditions box or a column of a
+   negated table.  You are not restricted to putting all your P.'s in
+   one example table.
+
+ - Likewise, UNQ. can go in any table that P. can go in.  Any
+   UNQ. causes SELECT DISTINCT to be generated (even if there is an
+   explicit ALL. somewhere).
+
+ - A condition in an attribute column can be arbitrarily complicated.
+   See COMPLEX CONDITIONS IN ATTRIBUTE COLUMNS, in the Overview help.
+
+
+
+3. JUST DIFFERENT
+-----------------
+
+ - Use `~' or `NOT' in the head column of a relation table to negate
+   it.  We use ASCII, not EBCDIC, so we don't have the "not"
+   character.
+
+ - "Not equals" is `<>'.  String literals use double quotes instead of
+   single quotes.
+
+ - Example elements may contain any number of letters, numbers, and
+   underscores after the first underscore.  (IBM limits you to 16
+   letters or numbers.)
+
+ - Unquoted strings may only consist of letters, numbers, and
+   underscores.  IBM's QBE lets you include #, $, and @, but not
+   underscores.
+
+
+
+4. MINOR RESTRICTIONS
+---------------------
+
+ - The example element `_' is reserved to mean "this attribute."  It
+   does not work like an ordinary example element.  See COMPLEX
+   CONDITIONS IN ATTRIBUTE COLUMNS in the Overview help.
+
+ - The P., G., AO. and DO. commands must appear at the beginning of
+   their columns, before any condition or expression.  IBM lets you
+   put them after the expression too.
+
+ - We don't check for conflicting or absent ordering numbers (i.e.,
+   AO(n). and DO(n).).  An absent number is treated as zero;
+   conflicting numbers yield an unpredictable order of the order-by
+   attributes.  IBM flags this as an error.
+
+ - It is possible to fool our expression parser into accepting
+   erroneous conditions like `_a < 5 and _b < (_b >= 99)'.  This isn't
+   just a semantic error in SQL; the generated query won't even parse
+   correctly.  Workaround: don't write conditions like this!
+

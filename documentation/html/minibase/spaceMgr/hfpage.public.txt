@@ -1,0 +1,61 @@
+
+// slot structure
+struct slot_t {
+        short	offset;  
+        short	length;  // equals -1 if slot is not in use
+};
+
+const int DPFIXED= sizeof(lsn_t)+sizeof(slot_t)+4*sizeof(short)+3*sizeof(int);
+const int DATASIZE = PAGESIZE - sizeof(lsn_t);
+
+// Class definition for a minirel data page.   
+// The design assumes that records are kept compacted when
+// deletions are performed. Notice, however, that the slot
+// array cannot be compacted.  Notice, this class does not keep
+// the records align, relying instead on upper levels to take
+// care of non-aligned attributes
+
+class HFPage {
+private:
+    char 	data[DATASIZE - DPFIXED]; 
+    slot_t 	slot[1]; // first element of slot array - grows backwards!
+    short	slotCnt; // number of slots in use;
+    short	freePtr; // offset of first free byte in data[]
+    short	freeSpace; // number of bytes free in data[]
+    short	dummy;	// for alignment purposes
+    PageId	prevPage; // backward pointer to data page
+    PageId	nextPage; // forward pointer to data page
+    PageId	curPage;  // page number of current pointer
+
+public:
+    void init(PageId pageNo); // initialize a new page
+    void dumpPage(); // dump contents of a page
+
+    PageId getNextPage(); // returns value of nextPage
+    PageId getPrevPage(); // returns value of prevPage
+    void setNextPage(PageId pageNo); // sets value of nextPage to pageNo
+    void setPrevPage(PageId pageNo); // sets value of prevPage to pageNo
+
+    // inserts a new record pointed to by recPtr with length recLen onto
+    // the page, returns RID of record 
+    Status insertRecord(char* recPtr, int recLen, RID& rid);
+
+    // delete the record with the specified rid
+    Status deleteRecord(const RID& rid);
+
+    // returns RID of first record on page
+    // returns  NORECORDS if page contains no records.  Otherwise, returns OK
+    Status firstRecord(RID& firstRid);
+
+    // returns RID of next record on the page 
+    // returns ENDOFPAGE if no more records exist on the page
+    Status nextRecord (RID curRid, RID& nextRid);
+
+    // copies out record with RID rid into recPtr
+    Status getRecord(RID rid, char* recPtr, int& recLen);
+
+    // returns a pointer to the record with RID rid
+    Status returnRecord(RID rid, char*& recPtr, int& recLen);
+
+};
+

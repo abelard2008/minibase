@@ -1,0 +1,154 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!Converted with LaTeX2HTML 95 (Thu Jan 19 1995) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds >
+<HEAD>
+<TITLE>5.4.3  log::log (The Open Constructor)</TITLE>
+</HEAD>
+<BODY>
+<meta name="description" value="5.4.3  log::log (The Open Constructor)">
+<meta name="keywords" value="main">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+<P>
+ <BR> <HR><A NAME=tex2html224 HREF="node17.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html222 HREF="node13.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html216 HREF="node15.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html225 HREF="node17.html">5.4.4  log::~log</A>
+<B>Up:</B> <A NAME=tex2html223 HREF="node13.html">5.4  class log</A>
+<B> Previous:</B> <A NAME=tex2html217 HREF="node15.html">5.4.2  log::log (The Create </A>
+<BR> <HR> <P>
+<H3><A NAME=SECTION00054300000000000000>5.4.3  log::log (The Open Constructor)</A></H3>
+<P>
+<A NAME=subsubsectionimpllogopen>&#160;</A>
+<P>
+The open constructor will open the log file, attach to the shared
+memory structure, and initialize data members so that the log is
+operational.  Each <em> Minirel</em> process will have an object of <tt>
+class log</tt> in private memory.  The shared memory is accessed through
+<tt> global_shm_log_ptr</tt>.  The following paragraphs describe the
+sequence of operations that the open constructor goes through.
+<P>
+	The open constructor must mutually exclude other opens from
+occurring concurrently.  If the opens of the first two transactions
+access the shared memory structures without mutual exclusion, each
+open may think that it was the first one and a race condition will
+occur.  To prevent this, the open constructor <tt> down</tt>s the <tt>
+sl_sem</tt> semaphore before attempting anything else.  Thus, <tt>
+sl_sem</tt> is used to mutually exclude opens from each other.
+<P>
+	However, it may be argued that the internal semaphore that
+each shared memory segment has (by virtue of deriving from <tt> class
+SharedRegion</tt>) can be used for mutual exclusion.  This semaphore is
+used by all methods to mutually exclude access to the shared memory
+structure.  Unfortunately, this will not work for the open
+constructors of the first set of transactions if they all start their
+opens more or less simultaneously.  Consider the following code
+fragment:
+<P>
+<PRE>    global_shm_log_ptr-&gt;lock();            //  down the semaphore
+    if (global_shm_log_ptr-&gt;sl_n_xact &gt; 0) {
+        global_shm_log_ptr-&gt;sl_n_xact++;
+        global_shm_log_ptr-&gt;unlock();
+        return;
+    }
+    global_shm_log_ptr-&gt;sl_n_xact = 1;
+
+    //
+    //  We are the first transaction.  Initialize shared memory
+    //  structures.  Fill in the information by reading the header
+    //  page from the log file.  Call recovery manager to perform
+    //  restart.
+    //
+    ...
+</PRE>
+This segment will not work because the recovery manager will attempt
+to read the log.  <tt> Log::read</tt> will try to down the semaphore again
+and will block everyone forever.  We have to unlock before calling
+recovery.
+<P>
+	However, if we unlock before recovery, it could happen that
+some other transaction enters its open, detects that it is not the
+first, increments <tt> sl_n_xact</tt>, does not perform recovery, and
+starts reading and writing the log.  Unfortunately, since recovery has
+not run yet, the log will be corrupted if another transaction attempts
+to read and write it.
+<P>
+	It may appear that the second transaction went along
+corrupting the log because it saw that <tt> sl_n_xact</tt> was 1.
+However, setting <tt> sl_n_xact</tt> to 1 finally (instead of at the
+start) is not a correct solution.  If this were done, the second
+transaction will also think that it is the first one in the system and
+perform restart recovery.  There will be two restarts running
+concurrently.  Since the recovery manager assumes that at most one
+copy of it is running in restart recovery mode at any time, this
+solution is incorrect.
+<P>
+	The correct solution is that we must mutually exclude opens
+from each other.  In that case, no other transaction can open the log
+while another transaction is attempting an open.  Also, the first
+transaction gets to run restart recovery without the danger of another
+transaction doing the same.  Further, since we do a <tt>
+global_shm_log_ptr-&gt;unlock()</tt> before restart recovery, the recovery
+manager can safely issue <tt> log::read</tt> and <tt> log::write</tt> calls.
+No other transaction will simultaneously be trying to execute <tt>
+global_shm_log_ptr-&gt;lock()</tt> because it is guaranteed that only the
+first transaction will run recovery.  <tt> Down</tt>ing <tt> sl_sem</tt>
+prevents other transactions from entering the system.
+<P>
+	The following argument demonstrates that there is no deadlock:
+<P>
+<UL><LI> Every open will start by <tt> down</tt>ing
+the <tt> sl_sem</tt> semaphore.  If at any time, it accesses a shared
+memory structure, it will also perform a <tt>
+global_shm_log_ptr-&gt;lock()</tt>.  Thus, shared data structures are not
+corrupted.
+<P>
+	<LI> Other <tt> log</tt> methods never use <tt> sl_sem</tt>.
+<P>
+	<LI> Every open requests a <tt> down</tt> on <tt> sl_sem</tt> before
+a <tt> global_shm_log_ptr-&gt;lock()</tt>.
+<P>
+</UL>
+Thus, every open requests the <tt> down</tt>s in the same order and other
+methods never <tt> down</tt> <tt> sl_sem</tt>.  Therefore, there can never be
+a deadlock.
+<P>
+	Since every method <tt> up</tt>s semaphores that it <tt> down</tt>s
+and there is no deadlock, there is no possibility of starvation.
+<P>
+	Initialization of shared memory structures, etc., is
+straightforward.  It will not be described here.
+<P>
+	There is one further problem that must be resolved.  The <tt>
+main()</tt> function of a <em> Minirel</em> process instantiates a global
+object of <tt> class log</tt> by executing:
+<P>
+<PRE>            extern log *logMgr;
+            char        log_file_pathname[MAXPATHNAME];
+            Status      error_status;
+
+            logMgr = new log(log_file_pathname, error_status);
+</PRE>
+<P>
+Therefore, <tt> logMgr</tt> has not been initialized when the open
+constructor is in progress.  However, the open constructor, on
+detecting that it is the first transaction to use the database, will
+start restart recovery.  Restart recovery will then read log records
+by invoking:
+<P>
+<PRE>            logMgr-&gt;read(...);
+</PRE>
+This will fail because <tt> logMgr</tt> has not been initialized as yet.
+The solution we adopted was to execute
+<PRE>            logMgr = this;
+</PRE>
+in the open constructor code just before calling restart recovery.
+<P>
+<BR> <HR><A NAME=tex2html224 HREF="node17.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html222 HREF="node13.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html216 HREF="node15.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html225 HREF="node17.html">5.4.4  log::~log</A>
+<B>Up:</B> <A NAME=tex2html223 HREF="node13.html">5.4  class log</A>
+<B> Previous:</B> <A NAME=tex2html217 HREF="node15.html">5.4.2  log::log (The Create </A>
+<BR> <HR> <P>
+<BR> <HR>
+<P><ADDRESS>
+ajitk@cs.wisc.edu, cjin@cs.wisc.edu
+</ADDRESS>
+</BODY>

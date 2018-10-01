@@ -1,0 +1,86 @@
+<HTML>
+<HEAD>
+<TITLE>Heap File and Disk Space manager</TITLE>
+</HEAD>
+
+<BODY>
+
+<H1> Heap File and Disk Space manager </H1>
+<i> Ravi Murthy </i> <A HREF= "/cgi-bin/finger?ravim">ravim@cs.wisc.edu</A><br>
+<i> Sriram Narasimhan </i> <A HREF= "/cgi-bin/finger?nsriram">nsriram@cs.wisc.edu </A><br>
+
+<hr>
+
+<H2> Project report </H2>
+<A HREF="../report/html/project.html">Click here for the project report</A>
+
+<H2> General Description </H2>
+
+
+<P> Our group provides  <b> two </b> independent  interfaces.
+
+<H3> Database  (DB) Interface </H3>
+The DB  class  provides  the abstraction  of  a  single database.  The
+operations    on  this  class  includes     creating  and   destroying
+databases. Existing databases can be opened and closed. Further, there
+are methods  to   retrieve certain characteristic   properties of  the
+database, like the number  of pages and page size.  <br> The DB  class
+also provides <b> directory  service </b>. This service is implemented
+in terms  of records  consisting of  file names and  their header page
+ids. There  are functions to  insert/delete/access  file entries. <br>
+<br>
+
+The top level of  the program should create  an instance of this class
+for  every database used.
+
+<P> The abstraction of a page is given by the class Page. All higher level applications use this Page. A Page contains LSN and a data part. Higher layers can impose their own types of pages on this common structure.
+<br><br>
+
+<H3> HeapFile Interface </H3>
+The heapfile  interface    provides the  capability   of  manipulating
+heapfiles which   are  unordered sets  of   records.  Heapfiles can be
+created   and  destroyed.  Existing   heapfiles   can  be   opened and
+closed. Records  can be inserted and  deleted. Each record is uniquely
+identified by a record id (RID). A specific record can be retrieved by
+giving the record    id.    It also supports  sequential    scans   on
+heapfiles.  A scan  object that  is  returned is used  to retrieve all
+records starting from  the first record.  Note that any selections can
+only be  applied by a higher   layer which uses  this  scan to get all
+records.<br> <br>
+
+<hr>
+
+<H2>  Private Interface </H2>  
+
+The following is a  description of the space  manager interface.  This
+is not needed by  any other group. However, if  you are  interested in
+knowing how the  space manager really  works, you are welcome  to read
+on....
+
+<p> The space manager  is the component of  the system that takes care
+of the allocation and deallocation of  pages among the different files
+of a database. A  database is a  single UNIX file. It contains several
+<i>files</i> , like the heapfiles, B+tree  files and so on. A database
+has a single space map that keeps track of the usage of the pages. The
+space  manager maintains  the space  map  in shared memory and ensures
+consistent access to it by different processes.
+
+<p> The other  function of the space map  is maintaining the directory
+for every database. The directory   contains the mapping between  file
+names and their header pages. Thus when a file needs to be opened, its
+directory entry  can be looked up which  gives us the header page. The
+directory is also  maintained in shared  memory  and consistent access
+ensured. 
+
+<p>  The space manager  logs all  changes  to  the space  map  and the
+directory of a database. The case of deallocation  of pages is handled
+carefully to ensure that the effects of an aborting transaction can be
+completely undone. Deallocation    requests by a  transaction  are not
+executed immediately.  They are instead  deffered and the page ids are
+maintained in a list. Only  when the transaction commits, changes  are
+made to the space map to reflect the deallocation.<br> <br>
+
+<p><hr>
+
+</BODY>
+</HTML>

@@ -1,0 +1,89 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> Retrospective:</TITLE>
+<meta name="description" value=" Retrospective:">
+<meta name="keywords" value="rec">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html96 HREF="node9.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A> <A NAME=tex2html94 HREF="rec.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A> <A NAME=tex2html88 HREF="node7.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html97 HREF="node9.html">References</A>
+<B>Up:</B> <A NAME=tex2html95 HREF="rec.html">MINIREL : Recovery Manager
+<P>
+</A>
+<B> Previous:</B> <A NAME=tex2html89 HREF="node7.html"> Testing:</A>
+<BR> <HR> <P>
+<H1><A NAME=SECTION00060000000000000000> Retrospective:</A></H1>
+ <A NAME=secretro>&#160;</A>
+The project in itself was interesting and very satisfying. We do have
+comments and thoughts, and here they are.
+We are now in the 'integration' phase of the project. We feel VERY
+strongly that we should have implemented both the log and the recovery
+managers.  We needed a basic functionality from the Log Manager, where the
+log was like a simple file to which we could write to, and read from.
+We discovered that the Log Manager group had made assumptions,
+some of which, in our eyes, were  unnecessary.
+<P>
+<UL><LI>
+For example, the  Log Manager keeps track of the end of the log file
+with the help of their 'MAGIC' value. That is, they can recognize 
+EOF when they see it,  but need to perform a scan on the log in order to
+find it.  So, when the log is first opened, they require that the
+Recovery Manager sit in a loop and find the end of file. It is only
+after this action is performed, can a log record be written. This defeats
+the idea of a Log Manager providing simple functions to write to and
+read from the log.
+<LI>
+If the master lsn is invalid, it implies that the log file is empty and that
+there is no transaction that needs to be recovered. In such a case the
+Restart routine performs no actions.  Now, when the Log Manager calls
+the <em>GetEarliestLSN() </em> function of the Recovery Manager ( for log
+compaction ),
+they require
+that we return a value '010', which is the physical address of the beginning
+of the log.  This is a detail we'd rather not have to know about.
+</UL>
+<P>
+Both the points stated above, makes the Recovery Manager somehow 
+'know' the internal layout of the log, and the exact implementation of the
+Log Manager.
+<P>
+Another problem recently discovered is the problem with the logging of
+space maps. The  Space Management group caches its own copy of the space
+map pages. After recovery, the copy of the space map in the cache of the
+Space Manager and the disk may be inconsistent. This is because the
+Recovery Manager treats the space map pages as any other data page. 
+During the restart phase, the Recovery Manager may modify those pages 
+in the buffer pool, and the Space Manager will not know about this.
+It will continue working with the incorrect version.
+We've found two possible solutions to the problem.
+<UL><LI> The Space Manager could modify pages in the buffer pool directly without
+caching any pages. This would be the simplest and cleanest solution.
+<LI> An alternative would be for the Recovery Manager to modify the
+Space Manager's cached copies. This, we think would be a more messy solution,
+but faster to implement.
+</UL>
+<P>
+To conclude with, the project has been enjoyable and we've gained some
+knowledge on what it takes to build a system.  The group meetings have
+been interesting and we learned several coding lessons.
+<P>
+<BR><HR>
+<P>
+<BR> <HR><A NAME=tex2html96 HREF="node9.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A> <A NAME=tex2html94 HREF="rec.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A> <A NAME=tex2html88 HREF="node7.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html97 HREF="node9.html">References</A>
+<B>Up:</B> <A NAME=tex2html95 HREF="rec.html">MINIREL : Recovery Manager
+<P>
+</A>
+<B> Previous:</B> <A NAME=tex2html89 HREF="node7.html"> Testing:</A>
+<BR> <HR> <P>
+<BR> <HR>
+<P><ADDRESS>
+<I> ranjani ramamurthy <BR>
+Sat May 13 16:56:49 CDT 1995</I>
+</ADDRESS>
+</BODY>

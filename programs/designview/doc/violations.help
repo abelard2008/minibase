@@ -1,0 +1,25 @@
+
+dbnorm Help: Violation List Window
+===================================
+
+This window displays a list of FDs which cause normal form violations
+(for either BCNF or 3NF, not both) in a single relation. This window
+will appear if you do a normal form test on a relation, and the FD
+projection for that relation contains violations of the chosen normal
+form. The window gives you three options for what to do next:
+
+	* Dismiss: Do nothing.
+
+	* Decompose: If you highlight one of the FDs and then click on
+	  the Decompose button, dbnorm will generate a decomposition
+	  of the relation that removes the highlighted violation. The
+	  new decompostion will appear in the session window from which you
+	  initiated the normal form test.
+
+	* Custom Decomposition: This choice allows you to create your
+	  own custom decomposition of the relation being
+	  tested. Clicking on this button will cause the Custom
+	  Decomposition Window to appear, in which you can define the
+	  new decomposition. See the "Creating a Custom Decomposition"
+	  help file for more information.
+

@@ -1,0 +1,113 @@
+<HTML>
+<HEAD>
+<TITLE>Minibase Overview</TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+
+<CENTER>
+<H1>Overview of Single-User Minibase</H1>
+</CENTER>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+
+It is easiest to understand Minibase in terms of how a query is processed.
+A query is first parsed and optimized to obtain an evaluation plan.
+The evaluation plan is structured as a tree of iterators, each of which
+supports a ``get-next-tuple'' interface, and corresponds typically to
+a relational algebra operator.  Execution is initiated by
+calling get-next-tuple at the root of the plan tree, which successively
+generates get-next-tuple calls on descendant nodes.  
+Execution consists essentially of 
+a data-driven loop of such calls until all the
+input tuples have been processed.  This is described below in more detail.
+(Only single-user Minibase is covered in this overview.)
+<P>
+
+<center>
+<A HREF="query.gif"><IMG SRC="query.gif"></A>
+</CENTER>
+
+<P>
+<A HREF="../planner/query.html"><B>Parser and Optimizer:</B></A>  These 
+modules take an SQL query and find the best plan for evaluating it.
+The optimizer is similar to the one used in System R (and subsequently 
+in most commercial relational database systems).  In optimizing
+a query, the optimizer considers information in the catalog about
+relations and indexes.  It can read catalog information from a Unix file, 
+and thus the parser/optimizer can be used in a stand-alone mode, independent of
+the rest of Minibase (say, for optimizer related exercises).
+<P>
+
+<A HREF="../planner/planner.html"><B>Execution Planner:</B></A> This 
+module takes the plan tree produced by the optimizer, and creates
+a run-time data structure.  This structure is essentially a
+tree of ``iterators'', each of which supports a ``get-next-tuple''
+interface.  Tuples are returned in response to get-next-tuple calls
+by copying them into dynamically allocated main memory (not the buffer pool).
+<P>
+The figure below shows details of iterator trees and the Minibase
+code that they call.  
+<P>
+<CENTER>
+<A HREF="plan.gif"><IMG SRC="plan.gif"></A>
+</CENTER>
+<P>
+<B>Main loop:</B></A> Execution is 
+triggered by ``pulling'' on the root of
+the tree with a get-next-tuple call.
+This results in similar calls to iterators lower in the tree.
+Leaf level iterators retrieve tuples from a relation (perhaps
+using an index), and intermediate level iterators in the tree
+correspond to joins.  Selections and projections are ``piggy-backed''
+onto these iterators.
+More information is available on each of these components:
+<P>
+<A HREF="../planner/iterator.html"><B>Iterators</B></A>  
+A ``get-next-tuple'' interface for file scans, index scans and joins.
+<P>
+<A HREF="../joins/joins.html"><B>Join Methods</B></A>  Nested loops,
+sort-merge and hash joins are supported.
+<P>
+<A HREF="../spaceMgr/heap_file.html"><B>Heap Files</B></A>  All data
+records are stored in heap files, which are files of unordered pages
+implemented on top of the DB class.
+<P>
+<A HREF="../AM/am.html"><B>Access Methods:</B></A> Currently two
+types of access methods are supported, <A HREF="../BTree/BTree.html">
+<B>B+ Trees</B></A> and <A HREF="../linearHash/linearHash.html"><B>
+Linear Hashing</B></A>.  
+The access methods in Minibase are dense, unclustered, and
+store key/rid-of-data-record pairs (Alternative 2, in terms of the 
+<A HREF="../dbbook.html"><B>text</B></A>).
+Data records are always stored in heap files, as noted above,
+and access methods are implemented (like heap files) as 
+files on top of the DB class.
+<P>
+<A HREF="../bufMgr/bufMgr.html"><B>Buffer Manager:</B></A> 
+The buffer manager swaps pages in and out of the (main memory) buffer
+pool in response to requests from access method and heap file
+code.
+<P>
+<A HREF="../spaceMgr/dsm.html"><B>Disk Space Manager:</B></A> 
+A database is a fixed size Unix file, and pages (in the file) on
+disk are managed by the disk space manager.  
+<P>
+
+<IMG SRC="../pics/hline.gif">
+<BR>
+
+<A HREF="overview3.html"><IMG SRC="../pics/right.gif">
+<B>Next Page of Overview</B></A><BR>
+<A HREF="../minibase.html"><IMG SRC="../pics/left.gif">
+Click here to go the Minibase Home Page</A>
+
+
+</BODY>
+
+</HTML>
+
+
+

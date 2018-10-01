@@ -1,0 +1,246 @@
+
+/* Written by Bill Kimmel in May 1995 as part of 764 minirel project.
+Revised by Michael Lee in Oct 1995
+
+Note, most of this is accurate, and as such will remain.
+
+If you have problems with it, just deal because it isn't going to
+change much. (kimmel@cs.wisc.edu) 
+
+
+
+HISTORY OF THIS PROTOCOL:
+  It was inherited from the error protocol in place from the Spring 1994
+  version of minirel.  In this version, variables of type Status were used
+  to return errors from one function call to another.  No global maintenance
+  was done.  This protocol was designed to be easily compatible with the
+  old protocol (all that is needed are 30+ more Status types added to this
+  file).
+*/  /*
+CONCEPT BEHIND THIS ERROR PROTOCOL:
+  In a multi-layered system, errors should propogate up through the 
+  system to the top level.  In a multi-user environment, however, there 
+  are "parallel" hierarchies that call one another.  There is the "query" 
+  side and the "concurrency" side.  The process will bounce back and 
+  forth between these two, and a simple layered error handling system is 
+  not enough.  What is needed is the _path_ that brought the error to the 
+  top level (where was it first detected, and what functions were called 
+  when it was detected).  In effect, we want to look at the stack.
+
+OUR APPROACH:
+  Every system creates error msgs that apply to the possible errors that 
+  will result.  If an error is detected by a system for the first time, 
+  then an error msg is added to the global queue.  The system that discovered 
+  the error _returns_ an error type that indicates what system it is.  It 
+  identifies itself to the caller by returning its own id.  If the error msg 
+  was returned from one system to another, then the detecting system must log 
+  the error (add it to the global queue) and then return its id.  The log entries 
+  that are added to the global object are not msgs, however.  They are the names of 
+  the two systems involved: the system that returned the error and the system that 
+  "caught" the error.
+
+A possible (hypothetical) example of the errors that will be logged in the global
+error object.
+  DBMGR       "File Not Open"
+  BUFMGR      DBMGR
+  BTREE       BUFMGR
+  JOINS       BTREE
+  PLANNER     JOINS
+  FRONTEND    PLANNER
+
+Note that there is some redundancy here, the recipient of an error is the source of 
+an error in the next level.  This helps ensure that the protocol is being followed
+properly.  
+
+
+The current protocol has all errors entered into a given variable of type 
+Status.  This variable is checked.  If OK, then proceed.  If !OK, then call
+global_error::add_error(...).  All errors must then be returned to the caller.
+Problem: destructors are unable to set a non-global variable to a value.  
+They can call global_error::add_error, but there is no way for them to 
+communicate failures.
+
+
+Oct 1995 Improvements: (MGL)
+
+More Messages: 
+
+Each layer now has an additional string passed.   The point of this is
+that it is possible to work your way through many layers, and you'd
+like to see which line in the file you want to use.  The add_errors
+member is encouraged so you can list what line in the file the error
+was discovered:
+
+Status s = bm->pinPage(...)
+
+if (s != OK)
+    return minirel_error->add_errors(DBMGR, BUFMGR, s, __LINE__, __FILE__, PINFAILED);
+
+In additon 
+Each layer of the database has associated with it a list of errors that
+can occur. Character strings with messages corresponding to these errors
+are stored in arrays.  These arrays are regisered to the global error
+object minirel_error by calling on the registerErrorMsgs
+member.   Each layer is responsible for establishing and registering it's
+error string array. (example:
+
+   minirel_error->registerErrorMsgs(BufErrorMsgs, BUFMGR); )
+
+The indicies to the appropriate error messages are the responsibility
+of the layer the error is discovered in.
+
+Possible Future Improvements:
+
+Checking Destructors:  
+		      There should be a global method called set_error.  
+Instead of checking a local variable, a global error variable (or flag in 
+the object) should be used. 
+
+Output:
+	 With a few minutes work, the global object could be made to
+	 write to a file or to standard output or to both.  
+	 I had other things to do, so I didn't bother.
+
+Bill Kimmel (kimmel@cs.wisc.edu) May 9, 1995
+*/
+
+#include <fstream.h>
+#include <assert.h>
+
+
+#ifndef _NEW_ERROR_H
+#define _NEW_ERROR_H
+
+
+// All the groups should be self explanatory except RAWFILE & DONE.
+// RAWFILE is used by the log manager to differentiate between problems
+// with the log manager and problems with their underlying disk
+// storage mechanism.  
+
+// MGL 10/3/95:
+// Note -- new software should only presume OK, DONE, and FAIL.  If you
+// wish to refer to the layers, use the ErrorLevel enum  (which of
+// course uses the same name)
+
+// OK is for a normal result, and the data is normal
+
+// DONE is for a "finished" or "not found" result, but NOT an error
+
+// FAIL is an error
+
+enum Status { OK, 
+
+	      // The following codes are ERRORS.  If you encounter
+	      // them, you must add an error to the global_error
+	      // object.  You must return an error to the group
+	      // above you.
+              BUFMGR, RECOVERYMGR, LOGMGR, SHAREDMEMORYMGR, BTREE, 
+	      LINEARHASH, GRIDFILE, RTREE, JOINS, PLANNER, PARSER,
+	      OPTIMIZER, FRONTEND, CATALOG, DBMGR, RAWFILE, LOCKMGR,
+
+	      // These are currently supported, but hopefully they
+	      // will disappear soon.  They are ERRORS.
+	      TUPLE_TOO_BIG, TUPLE_TYPE,
+	     
+	      // The following codes are NOT errors.  If you 
+	      // encounter one you must handle it as you see fit.
+	      // You may set an error and return an error or you 
+	      // may not.  It is up to you to decide how to
+	      // handle them.
+              DONE, FILEEOF, FAIL, RECNOTFOUND, RELNOTFOUND, INDEXNOTFOUND,
+	      ATTRNOTFOUND, INSUFMEM, NOMORERECS, HEAPFILE, SCAN };
+
+typedef Status ErrorLevel;  // for the sake of compatibility
+
+const int ERROR_NUMLEVELS = 31;
+
+
+/* Every error that is logged by a call to global_error::add_error creates an
+error node.  The Status types are converted into strings in team_name().
+A node contains either a from (type Status) variable or a message (char*).    */
+
+class error_node {
+
+public:
+
+	error_node(Status T1, Status T2);
+	error_node(Status T1, const char* error_msg);
+	error_node(ErrorLevel iFrom, ErrorLevel iTo, char* iError_index, 
+		   char* iMsg);
+	
+	void show_error();
+	char* team_name(Status T1);
+	void set_next(error_node* nxt);
+	error_node* get_next();
+private:
+	error_node* next_node;
+	ErrorLevel from;
+	ErrorLevel recipient;
+	const char* msg;
+	const char* error_index;
+};
+
+
+typedef char** ErrorStringTable;
+typedef ErrorStringTable* ErrorStringTablePtr;
+
+/*  GLOBAL_ERROR
+The method add_error(Status T1, char* msg) should only be called
+once in a given execution of the program.  Only the first time an error
+is discovered.         
+
+Note, it is also obsolete and devalued.
+
+                                   */
+class global_error {
+
+friend class error_node;
+
+public:
+	global_error();
+	global_error(char* filename);
+	~global_error();
+	void add_error(Status T1, Status T2); // discouraged
+        void add_error(Status T1, char* msg); // discouraged
+
+	Status add_error(ErrorLevel from, ErrorLevel to, int error_index, 
+			 char* msg);  
+	
+	Status add_errors(ErrorLevel Elayer, ErrorLevel Clayer, Status flag,
+			  int lineno, char *file, int error_index);
+
+	Status add_errors(ErrorLevel Elayer, int lineno,
+			  char *file, int error_index)
+	    { return add_errors(Elayer, OK, FAIL, lineno, file, error_index); };
+
+
+	Status registerErrorMsgs(ErrorStringTablePtr err, ErrorLevel from);
+
+	void clear_errors();
+
+	void show_errors();
+	void print(Status status)
+	  {
+	    cerr << "Error!!! YOU MUST SWITCH TO THE NEW PROTOCOL!";
+	    cerr << endl << "May 3, 1995!!" << endl;
+	  }
+
+private:
+	error_node* first;
+	error_node* last;
+	ErrorStringTablePtr* errmsgs;
+};
+
+
+#define MINIREL_ERROR(Elayer,Clayer,flag,index) ( minirel_error->add_errors( \
+		Elayer,Clayer,flag,__LINE__,__FILE__,index) )
+
+#endif
+
+
+
+
+
+
+
+

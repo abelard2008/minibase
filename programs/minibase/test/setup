@@ -1,0 +1,9 @@
+# This script sets up a Minibase database called TEST in the current
+# directory with the Sailors/Boats/Reserves relations, some indexes
+# and some data.
+rm -f TEST
+cp /dev/null setup.out
+../minibase < createRelations.script >>setup.out
+../minibase < addData.script >>setup.out
+../minibase < createIndexes.script >>setup.out
+

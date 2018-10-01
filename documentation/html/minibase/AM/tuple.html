@@ -1,0 +1,55 @@
+<HTML>
+<HEAD>
+<TITLE>Tuple Representation</TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+<H1>Tuples</H1>
+<IMG SRC="../pics/hline.gif">
+<P>
+<h1>Introduction </h1>
+Each record in a relation is a collection of bytes that
+is cast as an object of type <EM>Tuple</EM>.  
+Only implementors of access methods, heap files and relational operators
+need to worry about how the bytes are utilized .
+Others can treat them as just a collection of bytes.  
+<P>
+<I>Tuples</I> may have attributes of three types: <B>strings</B> (up to 255 characters),
+<B>integers</B>, and <B>real</B> numbers (floats, in C++).
+<P>
+Because padding of bytes is needed to align integers and floats,
+the exact number of bytes in a <I>Tuple</I> is not known ahead of time.
+When tuples are created, a large number of bytes must be allocated.
+Then the attributes list (for example: int, int, float) 
+is passed to the tuple and the tuple is constructed.  During the 
+<I>Tuple</I> construction, padding is performed and the actual size of the 
+<I>Tuple</I> with those attributes is determined.
+<P>
+<IMG SRC="../pics/hline.gif">
+
+<H2>Design Decisions</H2>
+Padding was chosen over copying for no particular reason.  The amount
+of space wasted due to padding may not offset the time that is needed
+to copy the data into aligned space when it is needed; thus, a variant
+that uses copying could be used instead.
+<P>
+In Minibase, a tuple must fit on a single page.
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+
+Click here for the <A HREF="public.tuple.txt"><B>public interface</B></A>.
+
+
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+<B><A HREF="../project.html">Back to the List of Components</A></B><BR>
+<B><A HREF="../minibase.html">Back to the Minibase Home Page</A></B><BR>
+
+
+</BODY>
+</HTML>
+
+

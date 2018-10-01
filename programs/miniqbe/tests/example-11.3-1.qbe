@@ -1,0 +1,3 @@
+setComment {Simple join}
+addRelationTable {Sailors {}} {sid _Id} {sname P._S} {rating {}} {age {}}
+addRelationTable {Reserves {}} {sid _Id} {bid {}} {date {}}

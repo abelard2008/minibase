@@ -1,0 +1,52 @@
+
+
+<HTML>
+<HEAD>
+<TITLE>Using Minibase</TITLE>
+</HEAD>
+<body background = "pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+
+<H1>Using Minibase</H1>
+
+<P>
+<IMG SRC="pics/hline.gif">
+<P>
+   
+Users of Minibase will need to set two environment variables:
+<P>
+   "MINIBASE_ROOT", and "PLATFORM".
+<P>
+     In csh, this is done with:
+<P>
+     setenv MINIBASE_ROOT /usr/local/minibase<BR>
+     setenv PLATFORM `$MINIBASE_ROOT/bin/sysname` <BR>
+<P>
+  Where '/usr/local/minibase' is replaced by the path to the
+  root directory where Minibase is installed locally.
+  These lines should be added in one of your startup files,
+  for example, '.cshrc' for csh users.
+<P>
+  Users should also add "$MINIBASE_ROOT/bin" to their search
+  path. This is usually done by modifying the 'path' variable.
+  For csh users the line:
+<P>
+    set path = ( $path $MINIBASE_ROOT/bin )
+<P>
+  will add the directory to the end of your search path.  
+
+
+<P>
+
+<IMG SRC="pics/hline.gif">
+<BR>
+<A HREF="project.html">Back to the List of Components</A><BR>
+<A HREF="minibase.html">Back to the Minibase Home Page</A><BR>
+
+
+</BODY>
+
+</HTML>
+
+

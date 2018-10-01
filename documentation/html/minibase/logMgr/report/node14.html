@@ -1,0 +1,65 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!Converted with LaTeX2HTML 95 (Thu Jan 19 1995) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds >
+<HEAD>
+<TITLE>5.4.1  class Rawfile</TITLE>
+</HEAD>
+<BODY>
+<meta name="description" value="5.4.1  class Rawfile">
+<meta name="keywords" value="main">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+<P>
+ <BR> <HR><A NAME=tex2html204 HREF="node15.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html202 HREF="node13.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html196 HREF="node13.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html205 HREF="node15.html">5.4.2  log::log (The Create </A>
+<B>Up:</B> <A NAME=tex2html203 HREF="node13.html">5.4  class log</A>
+<B> Previous:</B> <A NAME=tex2html197 HREF="node13.html">5.4  class log</A>
+<BR> <HR> <P>
+<H3><A NAME=SECTION00054100000000000000>5.4.1  class Rawfile</A></H3>
+<P>
+<A NAME=subsubsectionimpllograwfile>&#160;</A>
+<P>
+At the lowest level, the log is maintained in a Unix file.  However,
+to emulate the way a real log is read/written, access to this file
+should be in units of a page.  We also need the forced write semantics
+-- when a write succeeds, it should be guaranteed that the changes
+have made it to disk.  Further, changing over to a duplex-disk setup
+or to a raw disk interface should change the least amount of code.
+<P>
+	<tt> Class DB</tt> [<A HREF="node32.html#db">Murthy &amp; Narasimhan 95</A>] was a candidate for this low level
+file maintenance.  It provided pagefile semantics and provided a
+forced-write semantics.  However, it also managed a space map and
+allowed multiple page files to reside within the <tt> DB</tt>.  This
+functionality was needed because <tt> DB</tt> was used to store the
+database itself.  We did not need this extra functionality.  Besides,
+it was not natural to treat a log as a <tt> DB</tt>.  Therefore, we
+implemented <tt> Rawfile</tt> (see <tt> rawfile.h</tt> and <tt> rawfile.C</tt>),
+which provides a page file view of a Unix file.
+<P>
+	<tt> Rawfile</tt> implements bounded file semantics as follows:
+when the log is created, the number of pages it contains is specified.
+<tt> Rawfile::Rawfile</tt> (the create constructor) allocates the required
+space by <tt> lseek</tt>ing [see <tt> lseek</tt>(2)] to the end of the file
+and <tt> write</tt>-ing [see <tt> write</tt>(2)] a single byte there.  This
+has the advantage that the log file does not occupy disk space until
+actually written to.  In addition, we need not keep track of the size
+of the file.  We can find it any time by using the <tt> stat</tt>(2) or
+<tt> fstat</tt>(2) system calls.  <tt> Rawfile::write_page</tt> never allows a
+write to go beyond the current size of the file.
+<P>
+	<tt> Rawfile::read_page</tt> and <tt> Rawfile::write_page</tt> are
+straightforward.  They use the <tt> read</tt>(2) and <tt> write</tt>(2) system
+calls to read and write a page at a time.  <tt> Rawfile::write_page</tt>
+also forces the write to disk by calling the <tt> fsync</tt>(2) system
+call.
+<P>
+<BR> <HR><A NAME=tex2html204 HREF="node15.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html202 HREF="node13.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html196 HREF="node13.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html205 HREF="node15.html">5.4.2  log::log (The Create </A>
+<B>Up:</B> <A NAME=tex2html203 HREF="node13.html">5.4  class log</A>
+<B> Previous:</B> <A NAME=tex2html197 HREF="node13.html">5.4  class log</A>
+<BR> <HR> <P>
+<BR> <HR>
+<P><ADDRESS>
+ajitk@cs.wisc.edu, cjin@cs.wisc.edu
+</ADDRESS>
+</BODY>

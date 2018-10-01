@@ -1,0 +1,396 @@
+Exercises for the optimizer visualization tool.
+
+GENERAL INFORMATION
+===================
+
+These exercises are based on two catalogs, A and B, which are located in files
+"catalogA" and "catalogB".  Each exercise says which catalog to use.  The first
+step of each exercise should be to open the appropriate catalog, which you do
+by choosing Open from the Optimizer Catalogs menu of the tool.
+
+	-------------------------------------------------------
+	WARNING: The visualization tool does not show you which
+		 catalog you have open.  Make sure you open the
+		 correct catalog for each question.
+	-------------------------------------------------------
+
+The two catalogs are based on the same schema.  There are three relations, emp,
+dept, and job, which represent employees, departments, and job titles of some
+organization.  Each of these relations has an integer ID which is used as the
+primary key for the relation.  The emp relation has foreign keys to dept and
+job, representing each employee's department and job title, and the dept
+relation has a foreign key back to emp, representing the department's manager.
+
+
+1. << type 1 question >>
+
+   This question asks you to explore "level 0" of the optimizer visualization
+   tool.  This level shows all the "access methods" for each relation involved
+   in the query.  If you double-click the LEFT mouse button on one of these
+   access method boxes, you can also see a list of the relation's attributes
+   with the range of values each attribute takes on.
+
+   Open Catalog A, then run the tool on the following query.  Then answer
+   questions a through e, looking at level 0 access methods.
+
+        select * from emp
+        where ename = "Doe"
+
+   a. What are the attributes of the emp relation?
+
+   b. Why are these level 0 boxes called "access methods" rather than
+      "indexes"?
+      << answer: because they include a file scan, which isn't an index >>
+
+   c. How many tuples are in the emp relation?
+
+   d. How many different values of the "ename" attribute are there in the emp
+      relation?
+
+   e. What is the largest job ID number held by any employee?
+
+
+
+2. << type 1 question >>
+
+   Level 1 of the optimizer visualization tool shows plans that consist of
+   walking a single relation using one of the access methods defined for that
+   relation.  If you double-click the LEFT mouse button on a level 1 plan (and
+   higher levels too), its box expands to show you more detailed information
+   about the plan and the estimates made about it.
+
+   Use the same catalog, Catalog A, and the same query as in question 1.  Then
+   answer the following questions, looking at level 1 plans.
+
+        select * from emp
+        where ename = "Doe"
+
+   a. What is the estimated total cost of running the "best" plan?
+
+   b. What is the sort cost for this plan?  What would the sort cost be for ANY
+      plan for this query?
+      << answer: 0, because the query doesn't specify a sort order >>
+
+   c. What is the estimated result cardinality for this plan?
+
+   d. Another way of asking question c is: how many employees does the
+      optimizer estimate are named "Doe"?  Given your answer to question 1d,
+      why is this a reasonable estimate?
+
+
+
+3. << type 1 question: levels 0 and 1 >>
+
+   If you double-click the RIGHT mouse button on a level 1 plan (and higher
+   levels too), the tool opens a separate window that isolates that plan and
+   all its children.
+
+   Once again, open Catalog A and run this same query as in questions 1 and 2.
+   Then answer the following questions, looking at both level 1 plans and level
+   0 access methods.
+
+        select * from emp
+        where ename = "Doe"
+
+   a. Find the "best" plan.  Which access method does this plan use?
+<< answer: the ename index >>
+
+   b. In what order would the tuples be returned by this plan?  Why?
+<< in ename order, because the index is ordered >>
+
+   c. Disable the access method used by the "best" plan by double-clicking the
+      RIGHT mouse button on its level 0 box.  (The box will then be displayed
+      in gray, on a color monitor.)  Which access method does the optimizer
+      consider best now?
+<< answer: the file scan >>
+
+   d. Compare the new best plan with the other plans still shown.  What is it
+      about the way the best plan accesses tuples that makes it substantially
+      cheaper than the others?
+<< answer: the file scan reads many tuples per page, while the
+   other indexes read a page per tuple >>
+
+
+
+4. << type 2 question: show understanding of the difference between levels 0
+      and 1 >>
+
+   Open Catalog A, run the tool on the following query, then answer questions
+   a through c.
+
+        select * from dept
+        where dno < 1500
+
+   a. How many department tuples does the optimizer think there are?  Where on
+      the tool's display is this information shown?
+
+   b. How many departments whose number is less than 1500 does the optimizer
+      think there are?  Where on the display does this appear?
+
+   c. How does the optimizer arrive at its estimate of the number of
+      departments whose number is less than 1500?  That is, what calculations
+      does it perform, and where does the supporting data come from?
+
+   d. Open Catalog B, then run the same query against this catalog.  (WARNING:
+      opening the new catalog does NOT automatically re-run the current query.
+      You must re-run the query yourself.)  What is the new estimate of the
+      number of departments whose number is less than 1500?  Why is it
+      different from before?
+<< answer: the range and number of departments is different in this
+   catalog >>
+
+
+
+5. << type 1 question >>
+
+   Levels 2 and higher of the optimizer tool show the result of joining a
+   lower-level plan with an access method.  If you double-click the RIGHT mouse
+   button on a level 2 plan, the tool opens a window showing the lower-level
+   plans and access methods that this plan is made up of.
+
+   Open Catalog A, run the following query, and then answer the following
+   questions looking at level 2 plans.  (NOTE: be sure not to confuse LEVEL 2
+   with the line NUMBERED 2.  The NUMBER of the line of plans you are to look
+   at is 3, the top line of the display.)
+
+        select * from emp, dept
+        where emp.dno = dept.dno
+
+   a. What kind of join is the best plan?
+
+   b. What is the estimated total cost of running this plan?
+
+   c. How many tuples does the optimizer estimate will result from this query?
+
+   d. How big are the tuples that result from this query?  (I.e., how many
+      bytes does each tuple occupy?)
+
+   e. How many pages will be filled by the result tuples?
+
+   f. What access methods does the best plan use?
+
+
+
+6. << type 2 question: show difference between levels 1 and 2 >>
+
+   Open Catalog A, run the tool on this query, then answer the following
+   questions looking at the best plan and its children.
+
+        select ename, dname from emp, dept
+        where emp.dno = dept.dno and emp.jno < 50
+
+   a. What kind of join is the best plan?
+<< index nested loops >>
+
+   b. How many tuples does the optimizer estimate it will retrieve from the
+      employee relation?  At what level is this information shown?
+
+   c. Why are the Primary Predicate Selectivity and Predicate Selectivity the
+      same at this node [the node from question b]?
+
+   d. What calculation does the optimizer do to arrive at the selectivity
+      estimate for this node?  Where does the underlying information come from?
+
+   e. How much memory does the optimizer estimate it will take to retrieve the
+      information it needs from the employee relation?
+
+   f. How much memory does the optimizer estimate it will it take to run the
+      whole query?
+
+
+
+7. << type 3 question: differences between different join methods >>
+
+   From the Switches / Toggle Joins menu of the optimizer visualization tool,
+   you can disable and re-enable the different kinds of joins that the
+   optimizer will consider.
+
+   Also, if you double-click the RIGHT mouse button on the box that labels one
+   line of the tool's display, you will toggle off and on the pruning of plans
+   that the optimizer estimates will be too slow.
+
+   Run the following variant of the query from exercise 6, using Catalog A as
+   before.  Now suppose you knew that the run-time environment for this query
+   was limited to 10 pages of memory.  Find the best (left-deep) plan that fits
+   this requirement and describe its join method, access methods, and total
+   cost.
+
+        select ename, dname from emp, dept
+        where emp.dno = dept.dno and emp.jno < 500
+
+   << answer: index nested loops.  you find this by turning off sort-merge and
+      hash joins. >>
+
+
+
+8. << type 2 question: how index-only plans work >>
+
+   From the Switches menu it is possible to disable "index-only plans."  Run
+   the tool on the following query, which lists the number of employees that
+   hold each job if that number is greater than 5.  Use Catalog A.
+
+	select jno, count(*) from emp
+	group by jno
+	having count(*) > 5
+
+   a. Why is this query a candidate for an index-only plan?
+
+   b. What is the estimated cost of this query when index-only plans are
+      allowed?
+
+   c. You can infer the algorithm that the optimizer assumes by the cost
+      formula it displays.  Describe the algorithm assumed by the optimizer for
+      the best plan when index-only plans are allowed.
+
+   d. What is the cost of this query when index-only plans are disallowed?
+
+   e. Describe the algorithm assumed by the optimizer for the best plan when
+      index-only plans are disallowed.
+
+
+
+9. << type 3 question: modify a query to get a result >>
+
+   Run the following query using Catalog A.
+
+	select * from emp, dept
+	where emp.dno = dept.dno and emp.jno < 500
+
+   a. Find the largest number such that replacing the 500 with it in the above
+      query makes the best plan into an index nested loops join with a file
+      scan for the emp table.
+
+   b. Find the largest number such that replacing the 500 with it makes the
+      best plan into an index nested loops join using the index on the jno
+      column of the emp table.
+
+   c. Repeat a and b using Catalog B.
+<< This time, the two numbers are right next to each other >>
+
+
+
+10. << type 3 question: modify a catalog to get a particular result >>
+
+   Consider the following query, as run against Catalog B.  The query lists the
+   number of employees hired before their manager for each of the first 100
+   departments.
+
+	select M.ename, M.empid, count(*)
+	from emp E, emp M, dept D
+	where E.dno = D.dno and D.mgrid = M.empid
+		and E.dno <= 100 and E.empid < M.empid
+	group by M.empid, M.ename
+
+
+   a. Why does the best plan not use the index on E.dno?
+<< because it is a hash index, and you need other values from the tuple>>
+
+   b. Make a copy of Catalog B and modify your copy so that the best plan uses
+      the index on E.dno when run against your modified catalog.
+<< make the dno index into a btree >>
+
+   c. Find one single access method such that, when you disable it, the best
+      plan uses only file scans.
+<< the M.empid index is the one >>
+
+
+
+11. << type 1 question >>
+
+   Open Catalog B, then run the tool on the following query and answer the
+   following questions.
+
+        select * from job
+        where jno < 100
+
+   a. How many leaf pages are there in the index on the "jdesc" attribute?
+
+   b. How many leaf pages are there in the index on the "jname" attribute?
+
+   c. What can you infer about the relative sizes of the "jdesc" and "jname"
+      attributes?
+
+   d. What is the last (alphabetically) job name described in the job relation?
+
+
+
+12. << type 1 question >>
+
+   Open Catalog B, then answer the following questions referring to these
+   queries:
+
+    (i)   select jname from job
+          where jno < 101
+
+    (ii)  select jname from job
+          where jname >= "B" and jname < "C"
+
+    (iii) select jname from job
+          where jno < 101 or (jname >= "B" and jname < "C")
+
+
+   a. Run the tool on query (i).  What is the predicate selectivity of the best
+      plan?  What is the estimated cardinality?
+<< 50 >>
+
+   b. Run the tool on query (ii).  What is the predicate selectivity of the
+      best plan?  What is the estimated cardinality?
+<< 9 >>
+
+   c. Run the tool on query (iii).  What is the predicate selectivity of the
+      best plan?  What are the individual selectivities of the two predicates?
+      What is the estimated cardinality?
+<< 42 >>
+
+   d. What range would you have expected the estimated cardinality of query
+      (iii) to be in, if all you were given was the estimates for queries (i)
+      and (ii)?
+<< 50 .. 59 >>
+
+
+
+13. << type 2 question: levels 0 and 1 >>
+
+   Open Catalog B, then run the tool on the following query and answer the
+   following questions.
+
+        select * from job
+        where jno < 100
+
+   a. Find the "best" plan.  Which access method does this plan use?
+<< answer: the file scan >>
+
+   b. In what order would the tuples be returned by this plan?  Why?
+<< in random order, because the file scan is not ordered >>
+
+   c. Turn off pruning at level 1 by double clicking the RIGHT mouse button on
+      the box to the left of the level 1 plans (the box says: 1 / Plan:job /
+      pruning:on).  Then compare the cost formulas for the four plans.  Explain
+      for each plan why the cost formula is correct.  That is, describe the
+      algorithm implied by the cost formula, and explain why the algorithm
+      chosen for each plan is applicable.
+
+
+
+14. << type 2 question: show difference between kinds of joins >>
+
+   Open Catalog B, then answer the following questions referring to these
+   queries:
+
+     (i)   select ename, dname from emp, dept, job
+           where emp.dno = dept.dno and emp.jno = job.jno
+             and dept.dname = job.jname
+
+     (ii)  select ename, dname from emp, dept, job
+           where emp.dno = dept.dno and emp.jno = job.jno
+             and dept.dname < job.jname
+
+   a. Run query (i).  Describe the best plan: list the joins and access methods
+      it uses, and the order in which the relations are joined.
+<< 2 index nested loops >>
+
+   b. Now run query (ii).  Describe the best plan as in part a.
+<< page-oriented nested loops joining job and dept, hash join for emp >>
+
+   c. Why would changing the last comparison from = to < make such a big
+      difference in the structure of the best plan?

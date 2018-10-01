@@ -1,0 +1,513 @@
+
+\documentstyle{article}
+
+\addtolength{\oddsidemargin}{-0.75in}
+\setlength{\textwidth}{6.25in}
+
+
+\font\bigheadfont=cmss12 at 12truept
+\font\medheadfont=cmss10 at 10truept
+\font\smallheadfont=cmssq8 at 8truept
+
+\def\uwhead{{\vglue -\voffset \vglue -2.1truecm
+\bigheadfont\centerline{UNIVERSITY OF WISCONSIN--MADISON}
+\medheadfont\baselineskip=.43truecm\centerline{COMPUTER SCIENCES DEPARTMENT}
+\vskip.15truecm
+\centerline{CS 564:  DATABASE MANAGEMENT SYSTEMS}
+\bigheadfont\baselineskip=1.2em \vskip.25truecm
+\centerline{Assignment 7:  Relational Query Optimization}
+\centerline{Due: ? day, May ? , 1996, 5 p.m.}
+\medheadfont \vskip .2 truecm
+\centerline{Instructor:  Raghu Ramakrishnan}
+\vskip .2truecm}}
+
+\def\endash{{\the\textfont0--}} %% Need these because PostScript fonts do not
+\def\emdash{{\the\textfont0---}}%% make these dashes join together.
+\renewcommand{\baselinestretch}{1.2}
+\begin{document}
+
+\uwhead
+
+\section{Introduction}
+
+In this assignment, you will carry out a number of exercises involving
+the optimization of relational queries using the Minibase optimizer
+and visualization tool.  You will not have to write any code, and
+your answers should be turned in as a text file.
+
+\section{Available Documentation}
+
+The chapter on optimization and the lecture transparencies
+should provide all the background information that you need
+on query optimization.
+The tool itself has an on-line {\em help} feature, and additional
+information is included in this handout as part of exercise 
+descriptions.
+
+
+\section{Getting Started}
+
+See the 564 web page, under ``What's New,'' for specific instructions
+on how to run the optimizer visualization tool.
+
+These exercises are based on two catalogs, A and B, which are located in files
+{\em catalogA} and {\em catalogB}.  Each exercise says which catalog to use.  
+The first
+step of each exercise should be to open the appropriate catalog, which you do
+by choosing {\em Open} from the {\em Optimizer Catalogs} menu of the 
+vizualization tool.
+
+
+The two catalogs are based on the same schema.  There are three
+relations, {\em Emp, Dept}, and {\em Job}, which represent employees,
+departments, and job titles of some organization.  Each of these
+relations has an integer field which is used as the primary key for
+the relation---{\em empid} for the {\em Emp} relation, {\em dno} for
+the {\em Dept} relation, and {\jno} for the {\em Job} relation.  The
+{\em Emp} relation has foreign keys referring to {\em Dept} and {\em
+Job}, representing each employee's department and job title, and the
+{\em Dept} relation has a foreign key referring to {\em Emp},
+representing the department's manager.
+
+\section{The Exercises}
+
+\begin{enumerate}
+%1. << type 1 question >>
+\item
+This question gets you to explore ``Level 0'' of the optimizer visualization
+display.  This level shows all the access methods for each relation involved
+in the query.  If you double-click the LEFT mouse button on one of these
+access method boxes, you can also see a list of the relation's attributes
+with the range of values each attribute takes on.
+
+Open Catalog A and run the tool on the following query.  
+\begin{quote}
+        SELECT * FROM job\\
+        WHERE jname = "Boss"
+\end{quote}
+
+Answer the following questions, looking at level 0 access methods.
+\begin{enumerate}
+\item
+What are the attributes of the {\em Job} relation?
+\item
+How many tuples are in the {\em Job} relation?
+\item
+How many different values of the {\em jname} attribute are there in
+the {\em Job} relation?
+\item
+What is the largest job ID number held by any employee?
+\end{enumerate}
+
+
+\item
+%2. << type 1 question >>
+
+Level 1 of the optimizer visualization tool shows plans that consist of
+walking a single relation using one of the access methods defined for that
+relation.  If you double-click the LEFT mouse button on a level 1 plan (and
+higher levels too), its box expands to show you more detailed information
+about the plan and the estimates made about it.
+
+Use the same catalog, Catalog A, and the following query:
+\begin{quote}
+        SELECT * FROM emp\\
+        WHERE ename = "Doe"
+\end{quote}
+
+Answer the following questions, looking at level 1 plans.
+\begin{enumerate}
+\item
+What is the estimated total cost of running the (estimated) best plan?
+\item
+What is the sorting cost associated with
+this plan?  What would the sort cost be for {\em any}
+plan for this query?
+\item
+What is the estimated result cardinality for this plan?
+\item
+The estimated result cardinality is the number of employees that the
+optimizer estimates are named "Doe".  Given your knowledge about
+the number of different {\em ename} values (see earlier exercise),
+is the estimate the optimizer makes a reasonable one? Explain very briefly.
+\end{enumerate}
+
+
+\item
+%3. << type 1 question: levels 0 and 1 >>
+If you double-click the RIGHT mouse button on a Level 1 node 
+(similarly, for higher
+level nodes), the tool opens a separate window and displays the entire plan 
+denoted by that node.
+
+
+Use the same catalog, Catalog A, and the same query as before:
+\begin{quote}
+        SELECT * FROM emp\\
+        WHERE ename = "Doe"
+\end{quote}
+
+Once again, open Catalog A and run this same query as in questions 1 and 2.
+Answer the following questions, looking at both Level 1 plans and 
+Level 0 access methods.
+\begin{enumerate}
+\item
+Find the (estimated) best plan.  Which access method does this plan use?
+%<< answer: the ename index >>
+\item
+In what order would the tuples be returned by this plan?  Why?
+%<< in ename order, because the index is ordered >>
+\item
+Disable the access method used by the best plan by double-clicking the
+RIGHT mouse button on its Level 0 box.  (The box will then be displayed
+in gray, on a color monitor.)  Which access method does the optimizer
+consider to be the best now?
+%<< answer: the file scan >>
+\item
+Compare the new best plan with the other plans still shown.  What is it
+about the way the best plan accesses tuples that makes it substantially
+cheaper than the others?
+%<< answer: the file scan reads many tuples per page, while the other indexes read a page per tuple >>
+\end{enumerate}
+
+
+\item
+%4. << type 2 question: show understanding of the difference between levels 0 and 1 >>
+
+Open Catalog A, and run the tool on the following query.
+\begin{quote}
+        SELECT * FROM job\\
+        WHERE jno < 1500
+\end{quote}
+
+Answer the following questions.
+\begin{enumerate}
+\item
+How many Job tuples does the optimizer think there are?  Where on
+the tool's display is this information shown?
+\item
+How many jobs whose number is less than 1500 does the optimizer
+think there are?  Where on the display does this appear?
+\item
+How does the optimizer arrive at its estimate of the number of
+jobs whose number is less than 1500?  That is, what calculations
+does it perform, and where does the supporting data come from?
+\item
+Open Catalog B, then run the same query against this catalog.  {\em (WARNING:
+opening the new catalog does NOT automatically re-run the current query.
+You must re-run the query manually.)}  What is the new estimate of the
+number of jobs whose number is less than 1500?  Why is it
+different from before?
+%<< answer: the range and number of jobs is different in this catalog >>
+\end{enumerate}
+
+
+\item
+%6. << type 2 question: show difference between levels 1 and 2 >>
+
+Open Catalog A, and run the tool on this query. 
+\begin{quote}
+        SELECT ename, dname FROM emp, dept\\
+        WHERE emp.dno = dept.dno AND emp.jno < 50
+\end{quote}
+
+Answer the following
+questions, looking at the best plan.
+\begin{enumerate}
+\item
+What kind of join is the best plan?
+%<< index nested loops >>
+\item
+How many tuples does the optimizer estimate it will retrieve from the
+Employee relation?  At what level is this information shown?
+\item
+Why are the Primary Predicate Selectivity and Predicate Selectivity the
+same at this node (the same node as in the previous question)?
+\item
+What calculation does the optimizer do to arrive at the selectivity
+estimate for this node?  Where does the underlying information come from?
+\item
+How much memory does the optimizer estimate it will take to retrieve the
+tuples needed from the Employee relation?
+\item
+How much memory does the optimizer estimate it will it take to run the
+whole query?
+\end{enumerate}
+
+
+\item
+%5. << type 1 question >>
+
+Levels 2 and higher of the optimizer tool show the result of joining a
+lower-level plan with an access method.  If you double-click the RIGHT mouse
+button on a Level 2 plan, the tool opens a window showing the lower-level
+plans and access methods that this plan is made up of.
+
+Open Catalog A, and run the following query.
+\begin{quote}
+        SELECT * FROM emp, dept\\
+        WHERE emp.dno = dept.dno
+\end{quote}
+
+Answer the following
+questions looking at Level 2 plans.  (NOTE: be sure not to confuse LEVEL 2
+with the line NUMBERED 2.  The NUMBER of the line of plans you are to look
+at is 3, the top line of the display.)
+\begin{enumerate}
+\item
+What kind of join is the best plan?
+\item
+What is the estimated total cost of running this plan?
+\item
+How many tuples does the optimizer estimate will result from this query?
+\item
+How big are the tuples that result from this query?  (i.e., how many
+bytes does each tuple occupy?)
+\item
+How many pages will be filled by the result tuples?
+\item
+What access methods does the best plan use?
+\end{enumerate}
+
+
+\eat{RR let's omit this one too ...
+\item
+%13. << type 2 question: levels 0 and 1 >>
+
+   Open Catalog B, then run the tool on the following query and answer the
+   following questions.
+
+        select * from job
+        where jno < 100
+
+   a. Find the "best" plan.  Which access method does this plan use?
+<< answer: the file scan >>
+
+   b. In what order would the tuples be returned by this plan?  Why?
+<< in random order, because the file scan is not ordered >>
+
+   c. Turn off pruning at level 1 by double clicking the RIGHT mouse button on
+      the box to the left of the level 1 plans (the box says: 1 / Plan:job /
+      pruning:on).  Then compare the cost formulas for the four plans.  Explain
+      for each plan why the cost formula is correct.  That is, describe the
+      algorithm implied by the cost formula, and explain why the algorithm
+      chosen for each plan is applicable.
+
+end eat
+}
+
+
+\item
+%14. << type 2 question: show difference between kinds of joins >>
+
+Open Catalog B, then answer the following questions referring to these
+queries:
+\begin{quote}
+     SELECT ename, dname FROM emp, dept, job\\
+     WHERE emp.dno = dept.dno AND emp.jno = job.jno\\
+             AND dept.dname = job.jname
+\end{quote}
+\begin{enumerate}
+\item
+Run this query and describe the best plan: list the joins and access methods
+it uses, and the order in which the relations are joined.
+%<< 2 index nested loops >>
+\item
+Modify the query by replacing the last `=' (comparing names) with `$<$', and
+optimize it again.  Describe the best plan.
+%<< page-oriented nested loops joining job and dept, hash join for emp >>
+\item
+Explain why there is such a big difference in the plans produced for the query
+and for its (slightly) modified version.
+\end{enumerate}
+
+
+\item
+%8. << type 2 question: how index-only plans work >>
+
+>From the {\em Switches} menu it is possible to disable {\em index-only} plans.  
+If such plans are disabled, the optimizer will only generate plans that
+always retrieve tuples from the underlying relation, without checking to
+see if the index search key (and therefore the data entries in the index)
+contain all necessary information.
+
+Run the tool on the following query, which lists the number of employees that
+hold each job if that number is greater than 5.  Use Catalog A.
+\begin{quote}
+	SELECT jno, count(*) FROM emp\\
+	GROUP BY jno\\
+	HAVING count(*) > 5
+\end{quote}
+
+\begin{enumerate}
+\item
+Why is this query a candidate for an index-only plan?
+\item
+What is the estimated cost of this query when index-only plans are allowed?
+\item
+You can infer the algorithm that the optimizer assumes by the cost
+formula it displays.  Describe the algorithm assumed by the optimizer for
+the best plan when index-only plans are allowed.
+%RR We should find a way to make this explicit in the displayed plan.
+\item
+What is the cost of this query when index-only plans are disallowed?
+\item
+Describe the algorithm assumed by the optimizer for the best plan when
+index-only plans are disallowed.
+\end{enumerate}
+
+
+\item
+%9. << type 3 question: modify a query to get a result >>
+
+Run the following query using Catalog A.
+\begin{quote}
+	SELECT * FROM emp, dept\\
+	WHERE emp.dno = dept.dno AND emp.jno < 500
+\end{quote}
+
+\begin{enumerate}
+\item
+Find the largest number such that replacing the 500 with it in the above
+query makes the best plan into an Index Nested Loops join with a file
+scan for the {\em Emp} table.
+\item
+Find the largest number such that replacing the 500 with it makes the
+best plan into an Index Nested Loops join using the index on the {\em jno}
+column of the {\em Emp} table.
+\item
+Repeat the previous two questions using Catalog B.
+%<< This time, the two numbers are right next to each other >>
+\end{enumerate}
+
+
+\item
+%7. << type 3 question: differences between different join methods >>
+
+>From the {\em Switches \/ Toggle Joins} menu of the optimizer visualization tool,
+you can disable and re-enable the different kinds of joins that the
+optimizer will consider.
+
+Also, if you double-click the RIGHT mouse button on the box that labels any
+row of the tool's display, you will turn off (and back on) the pruning of plans
+that the optimizer estimates are not the `least expensive'.  (Remember that
+for each subset of relations, for each ordering of generated tuples,
+only the least cost plan is retained.  The toggling referred to here
+controls this pruning; it should be used with care since the number
+of retained plans can increase rapidly without pruning!)
+
+Run the following variant of the query from the previous
+exercise, using Catalog A as before.  
+\begin{quote}
+        SELECT ename, dname FROM emp, dept\\
+        WHERE emp.dno = dept.dno AND emp.jno < 500
+\end{quote}
+
+Now suppose you knew that the run-time environment for this query
+was limited to 10 pages of memory.  Find the best (left-deep) plan that fits
+this requirement and describe its join method, access methods, and total cost.
+%   << answer: index nested loops.  you find this by turning off sort-merge and hash joins. >>
+
+
+\item
+%10. << type 3 question: modify a catalog to get a particular result >>
+
+Consider the following query, as run against Catalog B.  The query lists the
+number of employees hired before their manager for each of the first 100 departments.
+\begin{quote}
+	SELECT M.ename, M.empid, count(*)\\
+	FROM emp E, emp M, dept D
+	WHERE E.dno = D.dno AND D.mgrid = M.empid
+		AND E.dno <= 100 AND E.empid < M.empid
+	GROUP BY M.empid, M.ename
+
+\begin{enumerate}
+\item
+Why does the best plan not use the index on {\em E.dno}?
+%<< because it is unordered, so ``dno<=100'' can't readily be determined from
+%   that index.  Also, you need other values from the tuple, so the other
+%   reason it might be of benefit, index-only, doesn't apply >>
+%RR above explanation is incomplete, at best --- LB: how about now?
+\item
+Make a copy of Catalog B and modify your copy so that the best plan
+uses an index on {\em E.dno} when run against your modified catalog.
+%<< make the dno index into a btree >>
+\item
+Find one single access method such that, when you disable it, the best
+plan uses only file scans.
+%<< the M.empid index is the one >>
+\end{enumerate}
+
+\eat{RR: let's think this one over ...
+\item
+
+\item
+%11. << type 1 question >>
+
+Open Catalog B, then run the tool on the following query and answer the
+following questions.
+\begin{auote}
+        SELECT * FROM job\\
+        WHERE jno < 100
+\end{quote}
+
+\begin{enumerate}
+\item
+How many leaf pages are there in the index on the {\em jdesc} attribute?
+\item
+How many leaf pages are there in the index on the {\em jname} attribute?
+\item
+What can you infer about the relative sizes of the {\em jdesc} and {\em jname}
+attributes?
+\item
+What is the last (alphabetically) job name described in the {\em Job} relation?
+\end{enumerate}
+
+
+%12. << type 1 question >>
+
+   Open Catalog B, then answer the following questions referring to these
+   queries:
+
+    (i)   select jname from job
+          where jno < 101
+
+    (ii)  select jname from job
+          where jname >= "B" and jname < "C"
+
+    (iii) select jname from job
+          where jno < 101 or (jname >= "B" and jname < "C")
+
+
+   a. Run the tool on query (i).  What is the predicate selectivity of the best
+      plan?  What is the estimated cardinality?
+<< 50 >>
+
+   b. Run the tool on query (ii).  What is the predicate selectivity of the
+      best plan?  What is the estimated cardinality?
+<< 9 >>
+
+   c. Run the tool on query (iii).  What is the predicate selectivity of the
+      best plan?  What are the individual selectivities of the two predicates?
+      What is the estimated cardinality?
+<< 42 >>
+
+   d. What range would you have expected the estimated cardinality of query
+      (iii) to be in, if all you were given was the estimates for queries (i)
+      and (ii)?
+<< 50 .. 59 >>
+
+end of eat
+}
+
+\end{enumerate}
+
+\section{What to Turn In, and When}
+
+Mail a text version of your answers to the TAs.
+The assignment is due at 5PM on December ? .  The solution will be made
+public after that time,  and solutions turned  in after that time will
+{\bf not} receive any credit.   So make sure to  turn in whatever  you
+have at that time.
+
+\end{document}

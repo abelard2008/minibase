@@ -1,0 +1,65 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!Converted with LaTeX2HTML 95 (Thu Jan 19 1995) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds >
+<HEAD>
+<TITLE>4.1 Log Sequence Numbers</TITLE>
+</HEAD>
+<BODY>
+<meta name="description" value="4.1 Log Sequence Numbers">
+<meta name="keywords" value="main">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+<P>
+ <BR> <HR><A NAME=tex2html98 HREF="node6.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html96 HREF="node4.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html90 HREF="node4.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html99 HREF="node6.html">4.2 Log records</A>
+<B>Up:</B> <A NAME=tex2html97 HREF="node4.html">4 Log Manager Interface</A>
+<B> Previous:</B> <A NAME=tex2html91 HREF="node4.html">4 Log Manager Interface</A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00041000000000000000>4.1 Log Sequence Numbers</A></H2>
+<P>
+<A NAME=subsectioninterfacelsn>&#160;</A>
+<P>
+Every log record is assigned a unique Log Sequence Number (LSN).
+There must be a way to create unique LSNs.  Also, the recovery
+subsystem will supply an LSN and expect the log manager to read the
+corresponding log record.  Thus, LSNs must encode some notion of
+position within the log.
+<P>
+	The functionality for creating and using LSNs is provided by
+<tt> class lsn_t</tt> (header file: <tt> lsn.h</tt>).  The default
+constructor of this class initializes the LSN to an invalid LSN.  An
+invalid LSN is one that can be uniquely detected and does not denote
+any valid position in the log.  It is very useful for error returns.
+For ease of use, <tt> lsn.h</tt> declares a constant LSN called <tt>
+invalid_lsn</tt> that can be used wherever an invalid LSN is required.
+<P>
+	<tt> Class lsn_t</tt> provides methods for setting and retrieving
+the individual parts of an LSN.  The methods for setting the LSN are
+<tt> private</tt> so that unintentional modification of the LSN by
+external code is prevented.  <tt> Operator <b>&lt;&lt;</b></tt> has been overloaded
+to recognize LSNs and output them in a human-readable form.
+<P>
+	The recovery subsystem needs a way to compare LSNs for
+equality.  It also needs to be able to decide whether the page LSN
+field of a page is less than the log record's LSN to determine whether
+to redo an update.  <tt> Class lsn_t</tt> overloads the operators <tt>
+==</tt>, <tt> !=</tt>, <tt> <b>&lt;</b></tt>, <tt> <b>&gt;</b></tt>, <tt> <b>&lt;=</b></tt>, and <tt> <b>&gt;=</b></tt> to
+handle this.  While invalid LSNs can be compared against other LSNs
+for equality and inequality, they cannot be meaningfully compared
+using any of the other comparison operators.
+<P>
+	<tt> Class log</tt> is a <tt> friend</tt> of <tt> class lsn_t</tt> so
+that it can manipulate LSNs in anyway it wants.  The log manager sets
+the LSN for every log record written and hence, needs to be able to
+access the methods that set the various parts of an LSN.
+<P>
+<BR> <HR><A NAME=tex2html98 HREF="node6.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html96 HREF="node4.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html90 HREF="node4.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html99 HREF="node6.html">4.2 Log records</A>
+<B>Up:</B> <A NAME=tex2html97 HREF="node4.html">4 Log Manager Interface</A>
+<B> Previous:</B> <A NAME=tex2html91 HREF="node4.html">4 Log Manager Interface</A>
+<BR> <HR> <P>
+<BR> <HR>
+<P><ADDRESS>
+ajitk@cs.wisc.edu, cjin@cs.wisc.edu
+</ADDRESS>
+</BODY>

@@ -1,0 +1,153 @@
+1
+select dno, count(*)
+from emp
+group by dno;
+9
+9
+1  -  Enter SQL
+2  -  Open Database
+3  -  Toggle Active Join Methods
+4  -  List JoinMethods
+
+9  -  Exit.:
+Query.:
+no errors.:
+start - relation access method list.:
+emp
+1
+Relation: emp
+Access Method: Unclustered B_Index on empid
+Number of Relation Pages = NP =  50
+Number of Index Leaf Pages = ILP = 23
+Number of Pages to Get to Leaf = IC = 1
+Cardinality = C = 2000
+Number of Distinct Keys = DK = 2000[
+Attributes:
+>   emp.empid  (Ascending) (Min = 0, Max = 999999999 )
+>   emp.ename (Min = A, Max = Z )
+>   emp.dno (Min = 0, Max = 999999999 )
+>   emp.jno (Min = 0, Max = 999999999 )
+>   emp.sal (Min = 0, Max = 999999999 )]
+.:
+2
+Relation: emp
+Access Method: Unclustered Hash on ename
+Number of Relation Pages = NP =  50
+Number of Pages to Get to Leaf = IC = 1
+Cardinality = C = 2000
+Number of Distinct Keys = DK = 2000[
+Attributes:
+>   emp.empid (Min = 0, Max = 999999999 )
+>   emp.ename (Min = A, Max = Z )
+>   emp.dno (Min = 0, Max = 999999999 )
+>   emp.jno (Min = 0, Max = 999999999 )
+>   emp.sal (Min = 0, Max = 999999999 )]
+.:
+3
+Relation: emp
+Access Method: Unclustered Hash on dno
+Number of Relation Pages = NP =  50
+Number of Pages to Get to Leaf = IC = 1
+Cardinality = C = 2000
+Number of Distinct Keys = DK = 2000[
+Attributes:
+>   emp.empid (Min = 0, Max = 999999999 )
+>   emp.ename (Min = A, Max = Z )
+>   emp.dno (Min = 0, Max = 999999999 )
+>   emp.jno (Min = 0, Max = 999999999 )
+>   emp.sal (Min = 0, Max = 999999999 )]
+.:
+4
+Relation: emp
+Access Method: Unclustered B_Index on jno
+Number of Relation Pages = NP =  50
+Number of Index Leaf Pages = ILP = 23
+Number of Pages to Get to Leaf = IC = 1
+Cardinality = C = 2000
+Number of Distinct Keys = DK = 2000[
+Attributes:
+>   emp.empid (Min = 0, Max = 999999999 )
+>   emp.ename (Min = A, Max = Z )
+>   emp.dno (Min = 0, Max = 999999999 )
+>   emp.jno  (Ascending) (Min = 0, Max = 999999999 )
+>   emp.sal (Min = 0, Max = 999999999 )]
+.:
+5
+Relation: emp
+Access Method: Unclustered B_Index on sal
+Number of Relation Pages = NP =  50
+Number of Index Leaf Pages = ILP = 23
+Number of Pages to Get to Leaf = IC = 1
+Cardinality = C = 2000
+Number of Distinct Keys = DK = 2000[
+Attributes:
+>   emp.empid (Min = 0, Max = 999999999 )
+>   emp.ename (Min = A, Max = Z )
+>   emp.dno (Min = 0, Max = 999999999 )
+>   emp.jno (Min = 0, Max = 999999999 )
+>   emp.sal  (Ascending) (Min = 0, Max = 999999999 )]
+.:
+6
+Relation: emp
+Access Method: FileScan
+Number of Relation Pages = NP =  50
+Cardinality = C = 2000[
+Attributes:
+>   emp.empid (Min = 0, Max = 999999999 )
+>   emp.ename (Min = A, Max = Z )
+>   emp.dno (Min = 0, Max = 999999999 )
+>   emp.jno (Min = 0, Max = 999999999 )
+>   emp.sal (Min = 0, Max = 999999999 )]
+.:
+end - access methods.:
+start - level 1
+start - row 1
+emp
+pruning: on
+23
+* Best Plan *
+  Total Cost = Cost + SortCost = 74
+  Result Cardinality = RC = PC * S = 666
+[
+From Catalog/Child Node:
+  Pre-Select Cardinality = PC = 2000
+  Primary Predicate Selectivity = PS = 1.0 
+
+Calculated in this node:
+  Predicate Selectivity = S =  S0 = 1
+  Post-Primary Cardinality = PPC = PC * PS = 2000
+  Result Cardinality = RC = PC * S = 666
+  Result Tuple Size = TS = 8
+  Page Size = PG = 1024
+  Result Number of Pages = RP = RC * (TS / PG) = 6
+  Cost  =  NP  = 50
+  Cost to Sort = RP * log(RP) = 24
+  Memory Required = MR =  2
+  Realized: False
+]
+Predicate:
+>   all (S0 = 1.0)
+
+Project on:
+>   COUNT (*) , emp.dno
+Group by:
+>   emp.dno
+Children: 6
+.:
+end - table.:
+23
+end - root list.:
+1  -  Execute
+2  -  Pruning
+3  -  Toggle Active Join Methods
+4  -  List JoinMethods
+5  -  Toggle Active Access Methods
+8  -  Recompute Plans
+
+9  -  Close Menu.:
+1  -  Enter SQL
+2  -  Open Database
+3  -  Toggle Active Join Methods
+4  -  List JoinMethods
+
+9  -  Exit.:

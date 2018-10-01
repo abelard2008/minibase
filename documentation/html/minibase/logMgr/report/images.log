@@ -1,0 +1,361 @@
+This is TeX, Version 3.1415 (C version 6.1) (format=latex 95.4.14)  13 MAY 1995 16:19
+**images.tex
+(images.tex
+LaTeX2e <1994/12/01> patch level 1
+
+(/s/tex-3.141/sun4m_412/lib/texmf/tex/latex2e/base/latex209.def
+File: latex209.def 1994/11/28 v0.39 Standard LaTeX file
+Entering LaTeX 2.09 compatibility mode.
+\footheight=\dimen102
+\@maxsep=\dimen103
+\@dblmaxsep=\dimen104
+(/s/tex-3.141/sun4m_412/lib/texmf/tex/latex2e/base/tracefnt.sty
+Package: tracefnt 1994/11/18 v2.3m Standard LaTeX package (font tracing)
+\tracingfonts=\count82
+LaTeX Info: Redefining \selectfont on input line 101.
+)
+\symbold=\mathgroup4
+\symsans=\mathgroup5
+\symtypewriter=\mathgroup6
+\symitalic=\mathgroup7
+\symsmallcaps=\mathgroup8
+\symslanted=\mathgroup9
+LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 200.
+LaTeX Font Info:    Redeclaring math alphabet \mathsf on input line 201.
+LaTeX Font Info:    Redeclaring math alphabet \mathtt on input line 202.
+LaTeX Font Info:    Redeclaring math alphabet \mathit on input line 208.
+LaTeX Info: Redefining \em on input line 218.
+(/s/tex-3.141/sun4m_412/lib/texmf/tex/latex2e/base/latexsym.sty
+Package: latexsym 1994/09/25 v2.1f Standard LaTeX package (lasy symbols)
+\symlasy=\mathgroup10
+LaTeX Font Info:    Overwriting symbol font `lasy' in version `bold'
+(Font)                  U/lasy/m/n --> U/lasy/b/n on input line 47.
+)
+LaTeX Font Info:    Redeclaring math delimiter \lgroup on input line 283.
+LaTeX Font Info:    Redeclaring math delimiter \rgroup on input line 285.
+LaTeX Font Info:    Redeclaring math delimiter \bracevert on input line 287.
+) (/s/tex-3.141/sun4m_412/lib/texmf/tex/latex2e/base/article.cls
+Document Class: article 1994/12/09 v1.2x Standard LaTeX document class
+(/s/tex-3.141/sun4m_412/lib/texmf/tex/latex2e/base/size10.clo
+File: size10.clo 1994/12/09 v1.2x Standard LaTeX file (size option)
+)
+\c@part=\count83
+\c@section=\count84
+\c@subsection=\count85
+\c@subsubsection=\count86
+\c@paragraph=\count87
+\c@subparagraph=\count88
+\c@figure=\count89
+\c@table=\count90
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+Compatibility mode: definition of \rm ignored.
+Compatibility mode: definition of \sf ignored.
+Compatibility mode: definition of \tt ignored.
+Compatibility mode: definition of \bf ignored.
+Compatibility mode: definition of \it ignored.
+Compatibility mode: definition of \sl ignored.
+Compatibility mode: definition of \sc ignored.
+LaTeX Info: Redefining \cal on input line 455.
+LaTeX Info: Redefining \mit on input line 456.
+\bibindent=\dimen105
+) (/s/tex-3.141/sun4m_412/lib/texmf/tex/latex2e/supported/a4.sty
+Package: a4 1994/03/15 1.2c A4 based page layout
+) (/s/tex-3.141/sun4m_412/lib/texmf/tex/latex209/dvips/epsf.sty
+\epsffilein=\read1
+\epsfxsize=\dimen106
+\epsfysize=\dimen107
+\epsftsize=\dimen108
+\epsfrsize=\dimen109
+\epsftmp=\dimen110
+\pspoints=\dimen111
+)
+\lthtmlwrite=\write3
+\sizebox=\box26
+(images.aux)
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 28.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 28.
+LaTeX Font Info:    Try loading font information for U+lasy on input line 28.
+(/s/tex-3.141/sun4m_412/lib/texmf/tex/latex2e/base/Ulasy.fd
+File: Ulasy.fd 1994/09/25 v2.1fLaTeX symbol font definitions
+)
+latex2htmlSize :tex2html_wrap_inline828: 3.66875pt::0.0pt.
+[1
+
+
+]
+latex2htmlSize :tex2html_wrap_inline830: 1.5139pt::2.86108pt.
+[2
+
+]
+latex2htmlSize :tex2html_wrap_inline832: 1.5139pt::2.86108pt.
+[3
+
+]
+latex2htmlSize :tex2html_wrap_inline834: 1.5139pt::2.86108pt.
+[4
+
+]
+latex2htmlSize :tex2html_wrap_inline836: 7.5pt::2.5pt.
+[5
+
+]
+latex2htmlSize :tex2html_wrap_inline838: 7.5pt::2.5pt.
+[6
+
+]
+latex2htmlSize :tex2html_wrap_inline840: 7.5pt::2.5pt.
+[7
+
+]
+latex2htmlSize :tex2html_wrap_inline842: 7.5pt::2.5pt.
+[8
+
+]
+latex2htmlSize :tex2html_wrap_inline844: 7.5pt::2.5pt.
+[9
+
+]
+latex2htmlSize :tex2html_wrap_inline846: 7.5pt::2.5pt.
+[10
+
+]
+latex2htmlSize :tex2html_wrap_inline848: 7.5pt::2.5pt.
+[11
+
+]
+latex2htmlSize :tex2html_wrap_inline850: 7.5pt::2.5pt.
+[12
+
+]
+latex2htmlSize :tex2html_wrap_inline852: 7.96227pt::0.0pt.
+[13
+
+]
+latex2htmlSize :tex2html_wrap_inline854: 7.96227pt::0.0pt.
+[14
+
+]
+Overfull \hbox (144.54001pt too wide) in paragraph at lines 104--106
+[][]
+ []
+
+
+Overfull \hbox (144.54001pt too wide) in paragraph at lines 108--109
+[][] 
+ []
+
+[15]
+latex2htmlSize :tex2html_wrap_inline868: 7.5pt::2.5pt.
+[16
+
+
+]
+latex2htmlSize :tex2html_wrap_inline870: 7.5pt::2.5pt.
+[17
+
+]
+latex2htmlSize :tex2html_wrap_inline872: 6.44444pt::0.83333pt.
+[18
+
+]
+Overfull \hbox (144.54001pt too wide) in paragraph at lines 133--135
+[][]
+ []
+
+
+Overfull \hbox (144.54001pt too wide) in paragraph at lines 137--138
+[][] 
+ []
+
+[19]
+latex2htmlSize :tex2html_wrap_inline874: 7.5pt::2.5pt.
+[20
+
+
+]
+latex2htmlSize :tex2html_wrap_inline876: 6.44444pt::0.83333pt.
+[21
+
+]
+latex2htmlSize :tex2html_wrap_inline878: 7.5pt::2.5pt.
+[22
+
+]
+latex2htmlSize :tex2html_wrap_inline880: 6.44444pt::0.0pt.
+[23
+
+]
+latex2htmlSize :tex2html_wrap_inline882: 3.66875pt::0.0pt.
+[24
+
+]
+latex2htmlSize :tex2html_wrap_inline888: 1.5139pt::2.86108pt.
+[25
+
+]
+latex2htmlSize :tex2html_wrap_inline890: 1.5139pt::2.86108pt.
+[26
+
+]
+latex2htmlSize :tex2html_wrap_inline892: 1.5139pt::2.86108pt.
+[27
+
+]
+latex2htmlSize :tex2html_wrap_inline894: 1.5139pt::2.86108pt.
+[28
+
+]
+latex2htmlSize :tex2html_wrap_inline896: 1.5139pt::2.86108pt.
+[29
+
+]
+latex2htmlSize :tex2html_wrap_inline892: 1.5139pt::2.86108pt.
+[30
+
+]
+latex2htmlSize :tex2html_wrap_inline894: 1.5139pt::2.86108pt.
+[31
+
+]
+latex2htmlSize :tex2html_wrap_inline896: 1.5139pt::2.86108pt.
+[32
+
+]
+Overfull \hbox (144.54001pt too wide) in paragraph at lines 224--226
+[][]
+ []
+
+
+Overfull \hbox (144.54001pt too wide) in paragraph at lines 228--229
+[][] 
+ []
+
+[33]
+latex2htmlSize :tex2html_wrap_inline898: 1.5139pt::2.86108pt.
+[34
+
+
+]
+latex2htmlSize :tex2html_wrap_inline900: 1.5139pt::2.86108pt.
+[35
+
+]
+latex2htmlSize :tex2html_wrap_inline902: 1.5139pt::2.86108pt.
+[36
+
+]
+latex2htmlSize :tex2html_wrap_inline904: 1.5139pt::2.86108pt.
+[37
+
+]
+latex2htmlSize :tex2html_wrap_inline906: 1.5139pt::2.86108pt.
+[38
+
+]
+latex2htmlSize :tex2html_wrap_inline908: 1.5139pt::2.86108pt.
+[39
+
+]
+latex2htmlSize :tex2html_wrap_inline910: 1.5139pt::2.86108pt.
+[40
+
+]
+latex2htmlSize :tex2html_wrap_inline912: 1.5139pt::2.86108pt.
+[41
+
+]
+latex2htmlSize :tex2html_wrap_inline914: 1.5139pt::2.86108pt.
+[42
+
+]
+latex2htmlSize :tex2html_wrap_inline916: 1.5139pt::2.86108pt.
+[43
+
+]
+latex2htmlSize :tex2html_wrap_inline918: 1.5139pt::2.86108pt.
+[44
+
+]
+latex2htmlSize :tex2html_wrap_inline920: 6.94444pt::1.94443pt.
+[45
+
+]
+latex2htmlSize :tex2html_wrap_inline922: 1.5139pt::2.86108pt.
+[46
+
+]
+latex2htmlSize :tex2html_wrap_inline924: 1.5139pt::2.86108pt.
+[47
+
+]
+latex2htmlSize :tex2html_wrap_inline926: 1.5139pt::2.86108pt.
+[48
+
+]
+latex2htmlSize :tex2html_wrap_inline928: 1.5139pt::2.86108pt.
+[49
+
+]
+latex2htmlSize :tex2html_wrap_inline930: 1.5139pt::2.86108pt.
+[50
+
+]
+latex2htmlSize :tex2html_wrap_inline932: 1.5139pt::2.86108pt.
+[51
+
+]
+latex2htmlSize :tex2html_wrap_inline934: 1.5139pt::2.86108pt.
+[52
+
+]
+latex2htmlSize :tex2html_wrap_inline936: 1.5139pt::2.86108pt.
+[53
+
+]
+latex2htmlSize :tex2html_wrap_inline938: 1.5139pt::2.86108pt.
+[54
+
+]
+latex2htmlSize :tex2html_wrap_inline940: 1.5139pt::2.86108pt.
+[55
+
+]
+Overfull \hbox (144.54001pt too wide) in paragraph at lines 346--348
+[][]
+ []
+
+
+Overfull \hbox (144.54001pt too wide) in paragraph at lines 350--351
+[][] 
+ []
+
+[56] (images.aux)
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+ ) 
+Here is how much of TeX's memory you used:
+ 475 strings out of 10950
+ 5466 string characters out of 73414
+ 47171 words of memory out of 262141
+ 3331 multiletter control sequences out of 9500
+ 9298 words of font info for 35 fonts, out of 100000 for 255
+ 14 hyphenation exceptions out of 607
+ 19i,4n,19p,502b,193s stack positions out of 300i,40n,60p,3000b,4000s
+
+Output written on images.dvi (56 pages, 5496 bytes).

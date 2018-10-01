@@ -1,0 +1,205 @@
+
+\documentstyle{article}
+
+\addtolength{\oddsidemargin}{-0.75in}
+\setlength{\textwidth}{6.25in}
+
+
+\font\bigheadfont=cmss12 at 12truept
+\font\medheadfont=cmss10 at 10truept
+\font\smallheadfont=cmssq8 at 8truept
+
+\def\uwhead{{\vglue -\voffset \vglue -2.1truecm
+\bigheadfont\centerline{UNIVERSITY OF WISCONSIN--MADISON}
+\medheadfont\baselineskip=.43truecm\centerline{COMPUTER SCIENCES DEPARTMENT}
+\vskip.15truecm
+\centerline{CS 564:  DATABASE MANAGEMENT SYSTEMS}
+\bigheadfont\baselineskip=1.2em \vskip.25truecm
+\centerline{Relational Query Optimization}
+\medheadfont \vskip .2 truecm
+\centerline{Instructor:  Raghu Ramakrishnan}
+\vskip .2truecm}}
+
+\def\endash{{\the\textfont0--}} %% Need these because PostScript fonts do not
+\def\emdash{{\the\textfont0---}}%% make these dashes join together.
+\renewcommand{\baselinestretch}{1.2}
+\begin{document}
+
+\uwhead
+
+\section{Introduction}
+
+The following exercises will serve as a starting point for understanding
+query plan selection and optimization on relations whose indexes are
+composed of an {\em ordered} sequence of a subset of the fields of that
+relation---we will simply such indexes {\em multi-column}.
+
+As before, you will not have to write any code, and your answers should
+be turned in as a text file.  Please be brief with your answers (a single
+line of prose should be sufficient in almost all cases).
+
+
+\section{Getting Started}
+
+See the 564 web page, under ``What's New,'' for specific instructions
+on how to run the optimizer visualization tool.
+
+All of the following exercises are based on the catalog D which is located
+in the file {\em catalogD}.  Once you have opened this catalog, you can
+use it for all of the multi-column index exercises.
+
+The first thing you should do is to take a look at the catalog file
+{\em catalogD}.  Note that it is much more complicated than the simple
+{\em catalogA} and {\em catalogB} files.  This is because {\em catalogD}
+can be used in a realistic database---the special relations {\em relcat},
+{\em attrcat} and {\em indcat} allow the catalog to describe itself and
+the rest of the relations in the database.  However, you will not be
+using any of these special relations in this exercise.
+
+The second thing you should note is the way multi-column indexes are
+specified---via the use of percent signs.  The order in which the field
+names are specified is also important (and this will be demonstrated in
+the exercises).
+
+\section{The Relations}
+
+CatalogD has five incarnations of the well-known and widely-used {\em emp}
+relation.  Each of the Emp relations has its indexes built on either two
+or three of its fields ({\em ename}, {\em title} and {\em dname}).
+
+
+\section{The Exercises}
+
+\begin{enumerate}
+%1. << Simple Query >>
+\item
+This question gets you to explore what query plans are produced when
+your query does not use all of the columns of a multi-column index, and when
+your query does use all the fields.
+
+Type in the following query.  
+\begin{quote}
+        SELECT * FROM emp1\\
+        WHERE ename = "Dilbert"
+\end{quote}
+
+Answer the following questions looking at Level 1 plans.
+\begin{enumerate}
+\item
+What query plans are produced for this query?
+\item
+What would be the cost of executing the query?
+\item
+What fields of the relation are used in the query plan?
+\end{enumerate}
+
+Now type in the following query.
+\begin{quote}
+        SELECT * FROM emp1\\
+        WHERE ename = "Dilbert" AND title = "Bozo"
+\end{quote}
+
+Answer the following questions looking at Level 1 plans.
+\begin{enumerate}
+\item
+What query plans are produced for this query?
+\item
+What would be the cost of executing the query?
+\item
+What fields of the relation are used in the query plan?
+\end{enumerate}
+
+
+\item
+%2. << Index-Only Query >>
+
+In the previous question, the queries we used selected the entire tuple
+from the relation.  However, if our {\em select} clause projected only
+those fields which are already a part of the index, then the query does
+not need to access the datapages of the relation.  This question gets you
+to explore how the query plans and their costs change when you specify
+index-only queries.
+
+This question also demonstrates the importance of column-order in the
+search key of a multi-column index.
+
+Type in the following query.
+\begin{auote}
+        SELECT ename, title FROM emp4\\
+        WHERE dname = "Programming" AND ename = "Dogbert"
+\end{quote}
+
+Answer the following questions looking at Level 1 plans.
+\begin{enumerate}
+\item
+What query plans are produced for this query?
+\item
+What would be the cost of executing the query?
+\end{enumerate}
+
+Now type in the following query.
+\begin{auote}
+        SELECT ename, title FROM emp4\\
+        WHERE dname = "Programming" AND title = "Hacker"
+\end{quote}
+
+Answer the following questions looking at Level 1 plans.
+\begin{enumerate}
+\item
+What query plans are produced for this query?
+\item
+What would be the cost of executing the query?
+\item
+Is there any effect of specify different columns in the query plans
+and cost?
+\end{enumerate}
+
+
+\item
+%3. << Sorting Query >>
+
+This question gets you to explore the difference between queries that
+require sorting or not.
+
+Type in the following query.
+\begin{quote}
+        SELECT title, count(*) FROM emp3\\
+        GROUP BY title
+\end{quote}
+
+Answer the following questions, looking at level 1 plans.
+\begin{enumerate}
+\item
+Is the query plan index-only?  What indexes are used?
+\item
+Is there a primary predicate?
+\item
+Is sorting required?
+\end{enumerate}
+
+Now type in the following query.
+\begin{quote}
+        SELECT title, count(*) FROM emp1\\
+        GROUP BY title
+\end{quote}
+
+Answer the following questions, looking at level 1 plans.
+\begin{enumerate}
+\item
+Is the query plan index-only?  What indexes are used?
+\item
+Is there a primary predicate?
+\item
+Is sorting required?
+\end{enumerate}
+
+\end{enumerate}
+
+\section{What to Turn In, and When}
+
+Mail a text version of your answers to the TAs.  The solution will be
+made public after that time,  and solutions turned  in after that time
+will {\bf not} receive any credit.   So make sure to  turn in whatever
+you have at that time.
+
+\end{document}

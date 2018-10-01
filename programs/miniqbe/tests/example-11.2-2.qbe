@@ -1,0 +1,2 @@
+setComment {Select *}
+addRelationTable {Sailors P.} {sid {}} {sname {}} {rating 10} {age {}}

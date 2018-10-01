@@ -1,0 +1,76 @@
+<HTML>
+<HEAD>
+<TITLE>Multi-User Minibase</TITLE>
+</HEAD>
+<body background = "../pics/fiber.gif">
+
+<BODY>
+
+<CENTER>
+<H1>Modules of the Multi-User System</H1>
+</center>
+
+<b>THIS DOCUMENT IS BEING WRITTEN.... 5/21, Ranjani. </b>
+<p>
+The Buffer Manager takes care of 
+
+
+<P>
+
+<CENTER>
+<H1>The Multi-User Model</H1>
+<A HREF="query.gif"><IMG SRC="query.gif"></A>
+</CENTER>
+
+The figure above describes the Minibase modules.
+<P>
+The Minibase server instantiates the shared memory area. This shared
+memory area contains the buffer pool, lock table, transaction table
+and the log tail. Varying levels of granularity exist for access to
+the shared components. Semaphores ( acting as latches ) ensure
+consistency. On startup, the server executes a  restart operation 
+initially, to ensure that the system is a consistent state. The server
+keeps track of the number of clients in the system and needs to be
+explicitly shut down. At server shutdown, the buffer pool is flushed
+to disk, all semaphores and shared memory is destroyed and the database
+is left in a consistent state.
+
+<P>
+Every client attaches itself to the shared memory region .i.e. it
+obtains pointers to the objects in shared memory. The client also
+instantiates pointers to other global objects which operate in its
+own space: for example, pointers to the DB object, catalogs, recovery
+manager and the lock manager.
+
+<P>
+The <a href="single_user.html"> Query Evaluation </a>
+path is identical in both single and multi user versions except
+that in the multi user version, log records are written before any
+updates to disk, latches and locking is used to maintain the consistency
+of the database. During the <b> normal mode </b> of operation, the
+RDBMS system merely executes queries from the user.
+The RDBMS system functions in the <b> recovery mode</b> when the
+system is restarted after a crash.
+
+<IMG SRC="../pics/hline.gif">
+<BR>
+
+<A HREF="design.html"><B>Next Page of Overview</B></A><BR>
+<A HREF="../minibase.html">Click here to go the Minibase Home Page</A>
+
+<IMG SRC="../pics/hline.gif">
+<BR>
+
+<ADDRESS>
+<a HREF="http://www.cae.wisc.edu/~ranjani/homepage.html"> Ranjani Ramamurthy</a>
+<A HREF="http://www.cs.wisc.edu/cgi-bin/finger?ranjani@cae.wisc.edu">
+[ranjani@cae.wisc.edu]</A>
+<BR>
+</ADDRESS>
+
+</BODY>
+
+</HTML>
+
+
+

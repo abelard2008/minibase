@@ -1,0 +1,67 @@
+<BODY BGCOLOR="#FFDDDD">
+<HTML>
+<HEAD>
+<TITLE>Error Page</TITLE>
+</HEAD>
+
+<BODY>
+
+
+<H1>Error Page</H1>
+
+<IMG SRC="../hline.gif">
+<BR>
+<B><A HREF="../minibase.html">Back to the Minibase Home Page</A></B><BR>
+<B><A HREF="../project.html">Back to the Progress Page</A></B><BR>
+
+
+<H2>Old Error Conventions</H2>
+<B>Dewitt-minirel</B>: An enumerated type, <I>Status</I>, is used to
+show what error was encountered.  When errors are detected, the program 
+exits.
+<P>
+<B>Old Minibase</B>: It uses a layered approach, with Record, PageFile, Buffer
+Manager, and System layers.  An error in one layer will propogate up 
+to the higher layers.
+<P>
+<IMG SRC="../hline.gif">
+<P>
+
+<H2>Current Error Convention</H2>
+<B>Carey-minirel & Minibase</B>: A layered approach was needed, but since the possibility
+exists of different groups calling each other (DB->BufMgr->DSM), the path
+that error discovery may take is slightly confusing.  A global error class
+will log errors as they go.  Each layer (when an error is discovered)
+will enter an error into a linked list of error msgs, allowing the user
+to see where the error was first discovered and see how the error
+caused various functions to fail.
+<BR>
+The <I>Status</I> enumerated type is still used, and care must be taken
+that different groups recognize that not all Status types are actual errors.
+In some cases, Status is used to signal a condition.  In these instances, the 
+different groups must be aware of the types used so that the proper
+interpretation is made.
+<BR>
+<B><A HREF="error.public.txt">Header File</A></B>
+<BR>
+
+<IMG SRC="../hline.gif">
+<P>
+
+<H2>Possible Improvements</H2>
+<UL>
+ <LI><A HREF="../logMgr/report/node27.html#SECTION00081000000000000000">One solution</A>
+</UL>
+
+<IMG SRC="../hline.gif">
+
+<P>
+<ADDRESS>
+Bill Kimmel<br>
+<A HREF="http://www.cs.wisc.edu/cgi-bin/finger?kimmel@cs.wisc.edu">
+[kimmel@cs.wisc.edu]</A>
+</ADDRESS>
+
+
+</BODY>
+</HTML>

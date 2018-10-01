@@ -1,0 +1,60 @@
+<HTML>
+<HEAD>
+<TITLE>Planner Page</TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+
+<H1>Planner Page</H1>
+
+<IMG SRC="../pics/hline.gif">
+
+<H2>Introduction</H2>
+The task of the runtime plan interpreter is to walk the optimizer's plan tree 
+recursively and to construct a tree of 
+<A HREF="iterator.html"><B>iterators</B></A>.  An iterator is an
+an object that (naturally!) iterates over a collection of input
+tuples and produces a collection of output tuples.
+In Minibase,
+all the relational operators and access methods are 
+special cases of iterators. 
+<P>
+The planner is thus basically a "translator" from a plan tree, produced
+by the optimizer, to an iterator tree, which is the basis of runtime
+execution.
+<P>
+<IMG SRC="../pics/hline.gif">
+
+<H2>Design Decisions</H2>
+The iterator object was designed to provide a
+consistent <i>get_next</i> interface
+to link the output of one operator to another.  While scans
+of heap files are identical in task to that of a file scan iterator, scans
+of a relation using an index are different:  they must scan the index <B>and</B>
+retrieve the tuple from the heap file.  Such details can be hidden,
+when appropriate, through the use of the iterator abstraction.
+<P>
+Not all iterators are created by the planner.  Some are created by other 
+iterators.  Go to the <B><A HREF="iterator.h">iterator page</A></B> for a 
+more complete description.
+
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+Click here for the <A HREF="public.txt"><B>public interface</B></A>.
+<P> 
+<IMG SRC="../pics/hline.gif">
+<P>
+<B><A HREF="../minibase.html">Back to the Minibase Home Page</A></B><BR>
+<B><A HREF="../project.html">Back to the Progress Page</A></B><BR>
+<B><!A HREF="report.html">
+<!764 Report</A></B>
+<BR>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+
+
+</BODY>
+</HTML>

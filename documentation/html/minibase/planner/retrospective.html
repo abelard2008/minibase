@@ -1,0 +1,32 @@
+<BODY BGCOLOR="#FFDDDD">
+
+<HTML>
+<HEAD>
+<TITLE> Retrospective </TITLE>
+</HEAD>
+
+<BODY>
+
+<H1> Retrospective </H1>
+<HR>
+
+In retrospect, I think we should have built the tuple class without the
+data alignment requirements because it was causing only the problems
+and it wastes the space.
+<p>
+I could make my code more space efficient (at runtime only) if the
+List class provided the member function <tt> length </tt> that would
+return the length of the list.
+Right now, we assume that it is bigger than some predefined constant.
+<p>
+We also think that the optimizer should uniquely identify all the 
+attributes in the tree not only by name (which is string and hard
+to hash) but by unique ID.
+This way my code could be faster because I could build the hash
+table on the available attributes in each plan node and I could
+compare the attributes easily.
+
+<HR>
+
+</BODY>
+</HTML>

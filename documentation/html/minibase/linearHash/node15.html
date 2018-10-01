@@ -1,0 +1,40 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> Downward interfaces</TITLE>
+<meta name="description" value=" Downward interfaces">
+<meta name="keywords" value="report">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html205 HREF="node16.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A> <A NAME=tex2html203 HREF="node2.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A> <A NAME=tex2html199 HREF="node14.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html206 HREF="node16.html"> Internal Design</A>
+<B>Up:</B> <A NAME=tex2html204 HREF="node2.html"> External Interface</A>
+<B> Previous:</B> <A NAME=tex2html200 HREF="node14.html"> Status delete_current()</A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00023000000000000000> Downward interfaces</A></H2>
+<P>
+The downward interfaces we used in our component include: 
+<UL><LI> Status BufMgr::newPage(PageId, Page*&amp;, int = 1)
+<LI> Status BufMgr::freePage(PageId)
+<LI> Status BufMgr::pinPage(PageId, Page*&amp;)
+<LI> Status BufMgr::unpinPage(PageId,DIRTY_FLAG)
+<LI> Status DB::add_file_entry(const char*, PageId);
+<LI> Status DB::get_file_entry(const char*, PageId);
+<LI> Status DB::delete_file_entry(const char*, PageId);
+<LI> Status RecoveryMgr::WriteUpdateLog(int,PageId,int,void*,void*,Page*)
+<LI> Status lock_manager_def::lock_page(page_def,lock_type)
+<LI> Status lock_manager_def::unlock_page(page_def)
+<LI> Status lock_manager_def::upgrade_lock(page_def,lock_type)
+<LI> the constructors and destructors for the above classes
+</UL>
+<P>
+<BR> <HR>
+<P><ADDRESS>
+<I> Weiqing Huang <BR>
+Sun May 14 16:22:27 CDT 1995</I>
+</ADDRESS>
+</BODY>

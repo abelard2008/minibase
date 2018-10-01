@@ -1,0 +1,98 @@
+% This file describes the layout of the minibase catalog file.
+
+% first line
+numberofrelations
+
+% then the following repeated for each relation
+relationname numattrs card tuplesize numpages
+
+	% this repeated for each attribute of each relation
+	attrname attrid type minval maxval size offset numberOfAccessMethods
+
+		% this repeated for each access method
+		either:
+		methodName estimatedCost order 0
+		or:
+		methodName estimatedCost order 1 clus distKeys pages SelectType fileName
+
+			where SelectType is 	0 for selRange
+						1 for selExact
+						2 for selBoth
+						3 for selUndefined
+
+
+% clarification on above abbreviations :
+
+% numberofrelations
+%     number of relations in the database
+
+% relationname
+%     relation name
+
+% numattrs
+%     number of attributes for the given relation
+
+% card
+%     cardinality
+
+% tuplesize
+%     size of a tuple in bytes; equals the total of the individual
+%     attribute sizes for the relation
+
+% numpages
+%     number of pages that the relation occupies
+
+% attrname
+%     attribute name
+
+% attrid
+%     an integer identifier for the attribute, unique within the relation
+
+% type
+%     type of the attribute, T for string, I for integer, R for real
+
+% minval
+%     minimum value for the attribute
+
+% maxval
+%     maximum value for the attribute
+
+% size
+%     size of the attribute in bytes
+
+% offset
+%     byte number within the tuple where the attribute's field starts
+
+% numberOfAccessMethods
+%     number of access methods; the access methods are then listed below the
+%     attribute; an access method is for the attribute it is under
+
+% methodName
+%     access method name
+%		**NOTE** that the type of the access method is determined
+%               by the SelectType, NOT by this field.
+
+% estimatedCost
+%     estimated cost of accessing the entire relation using the given access
+%     method
+
+% order
+%     attribute order that the access method presents tuples in; A ascending;
+%     D descending; R random
+
+% clus
+%     clustered; 1 means the the access method is a clustered index; 0 means
+%     it is a non-clustered index
+
+% distKeys
+%     number of distinct keys for the given access method (an index)
+
+% pages
+%    number of pages to reach a "leaf"
+
+% SelectType
+%     select type that the index supports; 0 for range; 1 for exact match;
+%     2 for both range and exact match; 3 for undefined
+
+% filename
+%    name of the index file

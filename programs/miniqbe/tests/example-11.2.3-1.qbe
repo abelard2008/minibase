@@ -1,0 +1,2 @@
+setComment Distinct
+addRelationTable {Sailors unq.} {sid {}} {sname p.} {rating {}} {age p.}

@@ -1,0 +1,16 @@
+.\" Copyright (c) 1994 University of Wisconsin - Madison.
+.\" All rights reserved.  
+.\"
+.TH Tickle_BTree 1 "Sep 19, 1994"
+.UC 4
+.SH Path contents
+.PP
+The path contents \fBbefore\f the update are shown (for the path followed
+during the search). Click on the node to see its \fBprevious\f contents.
+If you want to change the position of the path in the window, use the
+\fBmiddle\f mouse button.
+.PP
+.fi
+.SH Note 
+.PP
+Make sure you click on the NAME of the node rather than the bitmap...

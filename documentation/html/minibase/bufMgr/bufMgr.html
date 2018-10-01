@@ -1,0 +1,76 @@
+<HTML>
+<HEAD>
+<TITLE>Buffer Manager</TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+<H1>Buffer Manager</H1>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+<h2> Introduction </h2>
+<p>
+The buffer manager reads disk pages into a main memory page as needed.
+The collection of main memory pages (called <EM>frames</EM>) 
+used by the buffer manager for this
+purpose is called the <EM>buffer pool</EM>.  
+This is just an array of <B>Page</B> objects.
+The buffer manager is used by (the code for)
+access methods, heap files, and relational operators
+to read / write /allocate / de-allocate pages.  
+The Buffer Manager makes calls to the underlying DB class object,
+which actually performs these functions 
+on disk pages.
+<P>
+The buffer manager can also show the dirty page table when needed.  This
+information is required for checkpointing in multi-user
+Minibase (ARIES recovery protocol).
+Replacement policies for the buffer manager can be changed easily
+at compile time.
+<P>
+<IMG SRC="../pics/hline.gif">
+<H2>Design Decisions</H2>
+A hash table is used to figure out what page frame a given disk page
+(i.e., with a given pageId) occupies.  
+A buffer descriptor object is associated with every
+page frame in the buffer pool.  It contains a dirty bit, the page number,
+and LSN information (for recovery purposes).
+<P>
+When a page is requested, the buffer manager brings it in and pins it.
+The buffer manager does <STRONG>not</STRONG> keep track of all the pages that have 
+been pinned by a transaction.  It is up to the various  
+components (that call the buffer manager)
+to make sure that all the pinned pages are subsequently unpinned.
+<P>
+There are some points to be noted with respect to the Buffer Manager
+in multi-user Minibase.  It is created in shared memory since the data
+structures associated with it --- the buffer pool and the victim
+page list --- need to be shared by multiple processes. As every process
+is a transaction in Minibase, the Minibase server instantiates the
+Buffer Manager, and subsequently, transactions obtain pointers to it.
+<p>
+The <i>victim list</i> are present to take care of a
+<A HREF="victim.html"><B>not-so-often occurence</B></A>.
+The victim list keeps track of pages
+that have been removed from the buffer pool and are dirty and waiting to
+be written to disk.
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+
+Click here for the <A HREF="public.txt"><B>public interface</B></A>.
+<P>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+<A HREF="../project.html">Back to the List of Components</A><BR>
+<A HREF="../minibase.html">Back to the Minibase Home Page</A><BR>
+<!A HREF="report.html">
+<!764 Report</A>
+<P>
+
+
+</BODY>
+</HTML>
+

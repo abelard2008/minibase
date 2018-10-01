@@ -1,0 +1,2 @@
+setComment {Simple selection}
+addRelationTable {Sailors {}} {sid {}} {sname p._n} {rating {}} {age p._a}

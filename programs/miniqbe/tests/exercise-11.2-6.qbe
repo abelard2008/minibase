@@ -1,0 +1,4 @@
+setComment {Suppliers of green parts}
+addRelationTable {Suppliers unq.p.} {sid _s} {sname {}} {city {}}
+addRelationTable {Parts {}} {pid _p} {pname {}} {color green}
+addRelationTable {Orders {}} {sid _s} {pid _p} {quantity {}}

@@ -1,0 +1,95 @@
+<HTML>
+<HEAD>
+<TITLE>Life of a Minibase Query</TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+
+<H1>Overview Of Query Evaluation</H1>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+We conclude our overview by tracing a query's journey through Minibase.
+<P>
+
+<H2>Top Level</H2>
+The user starts Minibase, providing the database name as an
+option, along with the size of the database and buffer pool
+(in pages).  The 
+disk space manager is instantiated and the buffer manager is 
+instantiated.  The user then enters the SQL query.  The 
+<B><A HREF="../parser/parser.html">parser</B></A> checks the
+syntactic validity of the query and does the necessary type
+checking.  A call to the 
+<B><A HREF="../system/Catalog/catalog.html">catalog</A></B>
+is needed at this point.  The plan tree is passed to the  
+<B><A HREF="../optimizer/optimizer.html>optimizer</B></A> which
+calls the <B><A HREF="../system/Catalog/catalog.html">catalog</A></B>
+ to get the cardinality information.  The best plan is computed
+and the top node of the tree is passed to the 
+<B><A HREF="../planner/planner.html">planner</B></A>.  The planner
+recursively creates various <A HREF="../planner/iterator.html><B>iterators</B></A> 
+(such as scans and joins) 
+that will actually access the pages of the database.  Iterators
+return tuples when <B>get_next</B> is called on them.
+<P>
+Consider this query:
+<BR>
+<B>
+<P>
+select sailors.sname<BR>
+from sailors, reserves<BR>
+where sailors.sid = reserves.sid;<BR></B>
+<P>
+A sample plan tree is shown below. 
+The join takes two scans on two different
+relations as its input.  The join will call get_next on each
+of the scan iterators as tuples are needed.  Filescans are used because
+we assume that no matching indexes exist, in this example.
+<P>
+<A HREF="simplequery.gif"><IMG SRC="simplequery.gif"></A>
+
+<P>
+<A HREF="over3.more.html"><B>More details</B></A><BR>
+<IMG SRC="../pics/hline.gif">
+<P>
+
+<H2>Record Storage and Retrieval</H2>
+In the sample query shown above,
+the join will also perform a projection, retaining only the sname attribute.
+For every call to get_next of the outer tuple, the entire
+inner relation is scanned.  If the tuples match, then the
+projection operation is performed.
+<P>
+To scan a relation, the heap file must be opened.  Once opened,
+a scan object is created.  Calls to get_next on the scan object
+result in calls to the buffer manager to pin pages in the buffer pool.  
+The page in the buffer pool is raw data cast as type HFPage.  The 
+scan object calls methods of HFPage
+to find out where the next record is, and returns a pointer to this
+record.
+<P>
+<B><A HREF="over4.more.html">More details</B></A><BR>
+<IMG SRC="../pics/hline.gif">
+<P>
+
+<H2>Conclusion</H2>
+Tuples are printed to the screen after each successive call
+to nested_loops_join::getNext.
+<P>
+The top level call to the nested_loops_join ends when DONE
+is returned.  At this point, the destructor of nested_loops_join
+is called, causing its inputs (the two file scans) to be deleted.
+<P>
+
+<IMG SRC="../pics/hline.gif"><br>
+<A HREF="../minibase.html">
+Click here to go the Minibase Home Page</A>
+
+</BODY>
+
+</HTML>
+
+
+

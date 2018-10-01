@@ -1,0 +1,81 @@
+<BODY BGCOLOR="#FFDDDD">
+<HTML>
+
+<TITLE>CS 764 Project Page: Log Manager</TITLE>
+
+<BODY>
+<H1>Log Manager</H1>
+<A HREF="http://www.cs.wisc.edu/~ajitk/ajitk.html">Ajitkumar Natarajan</A>,
+<A HREF="http://www.cs.wisc.edu/~cjin/cjin.html">Cjin Pheow Lee</A>
+<HR>
+
+<H3>Goals and Responsibilities</H3>
+<UL>
+<LI>Maintenance of a bounded-sized log file on disk
+<LI>Maintenance of a log tail in shared memory
+<LI>Maintenance of a master log record on disk for storing last checkpoint LSN
+<LI>Assignment of Log Sequence Number (LSN)
+<LI>Allow for reading and writing of log records
+</UL>
+
+<H3>Public interface</H3>
+
+The latest
+<A HREF="interface/">header files</A>
+for <TT>class</TT>es
+<A HREF="interface/lsn.h"><TT>lsn_t</TT></A>,
+<A HREF="interface/logrecord.h"<TT>logrecord</TT></A>,
+<A HREF="interface/logshm.h"><TT>shm_log</TT></A>,
+<A HREF="interface/log.h"><TT>log</TT></A>,
+and
+<A HREF="interface/rawfile.h"><TT>Rawfile</TT></A>
+(which is used internally).  Also, look at the
+<A HREF="interface/logerror.h">error</A>
+declarations.
+
+<H3>Implementation</H3>
+
+Look at the
+<A HREF="implementation/">C++ source</A>
+files that implement these <TT>class</TT>es.
+
+<H3>Project Report</H3>
+
+The project report is available in
+<A HREF="main.ps">Postscript</A>
+format (16 pages, 213 KB).  It is also available in a hierarchical
+<A HREF="report/main.html">hypertext</A>
+form.
+
+<H3>Meeting Summaries</H3>
+
+A brief note on what was discussed in each of the <A
+HREF="meeting_summaries.html">project
+meetings</A>.
+
+<HR>
+
+<H3>Related Project Pages</H3>
+
+<UL>
+<LI><A HREF="http://www.cs.wisc.edu/~cs764-1/cs764.html">CS 764 Class Home Page</A>
+<LI><A HREF="../project.html">CS 764 Project Home Page</A>
+<LI><A HREF="../recoveryMgr/recovery.html">Recovery Manager Home Page</A>
+<LI><A HREF="http://www.cs.wisc.edu/~nsriram/inter.html">Heap File and Disk Space Manager Home Page</A>
+<LI><A HREF="../bufMgr/764.html">Buffer Manager Home Page</A>
+</UL>
+
+<HR>
+
+</BODY>
+
+<ADDRESS>
+
+Ajitkumar Natarajan
+<A HREF="http://www.cs.wisc.edu/cgi-bin/finger?ajitk@cs.wisc.edu"><TT>&ltajitk@cs.wisc.edu&gt</TT></A>
+<BR>
+Cjin Pheow Lee
+<A HREF="http://www.cs.wisc.edu/cgi-bin/finger?cjin@cs.wisc.edu"><TT>&ltcjin@cs.wisc.edu&gt</TT></A>
+
+</ADDRESS>
+</HTML>

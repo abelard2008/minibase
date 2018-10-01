@@ -1,0 +1,6 @@
+setComment {Emps who work in both Toy and Candy depts}
+addRelationTable {Emp {}} {eid _e} {ename p.} {salary p.}
+addRelationTable {Works {}} {eid _e} {did _toy}
+addRelationTable {Dept {}} {did _toy} {dname Toy} {managerid {}} {floornum {}}
+addRelationTable {Works {}} {eid _e} {did _candy}
+addRelationTable {Dept {}} {did _candy} {dname Candy} {managerid {}} {floornum {}}

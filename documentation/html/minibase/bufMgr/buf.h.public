@@ -1,0 +1,76 @@
+class BufMgr {
+
+public:
+
+    	BufMgr();	
+			//Buffer pool size is set to be a default integer
+    	~BufMgr();  	
+			//flush all valid dirty pages to disk
+
+    	Status 	pinPage(int PageId_in_a_DB, Page*& page,int emptyPage=0);
+
+		// check if this page is in buffer pool, otherwise
+		// find a frame for this page , read in and pin it.
+		// also write out the old page if it's dirty before reading
+		// if emptyPage==TRUE, then actually no read is done to bring
+		// the page
+
+    	Status 	unpinPage(int globalPageId_in_a_DB, int dirty=FALSE);
+
+		// if pincount>0, decrement it and if it becomes zero,
+		// put it in a group of replacement candidates.
+		// if pincount=0 before this call, return error.
+
+    	Status 	newPage(int& firstPageId, Page*& firstpage,int howmany=1); 
+		
+		// call DB object to allocate a run of new pages and 
+                // find a frame in the buffer pool for the first page
+		// and pin it. If buffer is full, ask DB to deallocate 
+		// all these pages and return error
+
+    	Status 	freePage(int globalPageId); 
+
+		// user should call this method if it needs to delete a page
+		// this routine will call DB to deallocate the page 
+
+    	Status 	reserve(int number, Page* pagelist[]);
+
+		// reservation of a number of frames for special purpose,
+		// actually it just pin these frames and remove them
+		// from the buffer table.
+
+	Status	commit();   
+
+		// for Xact to notify bufferMgr to really delete pages
+	
+   	Status	release(int number, Page* pagelist[]); 
+
+		//only release those reserved by previous interface
+		//This routine includes unpinPage operation.
+
+	Status 	dirtyPageTable(int& Num_of_dirtyPage,
+			int globalPageId[],	
+					//user provides an array to hold Ids
+			lsn_t	recovery_LSN[]	
+					//user provides the space 
+			);
+
+		//(we don't assume that recovery manager has
+		//to know the size of the buffer pool)
+		//and an array of integers in the user
+		//provided integer buffer of some maximum
+		//size of buffer pool size.
+
+	void 	last_lsn_flushed(lsn_t last_lsn){
+			if (last_lsn == invalid_lsn){
+				cout<<"Invalid lsn from log manager!"<<endl;
+				exit(1);
+				}
+			lsnlock.down();
+			if (wal_lsn<last_lsn)
+				wal_lsn = last_lsn;
+			lsnlock.up();
+		}
+		// To be called by log manager
+    	void 	printSelf(void);
+};

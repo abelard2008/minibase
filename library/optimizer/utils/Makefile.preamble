@@ -1,0 +1,9 @@
+UTILS_SRCS := \
+	da_types.C \
+	StringUtils.C
+
+# No public headers.
+UTILS_HDRS :=
+
+UTILS_OBJS := $(UTILS_SRCS:.C=.o)
+

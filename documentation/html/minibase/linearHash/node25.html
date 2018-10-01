@@ -1,0 +1,40 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> Get the next record satisfies the scan</TITLE>
+<meta name="description" value=" Get the next record satisfies the scan">
+<meta name="keywords" value="report">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html317 HREF="node26.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A> <A NAME=tex2html315 HREF="node16.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A> <A NAME=tex2html309 HREF="node24.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html318 HREF="node26.html"> Delete the currently </A>
+<B>Up:</B> <A NAME=tex2html316 HREF="node16.html"> Internal Design</A>
+<B> Previous:</B> <A NAME=tex2html310 HREF="node24.html"> Open an exact </A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00039000000000000000> Get the next record satisfies the scan</A></H2>
+<P>
+If it's the first time the function is called (<IMG ALIGN=BOTTOM SRC="_2017_tex2html_wrap428.gif">), the
+ <em>key</em> is hashed to a bucket number and that bucket will be
+ scanned. <em>current_pageno</em> is set to the PageId of the primary
+ page of this bucket. <em>current_slotno</em> is set to -1. Then all the
+ pages are scanned until a matched record is found. During the scan,
+ the values of <em>current_pageno</em> and <em>current_slotno</em> are
+ updated. Also the PageId of the previously scanned page (if existing)
+ is stored in case some <em>delete_current()</em> call later deallocates
+ the current page.  If the end of the last page is reached and no
+ matched record is found, NOMORERECS is returned. Another special case
+when NOMORERECS can be returned is that the page number of the
+overflow page that's going to be read is equal to <em>last_pageno</em>,
+ a private member of the class <b>LinearHashingScan</b>. See
+the description of <em>delete_current()</em> for details.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+<I> Weiqing Huang <BR>
+Sun May 14 16:22:27 CDT 1995</I>
+</ADDRESS>
+</BODY>

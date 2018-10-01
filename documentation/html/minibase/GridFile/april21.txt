@@ -1,0 +1,41 @@
+1) need to add routine to gridfile to delete pages in the file.
+2) Page allocation wil be done via buffer manager routines:
+
+   //allocate new page
+   Status newpage (int &pageno, Page *& page);
+
+   //return page to free pool
+   Status freePage (int pageno);
+     
+   //read and pin page 
+   Status pinPage (int pageno, Page *& page);
+    
+   //write and unpin page
+   Status unpinPage (int pageno, int dirty);
+
+3) DB routines keep track of header page
+
+   // DB remember first page of file
+   Status set_first_page (char *name, int pageno);
+
+   // DB forget first page of file
+   Status drop_first_page (char *name);
+
+4) to start a file:
+    newPage
+    set_first_page
+
+5) open existing file:
+    get_first_page
+
+6) Page class: how to access data on page:
+
+   class Page {
+    LSN lsn;
+    char data[0];
+    }
+
+   then access methods derive the class as follows:
+   class mypage: Page
+     {mydata.....
+     }

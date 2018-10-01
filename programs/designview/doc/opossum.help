@@ -1,0 +1,272 @@
+
+dbnorm Help: Using Opossum
+============================
+
+GENERAL DESCRIPTION
+
+Opossum is a prototype schema editor that allows you to create and edit
+schemas in from several data models, including the Entity-Relationship
+model, the MOOSE object-oriented data model and the Relational Model.
+Schema editing works through direct manipulation of a visual
+representation of the schema.  Opossum is basically generic code; the
+data model and visual representations it uses are defined in external
+files that are read each time the program starts.  This document will
+describe the use of SchemaEd with the ER model.
+
+OPERATION
+
+The name of the Opossum executable is SchemEd. The SchemaEd editor
+distributed with minibase is compiled for SunOS4.1 The model files
+(.zoo files) must be in the same directory as the executable of the
+program.  SchemaEd can also use the file Opossum.bitmap for reading in
+a picture of an Opossum to make the editor look prettier.
+
+OPTIONS
+
+SchemaEd may be started with a number of command line options.  These
+options may also be specified in the .zoorc file, described below.
+All of the options are case insensitive.
+
+  ZOOM_FACTOR=<number>
+    This specifies by what factor the ZoomIn and ZoomOut commands change
+    the scale.  (These commands are activated by options in the Edit menu
+    or the 7 and 9 keys.)
+
+  DEFAULT_FONT=<X font specifiation>
+    Specifies the default font to use in schemas.
+
+  DEFAULT_MENU_FONT=<X font specifiation>
+    Specifies the font to use in Menus and Buttons in the SchemaEd window.
+
+
+THE .ZOORC FILE
+
+Any of the above options can be placed in a file called ".zoorc".
+Each option must be placed on its own line, with no leading or
+trailing whitespace.  The only difference in option specification is
+with font names: on the command line, it is necessary to put the
+specification of a font name in quotes, but in the .zoorc file this
+will cause errors.
+
+DESCRIPTION
+
+The SchemaEd editor appears in a window that contains file information
+and a menu bar at the top, a column of tools on the left, a panner in
+the lower left corner, and a work/display area comprising the rest of
+the area.  Schemas appear in the work area, and may be created and
+manipulated there.  The tools allow for direct manipulation of the
+schema in the work area.  The panner allows you to change the view of
+the work area, either by panning veritically and horizontally, or
+zooming in and out.  The menu items perform general functions on the
+schema.
+
+INFORMATION DISPLAYS
+
+At the top of the SchemaEd window are two information displays.  One
+given the name of current schema (or "[untitled]" if it is not yet
+named), followed by "*" if the schema has been changed since it was
+last saved.  The other is will be used in the future, when a database
+schema will have several different visual presentations.
+
+EDITING TOOLS
+
+You must engage a tool before you can use it.  You engage a tool by
+clicking on its icon or by typing the character below and to the right
+of its icon.  The icon of the drawing tool that's engaged appears in
+inverted colors.  Once engaged, you use the tool by clicking the left
+mouse button in the drawing area.  By default, the middle mouse button
+acts as the Move Tool, and the right mouse button as the Select Tool.
+
+The Select, Move, Edit, Edit Text, and Stretch tools manipulate
+existing schema elements in a generic way.  There are also buttons for
+creating primitives of the model in which you are working.  Each type
+of primitive object in the data model will have a corresponding button
+for creating objects of that type.
+
+Each tool works as follows:
+
+  Select
+    Select a schema element, unselecting all others.  A schema element
+    is selected if its handles are visible.  Handles are small
+    inverse-video squares that either surround the schema element or
+    demarcate its important points (such as the endpoints of a line). If
+    you hold down the shift key, Select extends the selection:
+    it selects the unselected schema element (or unselects the selected
+    schema element) you clicked on but does not unselect other selections.
+    Clicking anywhere other than on a schema element unselects everything;
+    you may also drag a rubberband rectangle around a group of schema
+    elements to select all of them at once.  Shortcut: the right mouse
+    button invokes Select while the mouse is in the drawing area.
+
+  Move
+    Move schema elements from one spot to another.  Shortcut: the
+    middle mouse button invokes Move while the mouse is in the drawing
+    area.
+
+  Edit
+    Change the value of an attribute of the schema element.  Each
+    schema element has many attributes, such as color, orientation, or
+    text value.  Some of these do not affect the meaning of the schema
+    element (e.g., a Node represents a Class in the schema, regardless
+    of color.).  Other attributes affect the meaning of the schema
+    (e.g., the text of a Node's label, which indicates the name of the
+    Class.).
+
+    When the Edit Tool is active, a mouse click on a schema element
+    results in the appearance of a menu listing all the attributes in
+    the vicinity of the mouse click that may be changed.  Note:
+    Sometimes it takes a few seconds for this menu to appear.  These
+    menu items are divided into two categories: User Attributes whose
+    values affect only aesthetics, and Data Attributes which affect
+    the meaning of the schema.
+
+    If an attribute has a limited range of values, a submenu appears
+    offering the choice of values.  Otherwise, if an attribute is
+    chosen from the menu, a dialog box appears to allow entry of a new
+    value for that attribute.
+
+    The Edit Tool produces a menu of one the attributes in the
+    vicinity of the mouse click.  To get a menu of all attributes for
+    a given Node or Edge, hold the shift key down while clicking the
+    mouse.
+
+  Edit Text
+    The Edit Text tool is used as a shortcut for editing text values,
+    including Node name, and Edge labels.  When it is clicked on a
+    textual attribute, a small region appears containing the text.
+    The mouse may be clicked or dragged in this area to move the
+    cursor and select portions of the text.  Any text typed on the
+    keyboard appears in the editing region.
+
+    To conclude the editing, click the mouse anywhere outside of the
+    text editing region.
+
+  Stretch
+    Under construction.
+
+  Node
+    Creates a Node in the drawing area at the mouse pointer's location
+    when the mouse button is released.  This node indicates a Class in
+    the MOOSE schema.  A node is a rectangle containing two pieces of
+    text.
+
+  Edge
+    Creates an edge between two nodes.  This edge appears as a line
+    between the two nodes with an arrowhead, and optional labels in
+    the middle.
+
+    When creating an edge, two nodes must be specified as the
+    endpoints.  When any of the Edge tools are active, if the mouse is
+    clicked on empty space, the next click must be on the from-node
+    (the node that is the origin of the edge), followed by a click on
+    the to-node.  If the mouse is first clicked on a node, that node
+    is assumed to be the from-node.
+
+
+PULL-DOWN MENUS
+
+The pull-down menus File, Edit, and Misc.  above the work/display area
+contain commands for editing the schema and for controlling SchemaEd's
+execution.  The File menu contains the following commands to operate
+on files:
+
+  New: Destroy the current schema and replace it with an unnamed blank
+  schema.
+
+  Open: Specify an existing schema to edit.
+
+  Save: Save the current schema in the file it came from.  If the
+  schema is as yet unnamed, it will prompt you for a schema name.
+
+  Save As: Save the current schema in a file with a specific name.
+
+  Print: Send a PostScript version of the drawing to a printer or to a
+  file.
+
+  Quit: Quit SchemaEd.  If the schema has not been saved, you will be
+  asked if you wish to save it.
+
+The Edit menu contains the following commands for editing schema elements:
+
+  Undo: Undo the last editing operation.  Successive Undo commands
+  undo earlier and earlier editing operations (to a limit of 20
+  operations).
+
+  Redo: Redo the last editing operation.  Successive Redo commands
+  redo later and later editing operations up to the first operation
+  undone by Undo.  Undone operations that have not been redone are
+  lost as soon as a new operation is performed.
+
+  Cut: Remove the selected schema elements from the schema and place
+  them in a temporary storage area called the clipboard.
+
+  Copy: Copy the selected schema elements into the clipboard without
+  removing them from the schema.
+
+  Paste: Paste copies of the schema elements in the clipboard into the
+  schema.  Together, Cut, Copy, and Paste let you transfer schema
+  elements between schemas simply by cutting schema elements out of
+  one schema and pasting them into another.
+
+  Delete: Destroy the selected schema elements.
+
+  Select All: Select every schema element in the drawing.
+
+  Bring To Front: Move all selected items as far forward as possible.
+
+  Send To Back: Move all selected items as far backward as possible.
+
+  Align Selected Left To Right: Aligns horizontally the centers of the
+  selected items with the center of the first item selected.
+
+  Align Selected Top To Bottom: Aligns vertically the centers of the
+  selected items with the center of the first item selected.
+
+  Zoom To Selected: Zooms so that the selected items fill the screen.
+
+  Zoom To All: Zooms so that the entire schema fits on the screen.
+
+  Zoom In: Move the current view out, so that objects are larger.
+  Also activated by the 7 key.
+
+  Zoom Out: Move the current view out, so that more is visible.  Also
+  activated by the 9 key.
+
+  Pan Left: Pan the current view left (so object appear to move
+  right).  Also activated with the 4 key, useful on the keypad.
+
+  Pan Right: Pan the current view right.  Also activated by the 6 key.
+
+  Pan Up: Pan the current view up.  Also activated by the 8 key.
+
+  Pan Down: Pan the current view down.  Also activated by the 2 key.
+
+  Group Selected Items: Create a group surrounding the selected items.
+  Also activated by the "G" key.
+
+  Remove Selected Groups: Remove all selected Groups from the schema
+  without affecting their members.  Also activated by the "H" key.
+
+  Collapse Selected Groups: Change all selected Groups to their
+  collapsed state.
+
+  Expand Selected Groups: Change all selected Groups to their expanded
+  state.  The Misc. menu contains various options for communication
+  and changing settings.
+
+  Expand Selected Groups: Change all selected Groups to their expanded
+  state.
+
+  Send Relational Schema To File: Used for converting an on-screen
+  Relational schema to an SQL create table expression.
+
+
+USING GROUPING IN EITHER MODEL
+
+Under construction.
+
+
+BUGS
+
+There are many bugs.  Soon, known bugs will be listed here.
+

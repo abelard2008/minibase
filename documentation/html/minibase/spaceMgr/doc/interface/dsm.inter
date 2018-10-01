@@ -1,0 +1,141 @@
+#ifndef DSM_H
+#define DSM_H
+
+#include <string.h>
+#include "page.h"
+#include "db.h"
+
+// Class definition for the disk space manager. This class manages the 
+// space maps belonging to all the open DBs. 
+
+const int MAX_OPEN_DB = 10;
+const int MAX_HEADER_PAGES = 100;
+const int INVALID_PAGE = -1;
+const int MAX_NAME = 25;
+const int MAX_SPACE = PAGESIZE - sizeof(lsn_t);
+class DB;
+
+class DSM
+{
+public:
+    DSM(Status& status);         // Constructor
+    ~DSM();                      // Destructor
+
+    enum db_status { DB_CREATE, DB_OPEN, DB_CLOSE, DB_DESTROY } ;
+
+    /* The following member function is called when a new database is 
+       created or opened (specified in the stat_f flag). 
+       
+       When the database is created, it provides a "fresh" space map 
+       which is NOT read off the disk. This is because we know what 
+       the space map of a newly created database looks like.
+
+       When an existing database is opened, the space map
+       for this database is read off the disk and a database number 
+       is returned.
+      
+       It gives back a db_num which has to be used by all the later 
+       calls made by the database.
+
+       A database number to identify a database is needed to speed up 
+       all the later calls, because this number is directly used as an
+       index into an internal array. Without this, we would have to 
+       compare the name of the database in some lookup table.
+    */
+    Status init_map_entry(DB* db, db_status stat_f, int& db_num);
+
+    /* Get a run of free pages for the specified database. 
+       Gives the page number of the first page of the set.
+    */
+    Status get_free_pages(int db_num, int run_size, int& start_page);
+
+    // Deallocate pages in the database.
+    Status release_page(int db_num, int start_page_num, int run_size=1);
+
+    /* This is called when the database is closed. If there are multiple
+       database objects looking at the same space map, this does not 
+       mean that the corresponding space map is removed. Only when the 
+       last database object that is looking at a space map is closed,
+       the space map is removed from our table.
+
+       The number of database objects for a space map entry is 
+       maintained through a pin count.
+    */
+    Status delete_map_entry(DB* db, int db_num);
+
+    // The following two functions manipulate the file entries in the
+    // directory maintained in the header pages of the specified database.
+
+    Status add_file_entry(int db_num, char* fname, int start_page_num);
+    Status delete_file_entry(int db_num, char* fname);
+    Status get_file_entry(int db_num, char* fname, int& start_pg);
+
+    // Dump space map - for debugging
+    Status dump_space_map( int dbnum );
+
+private:
+    // HEADER PAGE DETAILS
+
+    // Most of the header pages is of the form : filename : first page of file
+    // There is also a valid field.
+    typedef struct 
+	{
+	    int valid;
+	    char fname[MAX_NAME];
+	    int pagenum;
+	} header_entry_t;
+
+    // Every header page starts out with a LSN and then, there is a integer
+    // specifying the page where the header information continues (if any).
+    // This is followed by a list of entries, one for each file in the
+    // database.
+    // The number of such entries on each page is calculated through the 
+    // formula below....it simply subtracts the sizes of the two other fields
+    // from page size and divides by the size of each entry.
+    const int num_header_entries = (int)((PAGESIZE-sizeof(lsn_t)-sizeof(int))/sizeof(header_entry_t));
+ 
+    typedef struct 
+	{
+	    int next_page;
+	    header_entry_t entry[num_header_entries];
+	    char dummy[PAGESIZE - sizeof(lsn_t) - sizeof(int) - num_header_entries*sizeof(header_entry_t)];
+	    lsn_t lsn;
+	} header_page_t;
+
+    //*********************
+
+    typedef enum{ VALID, INVALID } dbe_stat;
+    int spt_index;          // Index to an available SpaceTable entry
+    typedef struct 
+    {
+        dbe_stat valid_f;   // Valid Flag for the SpaceTable Entry
+        char* dbname;       // Name of the database
+        int pin_count;      // Number of users accessing the spacemap
+        int spm_size;	    // Size of the space map in pages
+	int sp_num_pages;	// Number of valid bits in the spacemap
+	int header_size;	// Number of header pages
+	header_page_t* header[MAX_HEADER_PAGES];// List of header page pointers
+        Page* space_map;    // List of Space map pages
+    }DBEntry;               
+
+    DBEntry* SpaceTable;    
+
+    int  get_spt_index();   // Returns and updates spt_index
+    void delete_spt_index(int spti);/* Delete a SpaceTable entry 
+							  ( and freeing
+                               memory ) after the space map has been
+                               flushed to disk and when no user is
+                               accessing the database
+                            */
+
+	// Set runsize bits starting from start to value specified
+	Status set_bits( int dbnum, int start, int runsize, int bit );
+
+
+    // Initializes the given header page
+    void init_header_page(header_page_t*& hp); 
+
+    const int SPT_FULL = -1;
+};
+
+#endif

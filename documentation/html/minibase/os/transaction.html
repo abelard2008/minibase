@@ -1,0 +1,64 @@
+<HTML>
+<HEAD>
+<TITLE>Transaction Manager</TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<H1>Transaction Manager</H1>
+
+<IMG SRC="../pics/hline.gif"><br>
+<P>
+The Transaction Manager maintains information about all transactions in the
+system. It also provides methods using which the Lock Manager
+and the Recovery Manager can obtain
+information from the shared memory regions (for example, the Recovery Manager
+requires information from the dirty page table during checkpointing ).
+In addition, the TM manages information about the process ids of the
+clients in the system. This is information required by the Minibase
+server.
+<P>
+<IMG SRC="../pics/hline.gif">
+<H2>Design Decisions</H2>
+Every process is a <i>transaction</i> in the Minibase multi-user model.
+The Minibase server is transaction 0. Subsequent transactions are
+assigned sequential transaction identifiers.  
+Nested transactions from a single process are not possible in the
+current design of the Minibase system. Nested transactions may be
+modelled by transactions from different clients, that attach to
+the Minibase server.
+<p>
+The base 
+xaction_manager class includes one key data structure --- an array 
+of pointers to transactions.  The transaction class is derived
+from the base 
+<A HREF="os.html"> SharedRegion class</A> and contains data critical
+to the Lock Manager and the Recovery Manager.
+<p>
+The transaction maintains a linked list of lock queues. Each element in
+this list points to a lock entry which holds information about the page
+which the transaction has a lock on. There are thus as many entries in
+the list as there are pages that the transaction has a lock on. <br>
+It also maintains information about the last LSN and the minimum LSN
+associated with the transaction. For more details about LSNs and their
+use in recovery, refer to details about the 
+<A HREF="../logMgr/logMgr.html"> Log Manager</A>.
+<p>
+The transaction manager also maintains some information about the clients
+in the system, namely their process identifiers and a flag 
+indicating the validity of a transaction. This is required by the Minibase
+server for deadlock detection and resolution. 
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+Click here for the <A HREF="xaction_mgr.h"><B>public interface</B></A>. <br>
+Click here for details on <A HREF="xact_rep.html"><B>Transaction Manager implementation</B></A>. 
+<P>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+<B><A HREF="../project.html">Back to the List of Components</A></B><BR>
+<B><A HREF="../minibase.html">Back to the Minibase Home Page</A></B><BR>
+
+</BODY>
+</HTML>
+

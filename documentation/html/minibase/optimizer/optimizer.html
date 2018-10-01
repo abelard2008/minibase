@@ -1,0 +1,76 @@
+<HTML>
+<HEAD>
+<TITLE>Query Optimizer</TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+
+<H1>Query Optimizer</H1>
+
+<IMG SRC="../pics/hline.gif">
+
+<P>The optimizer takes a query tree from <B><A
+HREF="../parser/parser.html">parser</A></B> 
+and decides on the best evaluation of the query based on a heuristic (described
+below).  The optimizer uses <B><A
+HREF="../system/catalog.html">catalog</A></B>  
+information (cardinalities and indexes).  The 
+<B><A HREF="../planner/planner.html">planner</A></B> then interprets the tree.
+<BR>
+<P>The optimizer is in general a System R style optimizer, as
+described in "Access Path Selection in a Relational Database
+Management System", <EM>Proceedings of the ACM-SIGMOD
+International Conference on Management of Data</EM>, June 1979. 
+
+<P>The optimizer also considers many plans that Minibase proper does
+not support.  These include some join methods, clustered indexes,
+order by, group by, distinct, and aggregates.
+
+<P>Information about the estimates for cost formulas for joins and access methods are <A HREF="costformula.html">available.</A>
+<P>
+<IMG SRC="../pics/hline.gif">
+
+<H2>Design Decisions</H2>
+
+<P> There are two places one might want the optimizer to get its
+catalog information from.  One is the actual catalog relations stored in a
+Minibase database.  The other is a text file that describes a
+hypothetical catalog; this is convenient for experimenting with
+the optimizer.  The Minibase optimizer handles both of these
+options, using an abstract interface contained in the global
+systemCatalogs object.
+
+<!In the original version, the plan structure was designed to
+allow any arbitrary plan structure (not just left-deep).  It's still
+there, but because of the nature of joins to a very weak degree.  In
+all of the displayed output, it appears that the join is directly
+connected to the access method, when in fact there is a plan node
+present in between, which can be ignored by any plan interpreter.>
+<p>
+<IMG SRC="../pics/hline.gif">
+
+<H2>Examples</H2>
+
+Some sample plans are available <A
+HREF="../temp/exampleselect.html">here</A>.  Note that the
+optimizer may have had some changes since these plans were generated,
+so your results may not be identical.  (For example, index-only full scans
+on Hash indexes are not considered in this version).
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+
+Click here for the public interface to the <A HREF="ii_systemcatalogs.h">catalogs</A>
+<BR>
+Click here for the public interface to the <A HREF="planner.h">planner</A><br>
+<A HREF="../minibase.html">Back to the Minibase Home Page</A><BR>
+<A HREF="../project.html">Back to the Components Home Page</A><BR>
+<P>
+
+
+</BODY>
+
+</HTML>
+
+

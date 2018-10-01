@@ -1,0 +1,39 @@
+<HTML>
+<HEAD>
+<TITLE>External Sorting</TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+<H1>External Sorting</H1>
+<IMG SRC="../pics/hline.gif">
+<P>
+Sorting a collection of records on some (search) key is a very useful
+operation. 
+When the data to be sorted is too large to fit into available main memory, we need to
+use an <i> external sorting </i> algorithm. Such algorithms seek to minimize the
+number of disk accesses.  
+<P>
+Minibase supports <i> external merge sort </i>:
+<P>
+Suppose we have <b>B</b> buffer pages available in memory, and we need to sort a large
+file with, say, <b>N</b> pages. There are two passes for the external sort.
+<OL>
+  <LI> In Pass 0, read in B pages at a time and sort internally to produce ceil(N/B) runs
+       of B pages each (except the last run, which may contain fewer pages).
+       Runs are held in temporary <A HREF="../spaceMgr/heap_file.html"><B>heap files</B></A>.
+  <LI> In Passes i = 1, 2, ..., use B - 1 buffer pages for input, and use the remaining
+       page for output; thus you do a B - 1 way merge in each pass.
+</OL>
+<IMG SRC="../pics/hline.gif">
+<P>
+The public interface for the external sorting utility is available
+<i> <A HREF="interface/sort.h"> here</A></i>
+<P>
+<IMG SRC="../pics/hline.gif">
+
+<P>
+<B><A HREF="../project.html">Back to the List of Components</A></B><BR>
+<B><A HREF="../minibase.html">Back to the Minibase Home Page</A></B><BR>
+
+</BODY>

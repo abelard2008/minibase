@@ -1,0 +1,2 @@
+setComment {Original used two rows.  Same result with expanded condition syntax.}
+addRelationTable {Sailors {}} {sid {}} {sname p.} {rating {}} {age {> 30 or _ < 20}}

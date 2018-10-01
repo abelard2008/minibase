@@ -1,0 +1,47 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> A Brief Description of ARIES:</TITLE>
+<meta name="description" value=" A Brief Description of ARIES:">
+<meta name="keywords" value="rec">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html58 HREF="node5.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A> <A NAME=tex2html56 HREF="node3.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A> <A NAME=tex2html50 HREF="node3.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html59 HREF="node5.html"> Internal Data Structures </A>
+<B>Up:</B> <A NAME=tex2html57 HREF="node3.html"> Internal Design:</A>
+<B> Previous:</B> <A NAME=tex2html51 HREF="node3.html"> Internal Design:</A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00031000000000000000> A Brief Description of ARIES:</A></H2>
+<P>
+As mentioned in Section <A HREF="node1.html#secintro">1</A>, ARIES uses Write-Ahead-Logging,
+a Steal/No-Force policy in the Buffer Manager and repeats history during
+recovery.
+Each page in the database contains a log sequence number (LSN), which
+uniquely identifies the log record for the latest update to the page.
+This page LSN determines whether or not recovery is to be done to that page.
+This LSN information is used to determine the point in the log from which
+the Redo phase must commence during the restart from a system crash.
+LSNs are often implemented using the physical address of the log record in
+the log.
+<P>
+During the Analysis phase, the log is processed from its most recent 
+checkpoint. This phase determines information about the dirty pages and active
+transactions that is used in the subsequent phases. The second phase is the
+Redo phase, in which history is repeated by processing the log from the 
+earliest log record that could require a redo, ensuring that all logged
+operations have been applied. The third phase is the Undo phase. This
+proceeds backwards from the end of the log, removing from the database the
+effects of all transactions that had not been committed at the time of the
+crash. During the Undo pass, Compensation Log Records (CLR) are written
+to ensure ARIES need never undo the effects of an Undo operation.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+<I> ranjani ramamurthy <BR>
+Sat May 13 16:56:49 CDT 1995</I>
+</ADDRESS>
+</BODY>

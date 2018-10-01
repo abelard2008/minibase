@@ -1,0 +1,89 @@
+<HTML>
+<HEAD>
+<TITLE>Disk Space Manager</TITLE>
+</HEAD>
+<body background = "../pics/blue_paper.gif">
+
+<BODY>
+
+<H1>Disk Space manager </H1>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+The disk space manager is the component of the system that takes care
+of the allocation and de-allocation of  pages among the different files
+of a database.  It also performs reads and writes of pages to and from
+disk.  In Minibase, a  database is  implemented as a single UNIX file. 
+It contains several DBMS level <i>files</i>, 
+such as heap files, B+ tree files, etc.
+<P>
+<IMG SRC="../pics/hline.gif">
+
+<H2> The Database (DB) Class</H2>
+The DB  class  provides  the abstraction  of  a  single database 
+stored on disk.
+It is the shields the rest
+of the database from the fact that the database is implemented as
+a single UNIX file.  (Of course, the implementation of this layer
+suffers from the limitations of the UNIX file system!)
+<P>
+Thre should be one instance of the DB class
+for every database used.
+(In Minibase, a transaction is allowed to have at most one
+active database, so there is just one instance of this class.)
+The operations  on  this  class  include creating and   destroying
+databases. Existing databases can be opened and closed. Further, there
+are methods  to   retrieve certain characteristic   properties of  the
+database, like the number  of pages and page size.  
+<P> 
+The DB  class
+also provides a <strong> file naming service </strong>. This service is implemented
+using records  consisting of  file names and  their header page
+ids. There  are functions to  insert/delete/access  file entries. 
+<P>
+<IMG SRC="../pics/hline.gif">
+
+<H2>The Page Class</H2>
+The abstraction of a page is provided by the Page class. All higher 
+level applications use this Page. A Page contains an LSN and a data part. 
+Higher layers can impose their own types of pages on this common structure.
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+
+<H2>Space Management</H2>
+<EM>(Not relevant to the single-user version of Minibase.)</EM>
+<P>
+This class is used to provide the shared memory state of the disk space manager.
+The idea was that if multiple databases were supported, then one manager
+could have several DB and DSM objects.  Since this is not the case, the
+Space Manager class is awkward and can possibly be simplified.
+A database
+has a single space map that keeps track of the usage of the pages. The
+space  manager maintains  the space  map  in shared memory and ensures
+consistent access to it by different processes.
+
+<p>  The space manager  logs all  changes  to  the space  map  and the
+directory of a database. The case of deallocation  of pages is handled
+carefully to ensure that the effects of an aborting transaction can be
+completely undone. Deallocation    requests by a  transaction  are not
+executed immediately.  They are instead  deffered and the page ids are
+maintained in a list. Only  when the transaction commits, changes  are
+made to the space map to reflect the deallocation.<br> <br>
+<P>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+Click here for the <A HREF="public.db.txt"><B>public interface for the DB class</B></A>
+<P>
+
+
+<IMG SRC="../pics/hline.gif">
+<P>
+<A HREF="../project.html">Back to the List of Components</A><BR>
+<A HREF="../minibase.html">Back to the Minibase Home Page</A><BR>
+<A HREF="doc/report/html/project.html">764 Report</A>
+<BR>
+
+</BODY>
+</HTML>

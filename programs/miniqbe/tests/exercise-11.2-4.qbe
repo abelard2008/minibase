@@ -1,0 +1,7 @@
+setComment {Un-American parts}
+addRelationTable {Parts {}} {pid p._p} {pname {}} {color {}}
+addRelationTable {Orders {}} {sid _am} {pid _p} {quantity _amq}
+addRelationTable {Suppliers {}} {sid _am} {sname American} {city {}}
+addRelationTable {Orders {}} {sid _nam} {pid _p} {quantity _namq}
+addRelationTable {Suppliers {}} {sid _nam} {sname {not American}} {city {}}
+addConditionsBox {_namq >= _amq + 100}

@@ -1,0 +1,2 @@
+setComment {Suppliers in Madison}
+addRelationTable {Suppliers {}} {sid {}} {sname p.} {city Madison}

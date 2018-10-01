@@ -1,0 +1,115 @@
+
+dbnorm Help: Main Window
+=========================
+
+The dbnorm main window offers you a view of all the source relations
+that have been defined in your database.  For more details on dbnorm
+databases and source relations, see the "Intro to dbnorm" help file.
+Basically a dbnorm database is a collection of attributes, a set of
+functional dependencies over those attributes, and a set of "source
+relations", each of which contains a subset of the database
+attributes.  In addition, each source relation can be decomposed into
+new relations derived from its attribute set.  These decompositions
+and the derived relations also become part of the dbnorm database once
+you create them.
+
+There are two ways to open a database in dbnorm:
+
+	* Open a file containing a dbnorm database description.
+
+		To open a dbnorm database description, select Open
+		from the File menu, then use the file selection dialog
+		box to find the database file.  (See the "Input File
+		Format" help file for a description of dbnorm input
+		files.)
+
+	* Import an Opossum Entity-Relationship data schema.
+
+		To import an Opossum ER schema, select "Import Opossum
+		Schema" from the File menu, then use the file
+		selection dialog box to find the appropriate file.
+		(See the "Using Opossum" help file for information on
+		how to create an Opossum data schema.)
+
+You can also create a dbnorm interactively inside dbnorm by selecting
+"New" from the File menu.
+
+
+Once you have opened a database, the dbnorm main window allows you to:
+
+	* Open the "Detail" window for a source relation.
+	* Start a new decomposition session for a source relation.
+
+Each of these operations is described below.
+
+
+The Detail Window
+------------------
+
+Once you have opened a dbnorm database, you can activate the Detail
+window by clicking on the "View Details" button in the Main window, or
+by selecting "View Details" from the Relation menu.  The Detail window
+provides a listing of all attributes, functional dependencies, and
+decomposition sessions defined for a single relation referred to here
+as the "active" relation. The Detail window also allows you to:
+
+	* View the attributes and functional dependencies for the
+	  entire database.
+	* Create, display and delete decomposition sessions.
+	* Set the default decomposition for the active relation.
+	* View the SQL "Create Table" statement for the active
+	  relation.
+	* Compute attribute closures.
+	* Test a set of attributes for primality.
+	* Test a set of attributes to see if it contains a key.
+
+Here is a description of how to perform each of these operations:
+
+* Create, display, and delete decomposition sessions for a source
+  relation.
+
+	If any decomposition sessions have been saved for the active
+	relation, the names of the sessions appear in the Detail
+	window.  You can display one of these sessions by
+	double-clicking on the session name.  You can also highlight a
+	session name and use the middle mouse button to display a
+	menu of session operations. The session operations are:
+
+	* Display: Opens a new Session window and displays the selected
+	  session.
+
+	* Rename: Allows you to change the name of the selected session.
+
+	* Delete: Permanantly deletes the selected session.
+
+	* Set as Default: Makes the selected session the "default"
+	  session for the active relation. By convention, the default
+	  session is always displayed at the top of the session
+	  list. The default session is used when you request that SQL
+	  code be generated for all base relations in the database.
+
+	* Start New Session: Opens a new Session window with the
+	  active relation as the root of a new session tree.
+
+* Compute attribute closures.
+
+	You can compute the attribute closure of a set of attributes
+	by highlighting the attribute names, then selecting "Compute
+	Closure" from the Attribute menu.  The system will then
+	display the closure in a pop-up window.
+
+	NOTE: You can highlight non-adjacent attribute names by
+	holding down the Control key as you click on each name.
+
+* Test a set of attributes for primality.
+
+        You can also have the system determine if an attribute set is
+	prime.  Just highlight the attributes and select "Prime?" from
+	the Attribute menu.
+
+* Test a set of attributes to see if it contains a key.
+
+        To see if an attribute set contains a key for the active
+	source relation, highlight the attributes and select "Key?"
+	from the Attribute menu.
+

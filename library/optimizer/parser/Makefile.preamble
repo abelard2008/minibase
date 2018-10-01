@@ -1,0 +1,19 @@
+real_parser_srcs := \
+	arithops.C \
+	parse_routines.C \
+	scan_routines.C \
+	typechk.C \
+	table_routines.C \
+	hash_routines.C \
+	showerr.C
+
+PARSER_SRCS := \
+	y.tab.C \
+	lex.yy.C \
+	$(real_parser_srcs)
+
+# No public headers.
+PARSER_HDRS :=
+
+PARSER_OBJS := $(PARSER_SRCS:.C=.o)
+

@@ -1,0 +1,50 @@
+<HTML>
+<HEAD>
+<TITLE>Log Manager </TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+<BODY>
+<H1>Log Manager </H1>
+
+<p>
+<IMG SRC="../pics/hline.gif">
+<P>
+
+The Logging Protocol for Minibase is based on ARIES.  It uses 
+WAL (write-ahead logging), 
+and it supports the use of the Steal/No-force policy by the Buffer Manager.
+
+<P>
+<IMG SRC="../pics/hline.gif">
+<H2>Design Decisions</H2>
+
+The Log Manager does a physical logging of all changes to the database.
+It has no knowledge of log record types and merely interprets log records
+as sequences of bytes. It primarily interacts with the Recovery Manager.
+<p>
+The log record is maintained as a UNIX file. All updates are performed 
+through the Recovery Manager into the log tail.  
+Writes to the log are sequential. The log tail is stored in shared memory,
+and is a derived class of the base SharedRegion class i.e. a semaphore
+guards access to the log tail. 
+<p>
+The Log Manager defines
+the structure of the log sequence number (LSN). Every log record has a 
+distinct LSN. In the case of Minibase, the LSN is merely the offset from
+the beginning of the log.  The value of the LSN is assigned by the 
+Recovery Manager. 
+<p>
+<IMG SRC="../pics/hline.gif">
+<P>
+Click here for the <A HREF="public.txt"><B>public interface</B></A>.
+Click here for <A HREF="report/main.html"><B>more details</B></A>.
+
+<p>
+<IMG SRC="../pics/hline.gif">
+<P>
+<B><A HREF="../project.html">Back to the List of Components</A></B><BR>
+<B><A HREF="../minibase.html">Back to the Minibase Home Page</A></B><BR>
+
+</BODY>
+</HTML>
+

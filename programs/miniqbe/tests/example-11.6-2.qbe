@@ -1,0 +1,2 @@
+setComment {Aggregation by group}
+addRelationTable {Sailors {}} {sid {}} {sname {}} {rating g.p.} {age _A} {{} P.AVG._A}

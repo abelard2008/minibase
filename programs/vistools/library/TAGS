@@ -1,0 +1,120 @@
+
+ButtonFrame.tcl,25
+    method append14,320
+
+Canvas.tcl,136
+    method resize120,2844
+    method resizing54,1346
+    method rotate62,1554
+    method rotatex80,1920
+    method rotatey100,2359
+
+CanvasPrint.tcl,24
+    method print14,344
+
+CheckEntry.tcl,75
+    method _action_proc29,466
+    method get10,198
+    method var21,362
+
+Choice.tcl,56
+    method get_value13,242
+    method set_value21,357
+
+Dialog.tcl,59
+    method activate81,2228
+    method set_result104,2689
+
+Entry.tcl,78
+    method _action_proc27,434
+    method get11,182
+    method trace_18,273
+
+Frame.tcl,78
+    method busy46,944
+    method config27,656
+    method frameconfig32,733
+
+InputDialog.tcl,29
+    method set_result28,669
+
+LabelMessage.tcl,0
+
+Listbox.tcl,267
+    method append66,1194
+    method append_list73,1295
+    method clear117,2099
+    method get_contents25,521
+    method get_selected37,714
+    method move_down82,1420
+    method move_up100,1794
+    method remove_selected49,924
+    method set_contents15,361
+
+ListboxPrint.tcl,24
+    method print19,367
+
+PrintDialog.tcl,93
+    method load27,736
+    method ok52,1203
+    method print74,1522
+    method save12,324
+
+Toplevel.tcl,272
+    method add_menubar185,4341
+    method add_menubutton171,4050
+    method busy131,3341
+    method center_window200,4608
+    method config48,1285
+    method debug215,4969
+    method quit119,3145
+    method setup_menubar_traversal193,4484
+    method test160,3828
+
+Tree.tcl,360
+    method add_node99,2802
+    method center54,1444
+    method deSelect_bitmap176,4326
+    method deselect_node153,3892
+    method get_current192,4641
+    method get_selected185,4515
+    method layout_node74,2113
+    method select_bitmap161,4009
+    method select_node141,3614
+    method set_default_bindings43,1086
+    method toggle_layout199,4784
+
+compat.tcl,0
+
+defaults.tcl,98
+proc set_app_defaults112,3530
+proc set_default_bindings98,3058
+proc set_default_resources8,208
+
+list.tcl,84
+proc lremove35,599
+proc lremove_item22,389
+proc lreverse42,729
+proc lunion8,159
+
+tclutil.tcl,137
+proc utilConvertClock78,1675
+proc utilDirTail68,1444
+proc utilGetArgs38,835
+proc utilGetConfigFilename10,339
+proc utilGetEnv56,1243
+
+tkutil.tcl,115
+proc utilGetConfigValue18,320
+proc utilGetSelection25,443
+proc utilGetTopLevel7,152
+proc utilReUseWidget35,634
+
+udialog.tcl,185
+proc confirm_dialog74,1238
+proc errexit_dialog21,369
+proc error_dialog37,625
+proc filename_dialog8,156
+proc info_dialog61,1000
+proc input_dialog90,1591
+proc warning_dialog49,809

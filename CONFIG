@@ -1,0 +1,35 @@
+
+#   CONFIG
+#
+#   Configuration information for a minibase build.
+#
+
+# Because of it's use of templates, minibase needs to
+# be compiled with gcc 2.7.2 or higher.
+# Set the CC and C variable to your local versions of the compiler
+CC = g++ 
+C := gcc
+LEX := flex
+YACC := yacc -d
+
+# Where to find the include files for the X library
+# the following is for sunos.
+#X_INCLUDES = -I/s/X11/common/include
+# and for solaris2.5.1
+#X_INCLUDES = -I/s/X11/include
+
+# Where is flex? This is for sunos
+#FLEX_LIB_LOC := /usr/psup/lib
+# For solaris:
+FLEX_LIB_LOC := /usr/lib64
+
+# Where is libm.a?
+MATH_LIB_LOC := /usr/lib64
+
+# This is needed for Solaris, all others can be empty
+SOCKLIB := -lsocket -lnsl
+#SOCKLIB := 
+
+# This is needed for sunos only. Empty for solaris and hpux
+RANLIB := ranlib
+#RANLIB := 

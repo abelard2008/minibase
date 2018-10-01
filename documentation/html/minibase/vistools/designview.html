@@ -1,0 +1,55 @@
+<HTML>
+<HEAD>
+<TITLE>DesignView</TITLE>
+</HEAD>
+
+<BODY>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<H1>Normalization Tool</H1>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+This tool supports normalization based on functional dependencies.
+Schemas can be created, FDs specified, and the schemas then
+tested for various properties (e.g., find a minimal cover, find keys,
+check if they are in a particular normal form and find FDs that
+cause a violation if not, etc.) and decomposed further.
+Properties of decompositions (lossless-join and dependency-preservation)
+can be checked easily.
+<P>
+Importantly, the tool supports a concept of a <i>refinement session</i>,
+in which a schema is decomposed repeatedly and the resulting
+decomposition tree is then saved.  For a given schema, a user might
+consider several alternative decompositions (more precisely,
+decomposition trees), and each of these can be saved as a refinement
+session.  This provides a very flexible and convenient mechanism for
+trying out several alternative decomposition strategies.
+<P>
+A complementary tool to create and edit ER diagrams and to produce
+a relational schema with FDs and inclusion dependencies from such
+diagrams is nder development.
+The normalization tool can also generate SQL-92 statements to create tables
+(with appropriate primary key and referential integrity constraints)
+corresponding to a set of schemas, FDs and (restricted) inclusion dependencies.
+<P>
+Together these two tools should support the paradigm of developing
+an ER diagram and then refining it using normalization.  The goal is
+to enable a user to focus on the important issue of how to choose between
+alternatives in database design, rather than on the details of
+normalization algorithms.
+<P>
+The tool can be run using the command <b>designview</b>.
+Examples are included in the directory <i>programs/dbnorm/examples</i>.
+
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+<A HREF="../project.html">Back to the List of Components</A><BR>
+<A HREF="../minibase.html">Back to the Minibase Home Page</A><BR>
+
+
+</BODY>
+</HTML>
+
+

@@ -1,0 +1,73 @@
+#!/s/std/bin/tclsh
+# Andrew Prock, Spring 1996
+
+########################################################################### 
+# Main section...
+########################################################################### 
+
+if [info exists env(DBNPATH)] {
+	set __LIBDIR__ $env(DBNPATH)/lib
+} else {
+	set __LIBDIR__ [pwd]/lib
+}
+source $__LIBDIR__/parse.tcl
+source $__LIBDIR__/output.tcl
+
+#set LIBDIR ~prock/fd/trans
+#source $LIBDIR/parse.tcl
+#source $LIBDIR/output.tcl
+
+set model RELFD
+
+set argc [llength $argv]
+if { $argc == 0 } {
+    puts "Usage: o2r [-sql] <filename>"
+    exit 1
+}
+
+set i 0
+while {$i < $argc} {
+    switch -- [lindex $argv $i] {
+	-rel {
+	    set model RELFD
+	    incr i
+	}
+	-sql {
+	    set model SQL
+	    incr i
+	}
+	default {
+	    if { [expr $argc - $i] == 1 } {
+		set oFile [lindex $argv $i]
+	    }
+	    incr i
+	}
+    }
+}
+
+set file [open $oFile]
+parseObjects $file relationships entities 
+close $file
+
+set file [open $oFile]
+parseAttribs $file relationships entities isadependancies
+close $file
+
+# This function (in parse.tcl) needs to
+# resolve attributes that have the same name
+# resolveNames relationships entities
+
+# For debugging purposes
+puts "# Raw Oppossum Table"
+puts "#  Entities"
+foreach rel [array names entities] {
+    puts "#   $rel $entities($rel)"
+}
+puts "#\n#  Relationships"
+foreach rel [array names relationships] {
+    puts "#   $rel $relationships($rel)"
+}
+puts ""
+
+outputTables entities relationships $model
+

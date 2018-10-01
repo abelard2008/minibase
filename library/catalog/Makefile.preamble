@@ -1,0 +1,23 @@
+CATALOG_SRCS = \
+	attrcatalog.C \
+	build.C \
+	create.C \
+	destroy.C \
+	drop.C \
+	dump.C \
+	gen_stats.C \
+	indexcatalog.C \
+	load.C \
+	maincatalog.C \
+	menu.C \
+	relcatalog.C \
+	utility.C
+
+CATALOG_HDRS = \
+	catalog.h \
+	maincatalog.h \
+	menu.h \
+	utility.h
+
+CATALOG_OBJS = $(CATALOG_SRCS:.C=.o)
+

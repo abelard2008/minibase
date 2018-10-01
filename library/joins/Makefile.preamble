@@ -1,0 +1,46 @@
+JOINS_SRCS = \
+	buf_patch.C \
+	dupl_elim.C \
+	fileIspoof.C \
+	file_scan.C \
+	ind.C \
+	index-nl.C \
+	index_scan.C \
+	io_bufs.C \
+	nested-loops.C \
+	pnode.PQ.C \
+	pnode.SplayNode.C \
+	pnode.SplayPQ.C \
+	pred_eval.C \
+	projection.C \
+	sort-merge.C \
+	sort.C \
+	tuple.C \
+	tuple_utils.C
+
+JOINS_HDRS = \
+	dupl_elim.h \
+	example.h \
+	fileIspoof.h \
+	file_scan.h \
+	hash_joins.h \
+	hash_tbl.h \
+	index.h \
+	index_scan.h \
+	io_bufs.h \
+	join_errors.h \
+	joins.h \
+	pnode.PQ.h \
+	pnode.SplayNode.h \
+	pnode.SplayPQ.h \
+	pnode.defs.h \
+	pq_defs.h \
+	pred_eval.h \
+	project.h \
+	projection.h \
+	select.h \
+	sort.h \
+	tuple_utils.h
+
+JOINS_OBJS = $(JOINS_SRCS:.C=.o)
+

@@ -1,0 +1,60 @@
+<HTML>
+<HEAD>
+<TITLE>Disk Space Management Test Page</TITLE>
+</HEAD>
+<body background = "../../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+
+
+<H1>Disk Space Management Test Page</H1>
+
+<IMG SRC="../../pics/hline.gif">
+
+<H2>Test 1</H2>
+This test creates a database and does some normal operations. 
+It adds some file entries and then allocates a run of pages.
+Some of these pages are written on. The rest of them are 
+deallocated. The database created here is used in the later
+tests. 
+
+<P>
+<IMG SRC="../../pics/hline.gif">
+
+<H2>Test 2</H2>
+Opens the database created by test 1.  Some of the files created 
+in test 1 are deleted. Lookups of the remaining file entries
+are performed. Then data is read from the pages written in test1
+and checked for correctness.
+
+<P>
+<IMG SRC="../../pics/hline.gif">
+<H2>Test 3</H2>
+This test checks some erroneous operations like 
+<it>looking up a deleted file entry, deleting a non-existent
+file entry, looking up a non-existent file entry, adding a 
+duplicate file entry, adding a file entry whose name is too long,
+allocating a run of pages longer than the maximum allowed</it>.
+
+<P>
+<IMG SRC="../../pics/hline.gif">
+<H2>Test 4</H2>
+This test checks the boundary conditions.
+The database created in test 1 is removed. Then, it creates a new 
+database
+and then allocates all the pages available in the database. 
+Deallocates some of these pages and again allocates some of them.
+The directory size is increased to more than one page by adding enough 
+file entries. Again tries to allocate a page when none is available. 
+Finally, the database is destroyed. 
+<P>
+<IMG SRC="../../pics/hline.gif">
+
+<P>
+<B><A HREF="../../spaceMgr/dsm.html">Space Management Page</A></B><BR>
+<B><A HREF="../../project.html">Back to the Components Page</A></B><BR>
+<B><A HREF="../../minibase.html">Back to the Minibase Home Page</A></B><BR> 
+
+
+</BODY>
+</HTML>

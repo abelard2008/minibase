@@ -1,0 +1,120 @@
+###################################################################
+#
+#    Configuration instructions - see also the man page
+#
+#    Author: Harry Stavropoulos (harryst@cs.wisc.edu)
+#
+###################################################################
+
+
+CONFIGURATION FILE
+------------------
+Many different things are defined in config_file. Make changes there,
+only, if you want to customize things - do not touch the code unless
+you know what you are doing (make sure you keep a copy of the old stuff)
+
+
+COLORS
+------
+Better have 2 versions - one for colored and one for black-and-white
+screens, or the problem that it is slow will get worse...(many if sta-
+tements - can try it, though)
+
+
+LOG-FILES
+---------
+Log-files are in subdirectory LOG_FILES - see config_file.
+
+
+BITMAPS
+-------
+The bitmaps are in subdirectory BITMAPS - see config_file.
+
+
+CONTENTS OF LOG FILES
+---------------------
+The way the contents of the log-file are interpreted is described in
+the man page - you may change this (make sure you make the changes in
+the man-page, too) in file trace.tcl - methods Startup and Next.
+
+MAN PAGE
+--------
+Is in subdirectory manual - if you want to change this, you have to change
+also file show_man_page.
+
+
+FILES
+-----
+- CONFIGURATION_INSTRUCTIONS    
+     The present file
+ 
+- btree.tcl
+     Defines the btree for the main window.
+
+- bt_demo (in parent directory)
+     Calls the main program.
+
+- config_file               
+     All the configuration details possible...
+
+- empty_file
+     Used to clear files used in program.
+
+- filecomplete.tcl (now fileselect.tcl)
+     The prompt for the log-file to be used.
+
+- btree_file
+     Used in program.
+
+- main.tcl
+     The main program...
+
+- menu.tcl
+     Creates the menubuttons for the main window.
+
+- old_path.tcl
+     Defines the btree for the path that has been followed during the
+     search. Code is similar to the main btree - only with limited 
+     functionality.
+
+- old_path_menu.tcl
+     Like menu.tcl but for the old_path.
+
+- path_snapshot
+     Used in program.
+
+- setup.tcl
+     Creates all the windows.
+
+- show_help_old_path
+     tcsh file
+
+- show_man_page
+     tcsh file
+
+- show_node_contents
+     Used in program.
+
+- temp_node_contents
+     Used by the program.
+
+- tclIndex
+     Tcl stuff - do not change.
+
+- trace.tcl
+     Actions taken as log-file is scanned.
+
+
+DIRECTORIES
+-----------
+- BITMAPS
+     Holds the pin and unusable-frame bitmaps.
+
+- LOG_FILES
+     The log-files.
+
+- manual
+     Contains the man page(s).
+
+- p
+     Used to store contents of visited subtree.

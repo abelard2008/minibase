@@ -1,0 +1,86 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> Delete the currently scanned record</TITLE>
+<meta name="description" value=" Delete the currently scanned record">
+<meta name="keywords" value="report">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html327 HREF="node27.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A> <A NAME=tex2html325 HREF="node16.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A> <A NAME=tex2html319 HREF="node25.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html328 HREF="node27.html"> Concurrency Control</A>
+<B>Up:</B> <A NAME=tex2html326 HREF="node16.html"> Internal Design</A>
+<B> Previous:</B> <A NAME=tex2html320 HREF="node25.html"> Get the next </A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION000310000000000000000> Delete the currently scanned record</A></H2>
+<P>
+Since the position of the record to be deleted is known, we can just
+move the last record on the last page to the current slot and
+decrement <em>current_slotno</em> by 1. If an overflow page is
+deallocated because of the deletion, a merge is triggered.  If the
+bucket to be merged (the last bucket) is neither the bucket we are
+scanning nor its image, then the normal merge operation described
+previously can be used here without any modification.
+Otherwise, if we still use the same merge operation, the values of <em>current_pageno</em> and <em>current_slotno</em> could be changed due to
+records movement. In order to minimize the cost and complexity, we
+designed a special scheme which is illustrated in the following two
+cases: 
+<UL><LI> Case 1: the image of the scanned bucket is the last bucket.
+Since a merge is triggered only when an overflow page is deallocated
+and we know it's triggered this time after a currently scanned record
+(in the scanned bucket) is deleted, we can deduce that the scanned
+bucket consists of some number of <b>full</b> pages. So we can just
+concatenate all the pages of its image bucket (i.e. the last bucket)
+to its last page and only the <em>OverflowPageNo</em> on the last page
+needs to be changed to the PageId of the first page of its image
+bucket. If its image bucket has only one empty page, nothing needs to
+be changed. The whole process is illustrated in Figure 2.
+<P>
+<P><A NAME=141>&#160;</A><IMG ALIGN=BOTTOM SRC="_2017_figure138.gif">
+<BR><STRONG>Figure:</STRONG> Case 1 in delete_current()<BR>
+<P>
+<P>
+<LI> Case 2: the scanned bucket is the last bucket. Again, (as in
+case 1,) we know that the scanned bucket consists of some number of
+<b>full</b> pages. We can concatenate all the pages of the image bucket
+of the scanned bucket to the last page of the scanned bucket as in
+case 1. But this time the scanned bucket is to be destroyed, Hence we
+change the PageId of the primary page of the image bucket (on some
+DirPage) to the PageId of the scanned bucket to keep the whole
+structure consistent. The whole process is
+illustrated in Figure 3.
+<P>
+</UL>
+<P>
+<P><A NAME=148>&#160;</A><IMG ALIGN=BOTTOM SRC="_2017_figure145.gif">
+<BR><STRONG>Figure:</STRONG> Case 2 in delete_current()<BR>
+<P>
+<P>
+Note that after these operations, all bucket pages are still compact.
+Besides, the vales of <em>current_pageno</em> and <em>current_slotno</em>
+are unchanged. One drawback of this scheme is that the continuing scan
+after the merge will then scan all the pages concatenated to the last
+page of the scanned bucket where no matched records can be found since
+they belonged to the image bucket of the scanned bucket before the
+merge. In order to improve the performance, we set a member of the
+<b>LinearHashingScan</b> object, <em>last_pageno</em>, to the PageId of
+the first page concatenated to the scanned bucket. When the scan reads
+this page, it knows that it's the end of the scan and NOMORERECS is
+returned. (See Figure 2 and Figure 3.)
+The above reasoning is based on the fact that when
+a scan is opened, no update operation is allowed except <em>delete_current()</em>.
+<P>
+<BR> <HR><A NAME=tex2html327 HREF="node27.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A> <A NAME=tex2html325 HREF="node16.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A> <A NAME=tex2html319 HREF="node25.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html328 HREF="node27.html"> Concurrency Control</A>
+<B>Up:</B> <A NAME=tex2html326 HREF="node16.html"> Internal Design</A>
+<B> Previous:</B> <A NAME=tex2html320 HREF="node25.html"> Get the next </A>
+<BR> <HR> <P>
+<BR> <HR>
+<P><ADDRESS>
+<I> Weiqing Huang <BR>
+Sun May 14 16:22:27 CDT 1995</I>
+</ADDRESS>
+</BODY>

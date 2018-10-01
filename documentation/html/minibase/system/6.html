@@ -1,0 +1,58 @@
+<BODY BGCOLOR="#FFDDDD">
+
+<HTML>
+<HEAD>
+<TITLE>Introduction</TITLE>
+</HEAD>
+
+<BODY>
+
+
+<H1>Accomplishments: the End Product</H1>
+	The Minirel II system is not yet completed.  As of May 15, simple
+joins could be performed, indicies created and destroyed, relations created 
+and destroyed, and optimization observed.  These systems are not yet 
+integrated with one another, however.
+
+<P>
+
+	The concurrency side of Minirel II has not been introduced yet.
+Once the single user version is running, the cooncurrency subsystems can
+be added.
+
+
+<H2>Status of Integration</H2>
+All work is done on HPs.  Currently, two different compilers are being used
+in the integratin process.  It is recommended that the project switch to 
+Suns as the HPs are far too slow for this work.
+<P>
+
+<B>Parser - Optimizer - Relational Operators - Heap Files:</B> Linked 
+together.  Faked relations allow testing of joins.  Catalog information 
+is needed before the relational  operators can be tested as a true query 
+run through the parser / optimizer / planner.
+
+<P>
+<B>Operating System - Catalogs - HeapFiles - Linear hashing - Buffer Manager - Disk Space Management:</B>
+These systems are all linked together.  The utilities for creating indicies,
+relations, and destroying them have been implemented.  The transaction
+logic that is needed for the multi-user version has been implemented.
+
+<P>
+<H2>Next Step</H2>
+	The next step for the integration process is to integrate heap files,
+access methods and the relational operators.  Once this is done, the utlities
+can create a database on which to perform simple queries.<BR>
+	Compiler incompatibilities need to be addressed.  Currently the
+optimizer can be compiled only using version 2.6.0 of GNU g++.  An attempt
+at compiling it using 2.6.2 failed.<BR>
+	BTrees need to be integrated.<BR>
+
+<H2>Multi-user</H2>
+	The multi-user systems have been tested together far more than the
+single-user systems, so it is hoped that their integration will be straight
+forward.  The teams that wrote the multi-user code have a good grasp of
+the problems at had and it seems that they have addressed them appropriately.
+
+</BODY>
+</HTML>

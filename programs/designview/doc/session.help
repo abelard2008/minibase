@@ -1,0 +1,173 @@
+
+dbnorm Help: Session Window
+============================
+
+dbnorm provides you with full display and editing capabilities for all
+decompositions specified in the process of schema refinement.  Each
+source relation in your database can have one or more decomposition
+sessions associated with it, and within a session the source relation
+can be decomposed into new, "derived" relations.  The derived
+relations can be decomposed further within the same session, or new
+sessions can be created for derived relations.
+
+IMPORTANT: Any time you try to create a derived relation that has an
+attribute set identical to a relation that already exists, dbnorm will
+ask you to make a choice about how the new relation should be
+created. You can either create a brand new relation with the same
+attribute set as the other relation, but with a separate identity--any
+sessions associated with the old relation will not be associated with
+the new one. The other option is to use the previously existing
+relation in the decomposition that is currently being created. This
+will bring the name and associated sessions of the old relation into
+the session you are currently working on.
+
+Whenever a relation (source or derived) has more than one session, one
+of the sessions is chosen to be the "default" session.  The default
+session is always the session at the top of any list of sessions, and
+it is the default session that gets used in the process of displaying
+all base relations.
+
+When you select a source relation in the main window, a list of its
+decomposition session appears.  You can view one of these sessions by
+double-clicking on the session name or selecting "View Session" from
+the Session menu.  You can also start a new session by selecting "New
+Session" from the Session menu.  Once you have displayed a session,
+the menus in the session window allow you to perform these operations:
+
+	* Save or rename the session.
+	* Test a relation for BCNF/3NF.
+	* Automatically decompose a relation into BCNF or 3NF.
+	* Start a new decomposition session for a relation.
+	* Link a relation to another session.
+	* Undo decompositions within the session.
+	* Hide or unhide attribute lists in the session tree.
+
+
+Here is a description of how to perform each of these operations:
+
+NOTE: If you click on a relation name in the session window, that
+relation becomes the active relation in the session.  You then have
+the ability to perform various operations on the active relation
+through the operations in the Relation menu.
+
+* Save or rename the session.
+
+	Select Save from the File menu to create a permanent copy of
+	the current session.  Select "Save As" to make a copy of the
+	session under a different name.
+
+	NOTE: "Save As" makes a copy of the session, the copy with the
+	old name is not deleted.
+
+* Test a relation for BCNF/3NF.
+
+	After highlighting a relation, you can test the relation for
+	BCNF and 3NF through the "Test/Decompose" option in the
+	Relation menu.  If violations exist, you will be presented
+	with a list of the violations, and you can respond in one of
+	three ways:
+
+	   1. Do nothing.
+
+	       Just click on the Dismiss button.
+
+	   2. Decompose to remove a violation.
+
+	       Select a violation from the list, then click on the
+	       Decompose button.  You will be warned if the generated
+	       decomposition is not dependency preserving or is not a
+	       lossless join decomposition.  If a warning is
+	       displayed, you can cancel the decomposition by clicking
+	       on the Cancel button.  Otherwise, the decomposition is
+	       performed and the derived relations are displayed in
+	       the session window.
+
+	   3. Perform a custom decomposition.
+
+	       If you click on the "Custom Decomposition" button, a
+	       window will appear in which you can define a new
+	       decomposition for the active relation.  At the top of
+	       the decomposition window is a list of all attributes in
+	       the original relation.  And across the bottom half of
+	       the window is a set of frames which will display the
+	       attribute sets for all relations in the decomposition.
+	       I'll refer to the original relation as the "parent"
+	       relation, and all derived relations as "children".
+
+	       To copy attributes to a child relation, first go to the
+	       parent's attribute list and highlight the attributes to
+	       be copied.  Then click on the Add button in the
+	       appropriate child frame.  You can also delete
+	       attributes from a child by highlighting part of the
+	       child's attribute list and clicking on the Delete
+	       button.
+
+	       If you want to add a child frame, select "Add Child"
+	       from the Decompose menu.  To delete a frame, click
+	       somewhere in the frame (the frame border will become a
+	       thick, solid black outline), and then select "Delete
+	       Child" from the Decompose menu.
+
+	       You can generate a BCNF or 3NF decomposition by
+	       selecting "Generate BCNF" or "Generate 3NF" from the
+	       Decomposition menu.  And at any time while working on
+	       your decomposition, you can test for Lossless Join and
+	       Dependency Preservation through the Test menu.
+
+	       Once you are satisfied with your decomposition, click
+	       on the Done button and the decomposition will be added
+	       to the session.  Clicking on the Cancel button discards
+	       all work you have done in the decomposition window.
+
+* Automatically decompose a relation into BCNF or 3NF.
+
+	Another option under the "Test/Decompose" item of the Relation
+	menu is to automatically generate a decompostion that puts
+	your relation into a chosen normal form (BCNF or 3NF).  If the
+	relation in already in the chosen normal form, you will be
+	informed of this and no decomposition will be performed.
+
+* Start a new decomposition session for a relation.
+
+  	Select "New Session" from the Relation menu to open a new
+	session window for the active relation.
+
+* Link a relation to another session.
+
+	Within a specific session, you can create a link between one
+	of the relations in that session and some other session which
+	has that relation as its root. If you select "Link to Another
+	Session" from the Relation menu you will be shown a list of
+	other decompositions defined for the highlighted
+	relation. Selecting one of these other sessions establishes it
+	as the "linked session" for the highlighted relation. These
+	session links are followed when you ask dbnorm to generate SQL
+	statements for all base relations in your database. Once a
+	linked session has been defined for a relation, its name will
+	appear in the linked session button below the session
+	tree. Clicking on this button will bring up a session window
+	for the linked session. If you have not defined a linked
+	session for the relation that is highlighted in the session
+	window, then no text will appear in the linked session button,
+	and clicking on the button has no effect.
+
+* Undo decompositions within the session.
+
+	Once a relation has been decomposed within a given session,
+	you can delete all of the derived relations below the active
+	relation by selecting "Undo Decomposition" from the Relation
+	menu.
+
+	WARNING: Deleting a derived relation which has decomposition
+	sessions associated with it results in all the sessions being
+	deleted also.
+
+* Hide or unhide attribute lists in the session tree.
+
+	Within the session tree you have the ability to hide and
+	unhide the attribute list of any relation.  By double-clicking
+	on a relation name you toggle the relation between hiding and
+	displaying its attribute lists.  Options also exist in the
+	View menu for performing hide/unhide operations over the
+	entire tree.
+

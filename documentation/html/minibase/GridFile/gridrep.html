@@ -1,0 +1,1281 @@
+<!doctype html public "-//IETF//DTD HTML//EN">
+<HTML>
+
+<HEAD>
+
+<TITLE>Introduction </TITLE>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Word 1.0Z">
+<META NAME="AUTHOR" CONTENT="Authorized Gateway Customer">
+<META NAME="OPERATOR" CONTENT="Authorized Gateway Customer">
+</HEAD>
+
+<BODY>
+
+<H1>Grid File</H1>
+
+<P>
+M. Stubbs   mstubbs@cs.wisc.edu   cs 764  May 1995 
+<H1>Introduction </H1>
+
+<P>
+  The gridfile is a data access method to find data by more than
+one attribute at one time.. The original gridfile description
+specified in-memory scales for all the dimensions and a dimension-way
+array kept on disk. It does not seem  feasible to directly implement
+the array structure in a direct obvious way due to  performance
+problems  when  new  slices  are inserted  in the array .  Therefore
+various schemes have been proposed such as the multi-level directory
+implementation I have used here. This method was proposed  by
+Klaus Hinrichs 1984 and Henk Blanken et al 1990 (the Generalized
+Grid File) among others.  While the original gridfile specified
+2 disk accesses to find an exact match , the multi-level directory
+ implementation has to read as many pages as the depth of  the
+tree, as a B+ tree.  It is very similar to a B+ tree in concept
+and is also said to resemble a k-d-b tree . 
+<P>
+This particular gridfile implementation is only two dimensions
+and the only data type is float . Only insertion and scanning
+was implemented as there was not time to tackle the hairy deletion
+algorithm. This program is a stand-alone program that was not
+integrated in with the minirel system. It  calls the minirel single-user
+version buffer  manager code. Note that this implementation does
+not support more duplicate cases of a key  than MAXRECS - 1 (MAXRECS
+is the number of  entries per data page ). This gridfile is only
+a secondary  index. What is stored are the keys and the record
+id, i.e. page number and slot number.
+<P>
+Also note that as is the program artificially limits the number
+of data items per data page to 5 vs the 63 possible for a usable
+pagesize of 1020 bytes. (This is held in the MAXRECS variable).
+Also the directory size was limited to 150 bytes  (MAXDIRSIZE)
+variable from the potential 1020. This was done for demonstration
+purposes.  One could change these constants and recompile if different
+values were desired. 
+<H1>External Interface</H1>
+
+<H2>GridFile functions:</H2>
+
+<P>
+// create a gridfile. filename is the name of the gridfile. The
+status of  the creation is returned in status and
+<P>
+// should be OK. Keytypes and num_dimensions have to be given
+but must always be real,real and 2
+<P>
+// respectively. 
+<P>
+ <B>GridFile (enum Status &amp;status,  const char * filename,
+const void * KeyTypes, const int maxstr, const int           
+       num_dimensions)</B>
+<P>
+// This constructor opens a prior-existing gridfile of name given
+in filename. Status returned in status.
+<P>
+// This code does not work because the version of  buffermanager
+et al I was using did not correctly
+<P>
+//  return the header  page number. All the code on the gridfile
+end is there to do this is there however.
+<P>
+<B>GridFile (enum &amp;status, const char * filename);</B>
+<P>
+//Insert keys /rid  combination into gridfile. keyarray is  float
+keys[2] cast to (void *) . First dimension key
+<P>
+// should be placed in keys[0] and second dimension key in keys[1].
+ rid.PageNo should have page number
+<P>
+// and rid.slotNo should have the slotnumber. If insertion was
+successful returns OK.
+<P>
+<B>enum Status insert (const void * keyarray, const RID rid);</B>
+<P>
+// destroyFile Removes the gridfile index pages from the database.
+<P>
+<B>enum Status destroyFile();</B>
+<P>
+//setup a scan of a gridfile. As above lowkeys and highkeys are
+float keys[2] cast to (void *).
+<P>
+// lowkeys[0] is lowest value want on first dimension, highkeys[0]
+ is highest value want on first //dimension, lowkeys[1] is lowest
+value want on second dimension, lowkeys[2] is highest value want
+on 
+<P>
+//second dimension. status, hopefully OK is returned in status
+variable.
+<P>
+<B>GridfileScan *new_scan (Status status, const void * lowkeys,
+const void * highkeys);</B>
+<P>
+//print the gridfile pages out
+<P>
+<B>printtree();</B>
+<H2>GridFileScan functions:</H2>
+
+<P>
+//If successful returns MATCH and   sets given mykeys pointer
+to next keys found in gridfile and also 
+<P>
+//returns the recordid of  those keys.
+<P>
+<B>enum status get_next (float *&amp;mykeys, RID &amp;record_id);</B>
+<H2>Creating a gridfile: practical  example:</H2>
+
+<P>
+//The minimal gridfile access main program :
+<P>
+#include &lt;iostream.h&gt;
+<P>
+#include &quot;minirel.h&quot;
+<P>
+#include &quot;gridfile.h&quot;
+<P>
+#include &lt;stdio.h&gt;
+<P>
+#include &quot;gridarray.h&quot;
+<P>
+#include &lt;iostream.h&gt;
+<P>
+#include &lt;stdlib.h&gt;
+<P>
+#include &lt;assert.h&gt;
+<P>
+#include &quot;buf.h&quot;
+<P>
+#include &quot;Clock.h&quot;
+<P>
+#include &quot;db.h&quot;
+<P>
+#include &quot;const.h&quot;
+<P>
+DSM dsm;
+<P>
+DB  db(&quot;junk&quot;,100);  //database name here is junk, size
+100
+<P>
+BufMgr bm;
+<P>
+int Xid;
+<P>
+Error err;
+<P>
+int debug;
+<P>
+int main (int argc, char *argv[])
+<P>
+{
+<P>
+#define MAXSTR 6   //This is bogus. Doesn't matter what number
+this is
+<P>
+#define NUMDIM 2   //number dimensions can only be 2
+<P>
+float keys[2],lowkeys[2],highkeys[2];
+<P>
+float *mykeys;
+<P>
+AttrType keytypes[NUMDIM];
+<P>
+RID rid,myrid;
+<P>
+Status mystat;
+<P>
+GridFileScan *myscan;
+<P>
+ 
+<P>
+//keytypes can *only* be real but we have to do this anyway 
+<P>
+ keytypes[0] = attrReal;
+<P>
+ keytypes[1] = attrReal;
+<P>
+//------------------ startup: create a gridfile --------------
+
+<P>
+ //Here we create 'mygridfile'. 
+<P>
+ //'garbage' is the name of the symbolic file our gridfile goes
+into.
+<P>
+ GridFile mygridfile (mystat,&quot;garbage&quot;,(void *) keytypes,MAXSTR,NUMDIM);
+<P>
+  
+<P>
+//------------------- insert into gridfile ----------------- 
+<P>
+// example of inserting a keys,rid pair into the gridfile:  
+<P>
+// keys on dimension 0 is 42, on dimension 1 is 87 and 
+<P>
+//   the record is described by slot number 5 on page 11.
+<P>
+// status returned should be OK.
+<P>
+// Will fail to insert record that has duplicate keys and rid
+<P>
+   keys[0] = 42;
+<P>
+   keys[1] = 87;
+<P>
+   rid.pageNo = 11;
+<P>
+   rid.slotNo = 5;
+<P>
+   mystat = mygridfile.insert((void *)keys,rid);
+<P>
+//------------------------ printing gridfile ---------------
+<P>
+//example of printing the gridfile:
+<P>
+      mygridfile.print();     //print some basic info about file
+<P>
+      mygridfile.printtree(); //print all the pages 
+<P>
+//---------------- exact match scan --------------------------
+<P>
+// example of exact match search:
+<P>
+ //search for record with dimension 0 key 42, dimension 1 key
+87:    
+<P>
+ // note same values given for both low and hi keys of &quot;range&quot;
+<P>
+   keys[0] = 42;
+<P>
+   keys[1] = 87;
+<P>
+  //     have to create a scan first
+<P>
+   myscan = mygridfile.new_scan(mystat,keys,keys);
+<P>
+  // then tell it to get the next item
+<P>
+  // POINTER to keys are returned in mykeys and rid is returned
+in myrid
+<P>
+   while (myscan-&gt;get_next(mykeys,myrid) == MATCH)
+<P>
+        {// do something
+<P>
+        }
+<P>
+  // dont forget to delete it   
+<P>
+   delete myscan;
+<P>
+//-------------------- range scan --------------------
+<P>
+lowkeys[0] = 11;   
+<P>
+lowkeys[1] = 345;
+<P>
+highkeys[0] = 765;
+<P>
+highkeys[1] = 3724;
+<P>
+//Above specifies we want between 11 and 765 on dimension 0 and
+<P>
+//between 345 and 3724 on dimension 1.
+<P>
+//so initialize the scan:
+<P>
+ myscan = mygridfile.new_scan(mystat,lowkeys,highkeys);
+<P>
+//and then retrieve the matching entries.
+<P>
+//Pointer to keys and rid found returned by getnext.
+<P>
+while (myscan-&gt;get_next(mykeys,myrid) == MATCH)
+<P>
+     {// do something  
+<P>
+     }
+<P>
+  //when you're done, delete it 
+<P>
+   delete myscan;
+<P>
+//Note if you do not care about a particular range boundary value
+<P>
+//put the minimum possible value in for the appropriate lowkey
+<P>
+//or the maximum possible value for the high key as the case may
+be.
+<P>
+//---------------------------- destroy gridfile ----------------
+<P>
+// destroy the gridfile: (actually delete its pages from database).
+
+<P>
+   mygridfile.destroyFile();
+<P>
+// -------------------------- close down ------------------------------
+<P>
+//you can delete the gridfile object or let it go away when main
+ends.
+<P>
+//this closes the gridfile. To remove it, call destroyFile. 
+<P>
+}
+<H1>Internal Design</H1>
+
+<P>
+(Note the example gridfile created by my program at the end of
+this section.)
+<P>
+We have 2 basic kinds of pages in our structure. There are directory
+pages and data pages. Directory pages have a scale for the &quot;i&quot;
+dimension  also known as dimension  0 and the &quot;j&quot; dimension
+ also known as dimension 1 . Directory pages also have a 2-D array
+which hold the next level of pages. The next level of pages can
+be directory pages themselves or data pages. Data pages have the
+key0, key1, record Id entries on them. Thus this form of gridfile
+is a kind of B+ tree. Blanken et al also feel that this design
+is basically the same as a k-d-b tree.  Unlike a B+ tree the leaf
+pages are not linked horizontally.  We assume that anyone wishing
+to do a full filescan would use a clustered index on the dataset
+instead of asking the gridfile to do the scan.  I maintain a header
+page that contains basic information about the gridfile such as
+number_of_dimensions, key types, and most importantly, the root
+page number. The only time the header page was accessed was when
+the gridfile was created/opened or a new root was created above
+the previous root causing the root page number in the header to
+have to be changed.  
+<P>
+The design seems simple and appealing but turned out to be rather
+complex and voluminous to code and really slow to debug! 
+<P>
+Some questions an implementor needs to ponder are:
+<P>
+ 
+<P>
+ Is a scale interval inclusive or not (in my gridfile it is i.e.
+search stops at &lt;= scale value).
+<P>
+ Do splits move data that is larger than some splitting value,
+or smaller, to a new page. (I move  smaller).
+<P>
+           Are duplicate scale values allowed?  (I did not. I
+believe perhaps Blanken did).
+<P>
+  How do you deal with duplicate values on keys? I did not deal
+with it. If I cannot split a datapage 
+<P>
+ due to duplicates the insertion fails. Note that one could have
+a run of duplicates whose other key 
+<P>
+ was <I>not </I>duplicate. It would appear to be a difficult problem.
+<P>
+ Do you allow records to be inserted that are duplicate in all
+respects? In my implementation I  reject  insertion of items if
+it finds the identical item (including the record id) already
+exists on a  data page.  
+<P>
+ Locking?  I did not get to implement this.  The locking protocol
+designer needs to bear in mind  that the effects of page-splits
+percolating back up from below can cause a particular directory
+ page to have to be split <I>within </I> regions,  necessitating
+modifying one or more sub-trees below the  <I>unnaturally</I>
+ split directory all the way down to the leaf level.  Also  in
+my implementation the  header page always would have had to be
+locked first, of course. 
+<P>
+  How do you represent the directory pages in memory and on disk?
+
+<P>
+ I represented the scales as dynamically sized arrays of floats,
+and the 2D directory array as a 2-D  
+<P>
+ dynamically-sized array of ints. When new slices had to be added
+, increasing the size of one of  the scales, and the size of the
+directory, those arrays were increased in size in memory.  This
+ structural arrangement  did not seem amenable to being stored
+on disk.  Therefore on disk pages  directory pages were stored
+as the dimension_0_size, the dimension_1_size, followed by the
+ actual scale_0 , scale_1 and then the directory (written out
+in row-major order).  If the designer 
+<P>
+ thought of a way to represent the directory page that could be
+directly cast to and from a disk  page that would be a very good
+thing.  A gridfile of mixed data types would add another element
+
+<P>
+ of complexity to this task.
+<P>
+ How do you represent the data pages in memory and on disk?
+<P>
+ I used an array of structures, whose elements were the 2 keys
+(floats) and the pagenumber and  slotnumber (ints). Therefore
+this <I>could </I> be directly cast to and from a disk buffer.
+A gridfile of  
+<P>
+ mixed data types would make this more of a challenge.  It would
+have been very convenient to  have been able to make the array
+<I>in memory </I>one place larger than the maximum size that could
+ be stored on disk, due to cases where one is inserting a record
+on a datapage and need to consider  (i.e sort the entries on one
+of the keys ) the data group as a whole but the group may actually
+be 1  larger than fits on disk.
+<P>
+  Should we have null page numbers in our directory structure?
+I did not but later realized it might  be a good idea. See forced
+data page split below. 
+<H3>Implementation highlights:</H3>
+
+<P>
+<B>starting state</B>:  My gridfile started as a header page 
+containing the root pagenumber. In the startup state the rootpage
+has 0 sized scales and a null directory.  When the first data
+item was added then the first data page was allocated with its
+keys as the first scale entries, of course, and the 2-D directory
+is started.
+<P>
+<B>promotion of  directory scale endpoints</B>:  In my implementation
+when a new item is added to a &quot;bucket&quot; corresponding
+to one or both scale endpoints and one or both key values of 
+the added item exceed a scale endpoint or endpoints, the scale
+endpoint or endpoints will be promoted accordingly.  This potentially
+occurs recursively up the tree from below.  For example in an
+infant tree:
+<P>
+root page  <HR>
+
+<PRE WIDTH=132>
+             <B>11</B>           
+
+<B>23</B>           2            
+
+
+</PRE>
+<HR>
+
+<P>
+data page 2:
+<P>
+23  11 rid:  8 6  
+<P>
+Add entry  45, 87 rid 34 6 :
+<P>
+root page<HR>
+
+<PRE WIDTH=132>
+             <B>87</B>           
+
+<B>45</B>           2            
+
+
+</PRE>
+<HR>
+
+<P>
+data page 2:
+<P>
+23  11  rid 8 6
+<P>
+45 87   rid 34 6
+<P>
+Note how the directory scale values were promoted .
+<P>
+<B>data page splits:   </B>We receive a tuple slated to be entered
+into this datapage, but if it were inserted it would exceed the
+page capacity.  It is important to remember that this data page
+may be referenced by more than one &quot;bucket&quot; in the directory
+above it  i.e . it is a multi-bucket region covered by more scale
+intervals than just one i  scale interval and one j scale interval
+.  Consequently if the datapage's parent directory  holds our
+datapage in multiple directory  buckets we must  first try to
+divide the datapage on existing scale boundaries. If just one
+item can be split off on an existing boundary  (from the group
+including the item we are inserting) then we are happy  and move
+the lower valued (on the key being split) records to a new page,
+and change the appropriate buckets in the parent's directory to
+the new page number. In this program we always check  the 0 dimension
+first  followed by  the 1 dimension. No  further changes ascend
+the tree about this except possibly maximum key promotion as discussed
+previously. 
+<P>
+      But if we cannot redistribute the records on existing intervals
+ or there is only one bucket then we must split the page, creating
+a new scale/directory slice.  Since we could not redistribute
+even one record on the page then  the data must all be in one
+directory bucket, that given by the scale coordinates appropriate
+to the item we are inserting.  In this module we alternate between
+checking the 0 dimension first and the 1 dimension first as it
+really affects the &quot;dimensional skew&quot; of the tree. In
+this program I put all the items including the new item in ascending
+order on the dimension in question ,  check if the midpt value
+can be the splitpoint and if not , just start from the low end
+looking for a split point. A split point cannot occur in the midst
+of duplicate values of course and it cannot turn out to be the
+same value as the existing interval boundary! and we can't end
+up with everything in one bucket (the too many duplicate keys
+problem).  (It would be better to have a smarter split algorithm
+here.) Once a splitpoint is determined the lower values are moved
+to the new page. The parent directory is updated . If the parent's
+update requires adding a new directory splice, it could become
+ too large to fit on a page and  then the parent must undergo
+a directory split itself and so on back up the tree.
+<P>
+example data page splits:
+<P>
+<I>a  data page split that requires parent to add a new slice</I>:
+<P>
+inserting tuple:  706.0000  4931.0000  which maps to page 6:
+<P>
+ 
+<P>
+parent of page 6 before split:
+<P>
+page: 3 size: 28 dimensions:  2 X 1
+<P>
+         9139.00
+<P>
+4385.00       6
+<P>
+8075.00       5
+<P>
+data of page 6 before split:
+<P>
+   69.00     4290.00
+<P>
+ 1312.00  1068.00
+<P>
+ 4267.00  1957.00
+<P>
+ 4385.00  9139.00
+<P>
+ 1458.00  3375.00
+<P>
+adding key   706   4931 
+<P>
+data page is split on dimension 1 with a new boundary of 4290.
+Records with key1 &lt;= 4290 are moved to the new page  page 7.
+
+<P>
+page 7:
+<P>
+1458.00  3375.00
+<P>
+69.00      4290.00
+<P>
+4267.00  1957.00
+<P>
+1312.00  1068.00
+<P>
+new page 6:
+<P>
+  706        4931
+<P>
+ 4385.00  9139.00
+<P>
+directory after data page 6 split.  Note that a new scale slice
+was added on dimension 1.
+<P>
+page: 3 size: 40 dimensions:  2 X 2
+<P>
+         4290.00 9139.00
+<P>
+4385.00       7       6
+<P>
+8075.00       5       5
+<P>
+<I>data page split that is a redistribution and thus does not
+cause a new slice in the parent</I>:
+<P>
+inserting  2950.0000  7044.0000  6476  4663 maps to page 6 which
+occupies a region of more than one   interval  on the j scale.
+
+<P>
+directory before data page split: 
+<P>
+page: 3 size: 124 dimensions:  5 X 4
+<P>
+         1832.00 4290.00 8578.00 9347.00
+<P>
+1312.00       9       9      12      12
+<P>
+4385.00      10      7        6       6
+<P>
+7139.00       8       8      14      11
+<P>
+8034.00       8       8      13      11
+<P>
+9885.00       8       8       5       5
+<P>
+page: 6 
+<P>
+                   4385.00  9139.00 rid:   5669,  5235
+<P>
+                   1755.00  6462.00 rid:   3425,  8680
+<P>
+                    1546.00  6391.00 rid:   7859,  5725
+<P>
+                    2655.00  5440.00 rid:   9627,  4492
+<P>
+                    3075.00  7535.00 rid:     14,  3109
+<P>
+   added ing record:     2950 7044 
+<P>
+page 6 splits on dimension 1 boundary value 8578 and moves lesser
+records to page 15:
+<P>
+parent directory after data page redistribution. Note that a pagenumber
+in the directory was changed from 6 to 15 but no new slice was
+added. 
+<P>
+page: 3 size: 124 dimensions:  5 X 4
+<P>
+         1832.00 4290.00 8578.00 9347.00
+<P>
+1312.00       9       9      12      12
+<P>
+4385.00      10       7     15       6
+<P>
+7139.00       8       8      14      11
+<P>
+8034.00       8       8      13      11
+<P>
+9885.00       8       8       5       5
+<P>
+<B>directory page splits: </B> A directory page increases in size
+due to new slices being added to its scales and directory structure
+due to page splits below its level.  When a new slice is added
+the directory is increased in size and then its size is checked
+against the maximum size possible. (Directory pages always keep
+a disksize variable of how much space the structure will take
+up when converted to a disk image.)  If  it is too  large it must
+be split. First the program tries to do a &quot;natural split&quot;.
+It tries to find a point  as &quot;in the middle&quot; of a scale
+as possible where a split would be between regions all the way
+through the directory. Currently the program tries to find the
+most midline split on the 0 scale and the 1 scale and whichever
+is the most toward the middle is chosen with a preference for
+scale 0 if there is a tie.  If a potential split has been found
+it is checked to see if  both pieces that result from the directory
+split will both fit on disk.  If not the split fails. (It would
+be a lot smarter to take the size issue into account while deciding
+where to split the directory! but I did not have time to make
+this correction.)   
+<P>
+problem splits: <HR>
+
+<PRE WIDTH=132>
+          <B>10 </B>        20        30         40         50        60         
+
+<B>500</B>       4          4         4          4          4         3          
+
+<B>800</B>       5          5         5          5          5         3          
+
+
+</PRE>
+<HR>
+
+<P>
+Imagine we ended up with the above directory structure, which
+needs to be split but  splitting on dimension 1 between 50 and
+60, the directories we end up with after the split are still too
+large to fit on disk (caused by the dimension skew here). 
+<HR>
+
+<PRE WIDTH=132>
+             <B>20</B>           40           80           
+
+<B>876</B>          1            1            2            
+
+<B>993</B>          5            3            2            
+
+<B>999</B>          5            4            4            
+
+
+</PRE>
+<HR>
+
+<P>
+The above directory structure cannot be split naturally without
+dissecting a region. 
+<P>
+Therefore we also need to be able to do a forced directory split
+that goes through region boundaries.  The program merely picks
+the midpt of whichever dimension is larger . (It would be better
+to have a smarter algorithm which figures out a split that lessens
+the number of regions will be split!) .  The forced directory
+split routine is called to split this directory page at the specified
+scale and location chosen.  After the split occurs, whether natural
+or forced, the <I>parent</I> directory needs to be updated unless
+this page was the root. If this page was the root then a new root
+directory is created  whose directory has two entries: these two
+directory pages.  The maximum scale entries of  the old root 
+directory pieces are carried back to be the root scales. 
+<P>
+example new root creation:
+<P>
+oldroot needs to split. Splits on dimension 0 at location 3 with
+lesser values going to page 28.
+<P>
+page: 3 size: 228 dimensions:  7 X 6
+<P>
+         1832.00 4290.00 5785.00 6378.00  8578.00 9347.00
+<P>
+1312.00      20       9        24         12            12   
+    12
+<P>
+1755.00      22       7        21         21            26   
+     6
+<P>
+4005.00      22       7        21         21            15   
+     6
+<P>
+4385.00      10       7        21         21            15   
+     6
+<P>
+7139.00      16      16       23         19            14    
+   11
+<P>
+8034.00      17      17       13         13            13    
+   11
+<P>
+9885.00      18       8        25          5             5   
+       5
+<P>
+page 3 after split:
+<P>
+page: 3 size: 116 dimensions:  3 X 6
+<P>
+         1832.00 4290.00 5785.00 6378.00 8578.00 9347.00
+<P>
+7139.00      16      16      23      19      14      11
+<P>
+8034.00      17      17      13      13      13      11
+<P>
+9885.00      18       8      25       5       5       5
+<P>
+page: 28 size: 144 dimensions:  4 X 6
+<P>
+         1832.00 4290.00 5785.00 6378.00 8578.00 9347.00
+<P>
+1312.00      20       9          24        12          12    
+    12
+<P>
+1755.00      22       7          21        21          26    
+     6
+<P>
+4005.00      22       7          21        21          15    
+     6
+<P>
+4385.00      10       7          21        21          15    
+     6
+<P>
+The new root that was created: 
+<P>
+page: 30 size: 28 dimensions:  2 X 1
+<P>
+           9347.00
+<P>
+4385.00      28
+<P>
+9885.00       3
+<P>
+<B>parent update after a child splits: </B> We are told what scale
+the child split on and what the boundary value was plus the pagenumber
+of page that split, and the new pagenumber created to split into.
+If that split boundary value already exists in our scale then
+this actually constitutes a redistribution of pages not an increase
+in size on our part. If the  boundary value does not exist in
+our scale then a slice  is inserted at the appropriate place in
+the scale sequence and in the directory structure.
+<P>
+<I>Example redistribution in parent after child splits</I>: 
+<P>
+parent directory
+<P>
+page: 30 size: 104 dimensions:  4 X 4
+<P>
+         4290.00 5397.00 5785.00  9951.00
+<P>
+1755.00      81      28        28         28
+<P>
+4385.00      62      28        28         28
+<P>
+8034.00      76      76        42         42
+<P>
+9994.00      93      93        93          3
+<P>
+child page 28 is a directory page that has to split:  It splits
+on dimension 0 at boundary 1755 which is also a boundary in the
+parent.  The smaller valued part of  the directory is moved to
+page 99.
+<P>
+page: 28 size: 228 dimensions:  7 X 6
+<P>
+         5785.00 6378.00 7472.00  7761.00  8578.00  9951.00
+<P>
+ 688.00      72      38       50          50            50   
+      83
+<P>
+1312.00      24      38      50          50            50    
+     12
+<P>
+1755.00      39      39      26          26            26    
+     77
+<P>
+2782.00      85      21      89          89            71    
+     88
+<P>
+2950.00      48      21      46          46            46    
+      6
+<P>
+4005.00      48      21      97          84            45    
+      6
+<P>
+4385.00      48      21      15          15            15    
+      6
+<P>
+page 28 after split: 
+<P>
+page: 28 size: 144 dimensions:  4 X 6
+<P>
+         5785.00  6378.00  7472.00 7761.00 8578.00  9951.00
+<P>
+2782.00      85      21        89            89        71    
+   88
+<P>
+2950.00      48      21        46            46        46    
+    6
+<P>
+4005.00      48      21        97            84        45    
+    6
+<P>
+4385.00      48      21        15            15        15    
+    6
+<P>
+page: 99 size: 116 dimensions:  3 X 6
+<P>
+         5785.00 6378.00 7472.00 7761.00  8578.00  9951.00
+<P>
+ 688.00       72      38          50      50             50  
+     83
+<P>
+1312.00      24      38          50      50             50   
+    12
+<P>
+1755.00      39      39          26      26             26   
+     77
+<P>
+ 
+<P>
+parent directory after split:
+<P>
+Note how  because the child (28) who split , split on a boundary
+that exists in the parent (1755) that then a section of references
+to page 28 were changed to page 99, instead of adding a new slice
+to the directory. 
+<P>
+page: 30 size: 104 dimensions:  4 X 4
+<P>
+         4290.00 5397.00 5785.00 9951.00
+<P>
+1755.00      81      99       99         99
+<P>
+4385.00      62      28       28         28
+<P>
+8034.00      76      76       42         42
+<P>
+9994.00      93      93       93          3
+<P>
+ 
+<P>
+<I>Parent update requiring a new slice</I>:
+<P>
+page: 30 size: 28 dimensions:  2 X 1
+<P>
+              9555.00
+<P>
+4385.00      28
+<P>
+9885.00       3
+<P>
+child page 3 has to split. It splits on dimension 0 location 2
+with the lesser values going to page 42.
+<P>
+page: 3 size: 220 dimensions:  5 X 8
+<P>
+         1372.00 1832.00 3190.00 4290.00 5785.00    6378.00  8578.00
+ 9555.00
+<P>
+6980.00      34      34      33           16         23      
+         19         35         11
+<P>
+7139.00      34      34      33           16         23      
+         19         14         11
+<P>
+8034.00      17      17      17           17         13      
+         13         13         11
+<P>
+9636.00      37      18       8              8         25    
+           31         40          5
+<P>
+9994.00      37      18       8              8         25    
+           31         32          5
+<P>
+After page 3 split: 
+<P>
+page: 3 size: 112 dimensions:  2 X 8
+<P>
+         1372.00   1832.00 3190.00   4290.00 5785.00  6378.00
+ 8578.00  9555.00
+<P>
+9636.00      37      18           8              8          25
+            31        40          5
+<P>
+9994.00      37      18           8              8          25
+            31         32         5
+<P>
+   
+<P>
+page: 42 size: 148 dimensions:  3 X 8
+<P>
+         1372.00 1832.00 3190.00 4290.00 5785.00 6378.00 8578.00
+ 9555.00
+<P>
+6980.00      34      34      33            16          23    
+    19          35        11
+<P>
+7139.00      34      34      33            16          23    
+    19          14        11
+<P>
+8034.00      17      17      17            17          13    
+    13          13        11
+<P>
+Parent directory after child split: Note that the child's split
+boundary (8034) did not exist in parent therefore a new slice
+had to be added on the dimension the child split on.  
+<P>
+page: 30 size: 36 dimensions:  3 X 1
+<P>
+              9555.00
+<P>
+4385.00      28
+<P>
+8034.00      42
+<P>
+9885.00       3
+<P>
+<B>forced directory page split: </B> We are given the split scale
+and location from the caller.  We make a list of the regions split
+in the split. If  these are directory pages, we call ourself 
+to split them. If they are data pages we call the forced data
+page split module. We are passed back the changed page numbers
+from below.  (The split has to go all the way  down to the leaf
+level. Anything less than the split boundary is moved to a new
+page and the new page number is returned. )  We modify  our directory
+to reflect the pages changed  (the directory section more toward
+the origin from the splitlocation ). Now the effect is that there
+are no split regions on the boundary we are doing the split on.
+ Thus we now split our directory as specified moving the lesser
+values on the split boundary to a new page. We return the new
+page number to the caller.  The parent's update after a forced
+directory page split proceeds the same as after a regular child
+directory split. 
+<P>
+<B>forced data page split: </B> We are told by the caller what
+scale and location to split at. We allocate a new page and move
+the data items that are &lt;= split boundary value to the new
+page. We return the new page number. It would appear we have to
+allocate a new page even if there are no items that actually end
+up on the new page because we do not have the concept of a null
+page number in our directory structure. This would be something
+to consider adding to the algorithms.! 
+<H2>Example gridfile of depth 2: (0 is the root, level 2 are data
+pages) :</H2>
+
+<H3>Level 0 page: </H3>
+
+<P>
+Root page<HR>
+
+<PRE WIDTH=132>
+             <B>9866</B>         
+
+<B>6807</B>         15           
+
+<B>9420</B>         3            
+
+
+</PRE>
+<HR>
+
+<H3>Level 1 pages: </H3>
+
+<P>
+Directory page number 15<HR>
+
+<PRE WIDTH=132>
+             <B>3718</B>         4130         8003          8265         9612         
+
+<B>2151</B>         20           11           21            10           23           
+
+<B>5873</B>         19           11           18            10           6            
+
+<B>6807</B>         8            8            18            10           6            
+
+
+</PRE>
+<HR>
+
+<P>
+Directory page number 3<HR>
+
+<PRE WIDTH=132>
+             <B>2181</B>         3718         4130         8265         9866         
+
+<B>7406</B>         22           12           9            24           24           
+
+<B>8970</B>         7            7            7            13           13           
+
+<B>9420</B>         7            7            7            5            5            
+
+
+</PRE>
+<HR>
+
+<P>
+Level 2 data pages: 
+<P>
+page: 20 
+<P>
+         1534.00   993.00 rid:   7838,  8498
+<P>
+     1347.00   197.00 rid:   3009,  5260
+<P>
+    57.00  1522.00 rid:   1288,  4143
+<P>
+  2151.00  2073.00 rid:   9323,  7571
+<P>
+page: 11 
+<P>
+         4390.00  3804.00 rid:   7863,  3609
+<P>
+page: 21 
+<P>
+          1462.00  8003.00 rid:   3023,  3961
+<P>
+   493.00  5954.00 rid:   8770,  3121
+<P>
+page: 10 
+<P>
+         3200.00  8265.00 rid:   9931,  5591
+<P>
+  318.00  8160.00 rid:   6912,  7631
+<P>
+  6711.00  8243.00 rid:    667,  8706
+<P>
+page: 23 
+<P>
+ 1223.00  8590.00 rid:   5992,  8814
+<P>
+  782.00  9609.00 rid:   8396,  4009
+<P>
+   19.00  9537.00 rid:   3934,  8836
+<P>
+page: 19 
+<P>
+ 5873.00  1390.00 rid:     42,  6586
+<P>
+ 4342.00  3160.00 rid:   5632,  3634
+<P>
+ 5431.00  1409.00 rid:   6879,  4016
+<P>
+page: 18 
+<P>
+ 5647.00  7278.00 rid:   7158,  6734
+<P>
+ 3452.00  5152.00 rid:    461,  9299
+<P>
+ 4904.00  6953.00 rid:   3333,  1201
+<P>
+ 5186.00  5424.00 rid:   1880,  6163
+<P>
+page: 6 
+<P>
+ 3133.00  8300.00 rid:   1147,   739
+<P>
+ 4465.00  9612.00 rid:   1598,   973
+<P>
+ 5940.00  8350.00 rid:   4825,  9201
+<P>
+ 6340.00  8708.00 rid:   1729,  9450
+<P>
+ 4170.00  9124.00 rid:   9755,  7082
+<P>
+page: 8 
+<P>
+ 5886.00  2913.00 rid:   6151,  9173
+<P>
+ 6807.00  2465.00 rid:   6993,  5063
+<P>
+ 6454.00   402.00 rid:   7098,  7145
+<P>
+page: 22 
+<P>
+ 7133.00  1759.00 rid:   5745,  2335
+<P>
+ 7406.00   780.00 rid:   5852,  8796
+<P>
+ 7231.00   171.00 rid:   7034,   945
+<P>
+ 7372.00  2181.00 rid:   8599,  1086
+<P>
+page: 12 
+<P>
+ 7326.00  3718.00 rid:   1524,  1615
+<P>
+ 7067.00  3084.00 rid:    743,  3320
+<P>
+page: 9 
+<P>
+ 7027.00  4130.00 rid:   7860,  8549
+<P>
+ 7183.00  3921.00 rid:   6381,  6171
+<P>
+page: 24 
+<P>
+ 6969.00  6646.00 rid:   1582,  7070
+<P>
+ 6870.00  7977.00 rid:   1141,   736
+<P>
+page: 7 
+<P>
+ 8670.00   683.00 rid:   5962,  6110
+<P>
+ 8535.00  3962.00 rid:   5085,  3316
+<P>
+ 8657.00  2388.00 rid:   6471,  3897
+<P>
+ 8659.00  3434.00 rid:   7720,  6632
+<P>
+page: 13
+<P>
+ 8638.00  6735.00 rid:   9458,  5600
+<P>
+ 8414.00  5929.00 rid:   4322,  1571
+<P>
+ 8970.00  7076.00 rid:   7613,    86
+<P>
+ 8137.00  6825.00 rid:   1112,  9001
+<P>
+ 8246.00  7784.00 rid:   6202,  6000
+<P>
+page: 5 
+<P>
+ 9420.00  5096.00 rid:   2673,  7808
+<P>
+ 9032.00  4815.00 rid:    262,  5022
+<P>
+ 8985.00  9866.00 rid:   8306,  5803
+<H1>Accomplishments</H1>
+
+<P>
+ I spent not a little time researching the topic of implementing
+the gridfile. I considered  a number of  methods to implement
+it. The multi-level directory method seemed the easiest combined
+with a promised good performance.  Unfortunately I could find
+no references that went into exhaustive detail about  this way
+to implement the gridfile so I had to experiment and fill in the
+gaps myself  which turned out to be extremely time consuming 
+but rather fun to try to outwit the wily gridfile. Knowing what
+I know NOW about implementing it, I could do it in a fraction
+of  the time it actually took me with all the wrong turns I took.
+
+<P>
+Originally I wrote my own new/get/put page routines because there
+were none available at the time. These are in the diskfile.c file
+but are no longer used as later I converted to use the buffermanager
+code. I also had to write a number of routines to expand one-dimensional
+and two-dimensional arrays. These are in the gridarray.c  For
+testing, I wrote a routine to read a file line by line where each
+line had 4 numbers representing the keys and rid values. This
+is readfile.c  Also I wrote a routine to generate such a file
+of random key values which is in randdata.c 
+<P>
+I learned to use purify and found it to be a very useful tool.
+ It will point problems you did not even notice yet and can often
+do a better job in elucidating  the cause of  core dumps than
+gdb, which often fails to be able to report the section of code
+responsible.   
+<P>
+There was no code that I found that I could use so I wrote everything
+myself.  It would have been better to have a library of pre-existing
+code to use, assuming it were all known to be solid. In fact,
+it would have been better to write a mock up first in some high
+level language such as foxpro, work out all the details of the
+data structure without any concerns for having to write custom
+code to store the pages  (they could  just be stored in a database
+as records) and then when it was 100% checked out,  write the
+thing in C++ for performance. I think I would have ended up with
+a much better product in a lot less time if I had done it that
+way. However, this way I got a lot more practice in C++, which
+I sorely needed, so it was a good experience for me. 
+<P>
+Thus I wrote then about 3000 lines of code.  Several mis-intuitions
+I had about the gridfile insertion algorithm caused me a lot of
+ major re-writing. Also I spent at least 3 days trying to find
+a glitch with pages getting corrupted in the buffer pool. I wasted
+a lot of time at first trying to accomodate mixed data types and
+trying to be general about the number of dimensions.  I'm not
+at all sure that using a 2-D array for the directory structure
+was a good idea. It lead to a lot of  (if dimesion 0 do this,
+if dimension 1 do this)  code redundancy. 
+<P>
+I regret not having been able to spruce up the code as I would
+have liked to have done. (There are many many places where I have
+very poor performance code and/or  poor form code). Also I would
+have liked to have been able to create some statistics on I/Os
+necessary for insertions, for range-scan performance, and last
+and definitely least, been able to do the deletion algorithm.
+
+<H1>TESTING</H1>
+
+<P>
+I found it to be a good test of the gridfile to generate files
+of random keys,  insert those keys and then do an exact match
+scan to find them. Currently the driver program is set up to take
+a random seed and generate 400 random tuples, insert them, then
+do an exact match scan to find them. If one is not found that
+fact is reported as an error. I have not found a random number
+for which the gridfile fails this test. I was not able to write
+a program to test all random seed numbers in a range however.
+I tested about 20 individual random seed numbers. I also found
+it to be a good idea to have &quot;sanity checks&quot; in the
+code to test the integrity of  the structure, such as tests to
+see if  the scales were in increasing order as they should be.
+It turned out it was much easier than one would think to end up
+inserting an interval value in the wrong place in a scale. In
+fact I found a case where I could add 400 tuples and find them
+all but the structure was actually incorrect. The tuples were
+all found by luck!
+<P>
+I also ran the code under purify and corrected all the things
+purify objected to <I>that I could understand what it was complaining
+about. </I>There remain some cases of small memory leaks that
+I did not have time to be able to figure out what it was referring
+to as the modules referred to were not high level modules in my
+code, but library functions invoked in. (Of course not everything
+purify complains about<I> is</I> an error such as accessing the
+arguments to main. )
+<H1>RETROSPECTIVE </H1>
+
+<P>
+I thought the minirel design was really good as far as the interface
+to it I had to deal with.  I was not in a position to hear a lot
+of detail about the rest of the design so I can't really comment
+on it in any depth.  The only changes I would make in the process
+would be to try to decide on  key issues earlier in the semester
+and not change things at such a late date  such as the change
+of  the error protocol that was made so late, or the change from
+global objects to pointers to global objects.  
+</BODY>
+
+</HTML>

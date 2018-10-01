@@ -1,0 +1,54 @@
+//*****************************************************
+// DB INTERFACE
+//*****************************************************
+
+// Class definition for DB which manages a database.
+// Each database is basically a UNIX file and consists of several relations
+// within it.
+
+class DB
+{
+public:
+
+    // Create a database with the specified number of pages
+
+    DB( char* name, int num_pages, Status& status );
+
+    // Open an existing database with the given name
+
+    DB( char* name , Status& status);
+
+    // Destructor closes the database
+
+    ~DB();
+
+    // Destroy the database.
+    Status db_destroy();
+
+    // Functions to return some characteristics of the database.
+    char* db_name();
+    int db_num_pages();
+    int db_page_size();
+
+    // Allocate a set of pages where the run size is 1 by default.
+    // Gives back the page number of the first page of the allocated run.
+    Status allocate_page(int& start_page_num, int run_size = 1);
+
+    // Deallocate a set of pages starting at the specified page number 
+    // and a run size can be specified.
+    Status deallocate_page(int start_page_num, int run_size = 1);
+
+    // Read the contents of the specified page into the given memory area.
+    Status read_page(int pageno, Page*& pageptr);
+
+    // Write the contents of the specified page.
+    Status write_page(int pageno, Page* pageptr);
+
+    // DIRECTORY SERVICE
+    // Manipulate file entries
+    Status add_file_entry(char* fname, int header_pg_id);
+    Status delete_file_entry(char* fname);
+    Status get_file_entry(char* name, int& header_pg_id);
+};
+
+//***************************************************************

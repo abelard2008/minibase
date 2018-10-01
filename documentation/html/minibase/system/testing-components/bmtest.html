@@ -1,0 +1,69 @@
+
+<HTML>
+<HEAD>
+<TITLE>Buffer Manager Tests</TITLE>
+</HEAD>
+<body background = "../../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+
+
+<H1>Buffer Manager Test Page</H1>
+
+<IMG SRC="../../pics/hline.gif">
+
+<P>
+The buffer manager reads disk pages int a main memory page as needed.
+The collection of main memory pages (called <EM>frames</EM>) used
+by the buffer manager for this purpose is called the 
+<EM>buffer pool</EM>. This is just an array of <B>Page</B> objects.
+The buffer manager is used by access methods, heap files and 
+relational operators to read/write/allocate/deallocate pages. 
+A run of pages can be allocated with a single call. 
+The Buffer Manager uses the interface to the underlying DB
+class object which actually performs these functions on disk
+pages. 
+<P>
+The buffer manager can also return the dirty page table when 
+needed. This information is required for checkpointing in 
+multi-user Minibase (which uses the ARIES recovery protocol).
+Replacement policies can be changed easily at compile-time. 
+<P>
+<IMG SRC="../../pics/hline.gif">
+
+<H2>Test 1</H2>
+All normal operations are checked here. A run of pages is
+allocated, each page in the run is written upon and then unpinned (with
+the dirty flag set to TRUE).
+Later, each page is pinned again and the data on each page is compared
+with the data written on it (obviously, it has to be the same). 
+Finally, all the pages are freed. 
+<P>
+<IMG SRC="../../pics/hline.gif">
+
+<H2>Test 2</H2>
+Test 2 does some illegal buffer manager operations. First, it tries
+to pin more pages than there are frames in the buffer pool. This operation
+should fail. It also tries to free a pinned page, and tries to unpin an
+already unpinned page. Again, these operations should fail. 
+
+<P>
+<IMG SRC="../../pics/hline.gif">
+<H2>Test 3</H2>
+Test 3 allocates several new pages, dirties them and randomly 
+leaves some of them pinned. 
+All the newly allocated pages are pinned again, which
+means some of the pages are doubly pinned. Data written on them is
+checked and then all the pages are unpinned. 
+
+<P>
+<IMG SRC="../../pics/hline.gif">
+<P>
+<B><A HREF="../../bufMgr/bufMgr.html">Buffer Manager Page</A></B><BR>
+<B><A HREF="../../project.html">Back to the Components Page</A></B><BR>
+<B><A HREF="../../minibase.html">Back to the Minibase Home Page</A></B><BR>
+
+
+</BODY>
+</HTML>
+

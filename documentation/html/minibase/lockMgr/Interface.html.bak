@@ -1,0 +1,85 @@
+<BODY BGCOLOR="#FFDDDD">
+<h2 ALIGN=CENTER>External Interface </h2>
+
+The public interface to the lock manager is contained in lock_manager.h  All
+transactions wanting to use the lock manager must create an instance of the lock
+manger, class lock_manager_def(), and an instance of its memory manger, class
+sh_alloc(). Sh_alloc is defined in mem_manager.h  When the sh_alloc class is
+created, an external pointer sh_alloc_ptr must be set to point to it.
+
+<PRE>
+//The enumerated type used to request the lock mode     
+enum lock_type {Shared, Exclusive, IShared, IExclusive, None}; 
+
+//The structure of a page id.
+struct page_def 
+{
+        Page::Id page_id;           // The page to be locked in the file
+        char db_name[MAXFILENAME];  // The name of the file in which the page resides
+}
+
+class LockMgr {
+friend class deadlock_detector;
+public:
+    // returns Ok in status if the lock manager was created correctly
+    lock_manager_def (Status &status);
+    // This needs to connect the lock manager to the lock_table and the 
+    // transaction info
+
+    ~lock_manager_def() {};
+
+    // The following public functions return OK on success, 
+    // Restart if this transaction must be restarted.
+    
+    // Request a Shared/IShared or Exclusive/IExclusive lock on a page.  
+    // If it is not possible, the OS will be asked to suspend this
+    // process until the page becomes available. If the lock request
+    // introduces a dependency cycle into the graph, the process
+    // requesting the lock will be restarted.  A return code of Restart
+    // indicates the transaction must be restarted. Lock page also handles
+    // implicit upgrades. 
+
+    Status lock_page(page_def &page,lock_type lock);
+
+    // Upgrade a shared lock to an Exclusive lock.
+    // An error code of Restart indicates the transaction must be restarted
+    // "page" is the page to upgrade the lock on.  Lock is the new
+    // lock you wish to hold on the page.
+    Status upgrade_lock(page_def &page,lock_type lock); 
+
+    // Unlock a page
+    // Exclusive locks can only be released by calling unlockall()
+    Status unlock_page(page_def &page);
+
+    // Unlock all pages locked by this process.  This will usually
+    // be called by the OS at commit or abort time.
+    Status unlockall();
+
+}
+</PRE>
+<HR>
+
+An example of how to get the lock manager started once the OS has been
+initialized is listed below :
+
+<PRE>
+   #include "lock_manager.h"
+   #include "mem_manager.h"
+
+   extern Xaction_manager* XMgr;
+
+   sh_alloc_ptr = new sh_alloc();
+  
+   // we need to begin the transaction before the OS can initialize the 
+   // lock manager properly. 
+   XMgr->begin();
+
+   lock_manager_def Lock_Mgr(stat);
+
+   if (stat != OK)
+   {
+       my_err.show_errors();
+       exit(1);
+   }
+
+</PRE>

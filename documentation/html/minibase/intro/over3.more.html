@@ -1,0 +1,76 @@
+<BODY BGCOLOR="#FFDDDD">
+<HTML>
+<HEAD>
+<TITLE>Query Trace</TITLE>
+</HEAD>
+
+<BODY>
+
+<H1>Query Trace</H1>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+
+<H2>Calls that take place in the plan tree creation</H2>
+Actual calls will be in <I>italics</I>.  Members of
+objects that are referred to using pointers will use
+dot (.) notation because of HTML formatting problems
+with the greater than sign.<P>
+
+<UL><B>Create managers and global objects:</B>
+<LI>DB - disk space manager
+<LI>BM - memory manager (buffer manager)
+<LI>Error - global error object
+<LI>Catalog - catalog object
+</UL>
+
+<B>Parser</B> - C<BR>
+<I>DoQuery</I><BR>
+<I>OptimizeAndExecute</I><BR>
+<I>yyparse</I><BR>
+<I>pp_typechk</I><BR>
+<P>
+<B>Optimizer</B> - C++<BR>
+<I>ii_ConvertFromParseTree</I> constructor<BR>
+<I>Optimizer.Optimize</I><BR>
+<I>o.GetBestSolution</I><BR>
+<P>
+The plan tree is now a tree of <I>PlanNode</I>s.<P>
+<B>Planner</B><BR>
+<I>PlanNode.interpret</I><BR> 
+<I>interpret</I> is called recursively over every
+node in the tree.<BR>
+<P>
+<UL><B>Our example:</B>
+  <LI><I>nested_loops_join::nested_loops_join</I>
+   <UL>
+    <LI><I>FileScanIter::FileScanIter</I> constructor for relation sailors
+    <UL>
+     <LI>HeapFile::HeapFile
+     <LI>HeapFile::openScan
+    </UL>
+    <LI><I>FileScanIter::FileScanIter</I> constructor for relation reserves
+    <UL>
+     <LI>HeapFile::HeapFile
+     <LI>HeapFile::openScan
+    </UL>
+   </UL>
+</UL>
+Once the tree of iterators is created, with all the iterators 
+as inputs to the top level iterator, the call to <I>interpret</I> 
+will return a pointer to the top level iterator.  The main()
+function will call <I>get_next</I> on the top iterator
+and get the next tuple.  This call to get_next will cause
+the top level iterator to issue calls to its children.
+
+<P>
+<A HREF="../intro/overview.html">Back to the Overview</A><BR>
+<A HREF="../minibase.html">Click here to go the Minibase Home Page</A>
+
+
+</BODY>
+
+</HTML>
+
+
+

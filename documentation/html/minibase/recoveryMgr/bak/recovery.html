@@ -1,0 +1,78 @@
+<BODY BGCOLOR="#FFDDDD">
+<HTML>
+<HEAD>
+<TITLE>Recovery Manager</TITLE>
+</HEAD>
+
+<BODY>
+
+<H1>Recovery Manager</H1>
+Kar Shun Tsoi(tsoi) and Ranjani Ramamurthy (ramamurt)<BR>
+
+<HR>
+
+<H3>General Description of goals & responsibilities</H3>
+<UL>
+ <LI>Build a recovery manager with checkpointing, rollbacks, and restart 
+ routines.
+ <LI>Provide the log manager with a handle on the earliest page lsn required,
+ in order to do log compaction.
+</UL>
+
+
+<P>
+<H3>Meeting Summaries</H3>
+<UL>
+ <LI>3/24: Decided on a preliminary version of the interface. Interacted
+ with the log manager group about the log manager methods we'd need to invoke.
+ <li>3/31: Finalized the public interface. Added a function to determine the
+ earliest LSN required from the log. This was required by the log manager
+ group, to help them with log compaction.
+ <li>4/12: Finalized the interface from the log manager group and the OS
+ group. We did not have to make any changes in the public interface of the
+ RecoveryManager class.
+ <li>4/19: The decision to have a log file per database did not change our
+ interface significantly. The Buffer Manager group had to include the
+ DB name as a parameter, to the function  that returns the dirty page table.
+ So also the Operating Systems group. They too had to include the DB name 
+ for the function that returns the Transaction Table.
+ An issue remains - on whether or not the FirstLSN is to be written into
+ the log record during a checkpoint. We will be discussing this detail and
+ make the required changes to our code ( and this html document ), as and when
+ they are finalized.
+ <li>4/25: The FirstLSN will not be logged during the checkpoint. Also, we
+ make the assumption that the log manager will not ask for the FirstLSN during
+ or before the restart routine of ARIES.
+</UL>
+
+<P>
+<H3>Links to other groups that are relevant to our work</H3>
+<ul>
+<LI><A HREF="http://www.cs.wisc.edu/~cs764-1/cs764.html">CS764 Home Page</A>
+<LI><A HREF="../project.html">CS764 Project Home Page</A>
+<li><A HREF="../os/pj764.html">OS group</A>
+<li><A HREF="../bufMgr/764.html">Buffer Manager</A>
+</ul>
+<P>
+<H3>External Interfaces</H3>
+ <UL>
+  <LI><A HREF="recovery_mgr.h">Our latest public interface</A>
+ </UL>
+ <UL>
+  <LI><A HREF="details.html">A description of what the Recovery Mgr does..</A>
+ </UL>
+
+<HR>
+
+<a href = "rec.html">
+<img src="pics/purpleball.gif"></a>
+MINIREL : Recovery Manager project report.
+<br>
+
+</BODY>
+
+</HTML>
+
+
+
+

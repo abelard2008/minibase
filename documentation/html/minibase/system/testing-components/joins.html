@@ -1,0 +1,114 @@
+<HTML>
+<HEAD>
+<TITLE>Joins Test Page</TITLE>
+</HEAD>
+<body background = "../../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+
+
+<H1>Joins Test Page</H1>
+
+<IMG SRC="../../pics/hline.gif">
+
+
+<H2>Overview</H2>
+
+These tests show how three relations are joined together in various
+ways.  The three relations show how sailors of various skills make
+reservatons to rent different boats at the club.<P>
+<B>
+<I>sailors (sid, sname, rating, age)</I> - int, string, int, real<BR>
+<I>boats (bid, bname, bcolor)</I> - int, string, string<BR>
+<I>reserves (sid, bid, date)</I> - int, int, string<BR>
+</B>
+<P>
+The tests of the joins are done by using <I>faked</I> iterators,
+and feeding these into the joins.  The only two joins that are
+demonstrated are  sort-merge and nested-loops.  Sorting, duplicate
+elimination, projection and selection are all demonstrated as well.
+<P>
+The iterators are just arrays with the tuples in them, and calls to 
+get_next just increment the index.  All the plans are created "by
+hand" also (the optimizer, parser and planner are not used).
+<P>
+Other joins have been coded by this team, but these joins were
+not brought into the testing menu.  These hash-based joins (as
+well as a few others) are not supported by the Minibase
+optimizer.  They should be demonstrated anyway, but I decided against
+spending the extra time doing it. 
+<P>
+<IMG SRC="../../pics/hline.gif">
+
+<H2>Query 1</H2>
+Query: Find the names of sailors who have reserved boat number 1.<P>
+SELECT S.sname<BR>
+FROM   Sailors S, Reserves R<BR>
+WHERE  S.sid = R.rid AND R.bid = 1<BR>
+<P>
+This query uses a sort merge join with sailors as the outer relation and
+reserves as the inner relation.  The sailor name is projected at the end of 
+the join.
+<P>
+<IMG SRC="../../pics/hline.gif">
+
+<H2>Query 2</H2>
+Query: Find the names of sailors who have reserved a red boat 
+and return then in alphabetical order.<P>
+SELECT   S.sname<BR>
+FROM     Sailors S, Boats B, Reserves R<BR>
+WHERE    S.sid = R.rid AND R.bid = B.bid AND B.color = 'red'<BR>
+ORDER BY S.sname<BR>
+<P>
+Plan used:<P>
+Sort (Pi(sname) (B  |><|  Pi(sname, bid) (S  |><|  R)))<BR>
+<P>
+Two nested loops joins are used, with the result of the sailors & reserves join
+forming the outer input of the second join (boats being the inner relation).
+The result is sorted.
+<P>
+<IMG SRC="../../pics/hline.gif">
+
+<H2>Query 3</H2>
+Query: Find the names of sailors who have reserved a boat.<P>
+SELECT S.sname<BR>
+FROM   Sailors S, Reserves R<BR>
+WHERE  S.sid = R.rid<BR>
+<P>
+A sort-merge join.
+<P>
+<IMG SRC="../../pics/hline.gif">
+
+<H2>Query 4</H2>
+Query: Find the names of sailors who have reserved a boat
+and print each name once.<P>
+SELECT DISTINCT S.sname<BR>
+FROM   Sailors S, Reserves R<BR>
+WHERE  S.sid = R.rid<BR>
+<P>
+A sort-merge join that eliminates duplicates. 
+<P>
+<IMG SRC="../../pics/hline.gif">
+
+<H2>Query 5</H2>
+Query: Find the names of old sailors or sailors with a rating less
+than 7, who have reserved a boat, (perhaps to increase the
+amount they have to pay to make a reservation<P>
+SELECT S.sname, S.rating, S.age<BR>
+FROM   Sailors S, Reserves R<BR>
+WHERE  S.sid = R.rid and (S.age > 40 OR S.rating < 7)<BR>
+<P>
+A sort-merge using a complex selection.
+<P>
+
+
+<IMG SRC="../../pics/hline.gif">
+
+<P>
+<B><A HREF="../../joins/joins.html">Joins Page</A></B><BR>
+<B><A HREF="../../project.html">Back to the Components Page</A></B><BR>
+<B><A HREF="../../minibase.html">Back to the Minibase Home Page</A></B><BR>
+
+
+</BODY>
+</HTML>

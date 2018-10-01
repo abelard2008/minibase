@@ -1,0 +1,59 @@
+<HTML>
+<HEAD>
+<TITLE>Relational Operators</TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+
+<H1> <IMG ALIGN=MIDDLE SRC="sjp.gif"> Relational Operators </H1>
+
+<IMG SRC="../pics/hline.gif">
+
+<H2>Introduction</H2>
+The relational operators are implemented as
+<A HREF="../planner/iterator.html"><B>iterators</B></A>, i.e.,
+they support a get-next-tuple interface.
+<P>
+Selections are implemented as part of file-scan iterators
+or index-scan iterators; projections (with no selection)
+are always file-scan iterators.
+Selections on single relations are combined with projections.
+<P>
+Whenever possible, selections are combined with joins
+by applying the (non-join) selection conditions to
+the tuples in the join result.  Similarly, any unwanted
+attributes are projected out as part of the join operators.
+Each join method defines a new kind of iterator.
+<P>
+Sorting is implemented as a separate iterator, and is used
+internally by the sort-merge join operator.  It can also be
+used for GROUP-BY, ORDER-BY and DISTINCT.
+<P>
+
+<IMG SRC="../pics/hline.gif">
+
+<H2>Design Decisions</H2>
+<UL>
+ <LI> <A HREF="ext_sort.html"> External sorting.</A> [ 
+      <A HREF="interface/sort.h"><i>public interface</i></A> ]
+ <LI> <A HREF="proj.html">Projection (with elimination of duplicates).</A> [ 
+      <A HREF="interface/project.h"><i>public interface</i></A> ]
+ <LI> <A HREF="select.html"> Selection.</A> [ 
+      <A HREF="interface/pred_eval.h"><i>public interface</i></A> ]
+ <LI><A HREF="j.html"> Join algorithms</A> [ 
+      <A HREF="interface/joins.h"><i>public interface</i></A> ]
+</UL>
+
+<P>
+<IMG SRC="../pics/hline.gif">
+
+<P>
+<B><A HREF="../project.html">Back to the List of Components</A></B><BR>
+<B><A HREF="../minibase.html">Back to the Minibase Home Page</A></B><BR>
+<B><!A HREF="report.ps">
+<!764 Report</A></B>
+</BODY>
+
+</HTML>
+

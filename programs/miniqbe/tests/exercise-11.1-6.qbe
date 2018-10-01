@@ -1,0 +1,3 @@
+setComment {Emps with extreme salaries}
+addRelationTable {Emp {}} {eid {}} {ename p.} {salary _s}
+addConditionsBox {_s < 10000.00 or _s > 100000.00}

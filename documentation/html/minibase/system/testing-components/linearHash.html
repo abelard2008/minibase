@@ -1,0 +1,58 @@
+<BODY BGCOLOR="#FFDDDD">
+<HTML>
+<HEAD>
+<TITLE>Linear Hashing Test Page</TITLE>
+</HEAD>
+<body background = "../../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+
+
+<H1>Linear Hashing Test Page</H1>
+
+<IMG SRC="../../pics/hline.gif">
+
+
+<H2>Test 1</H2>
+Insert up to 1000 key / rid pairs into the index.
+<P>
+
+<IMG SRC="../../pics/hline.gif">
+
+<H2>Test 2</H2>
+In Test 2, scans are performed that make no sense (e.g., 
+low values higher than
+the high values, etc.).  The index that was created in Test 1 is used 
+for testing these scans.  The scans should return no tuples.  They should not
+return any errors.  
+<P>
+<IMG SRC="../../pics/hline.gif">
+
+<H2>Test 3</H2>
+Basically the same as Test 1, except that instead of an integer
+key, a string is used.  The keys are inserted in ascending order, as
+in Test 1.
+<P>
+<IMG SRC="../../pics/hline.gif">
+
+
+<H2>Test 4</H2>
+The same as Test 3, except that the keys are inserted in descending
+order.  
+<!This test has a PROBLEM.  The sibling pointers (from right
+to left) are not done correctly.  There is a problem in the splitting.
+Fortunately, this feature is not used in Minibase, though it should be
+changed later.>
+
+<P>
+<IMG SRC="../../pics/hline.gif">
+
+<P>
+<BR>
+<B><A HREF="../../linearHash/linearHash.html">Linear Hashing Page</A></B><BR>
+<B><A HREF="../../project.html">Back to the Components Page</A></B><BR>
+<B><A HREF="../../minibase.html">Back to the Minibase Home Page</A></B><BR>
+
+
+</BODY>
+</HTML>

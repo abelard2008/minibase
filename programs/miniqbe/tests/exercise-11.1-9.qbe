@@ -1,0 +1,5 @@
+setComment {Emps making over 20K who work in Video or Toy depts}
+addRelationTable {Emp unq.} {eid _e} {ename p.} {salary {p. > 20000}}
+addRelationTable {Works {}} {eid _e} {did _d}
+addRelationTable {Dept {}} {did _d} {dname _n} {managerid {}} {floornum {}}
+addConditionsBox {_n = Video or _n = Toy}

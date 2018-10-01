@@ -1,0 +1,111 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!Converted with LaTeX2HTML 95 (Thu Jan 19 1995) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds >
+<HEAD>
+<TITLE>7.2 Allowing More Concurrency</TITLE>
+</HEAD>
+<BODY>
+<meta name="description" value="7.2 Allowing More Concurrency">
+<meta name="keywords" value="main">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+<P>
+ <BR> <HR><A NAME=tex2html312 HREF="node26.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html310 HREF="node23.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html306 HREF="node24.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html313 HREF="node26.html">8 Enhancements to  Minirel</A>
+<B>Up:</B> <A NAME=tex2html311 HREF="node23.html">7 Future Work</A>
+<B> Previous:</B> <A NAME=tex2html307 HREF="node24.html">7.1 Duplex-Disks and Raw </A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00072000000000000000>7.2 Allowing More Concurrency</A></H2>
+<P>
+<A NAME=subsectionfuturenewdesign>&#160;</A>
+<P>
+The current implementation uses a single page for the log tail and
+locks the entire shared memory structure while performing any
+operation.  This considerably reduces concurrency.  Since log record
+writes are in the critical path of every update (i.e., every update
+operation has to log its update), maximizing concurrency is crucial.
+<P>
+	This section outlines an alternate, more complex design for
+the log manager that considerably increases the concurrency.
+<P>
+	Concurrency can be enhanced if we reduce the size of
+the critical section to encompass just the assigning of LSNs.  Writing
+on the log tail page can proceed concurrently because the writes are
+to non-overlapping portions of the page (the mutual exclusion of
+assignment of LSNs guarantees this).  The scheme is more complicated
+because we no longer know when a page can be flushed.  Also, since LSN
+assignments proceed at a faster rate, we have to ensure that the page
+for a log write is in the log tail before allowing the write to
+proceed.  This raises the question of what should be done if the page
+is not in the log tail.
+<P>
+	We propose the following solution to tackle these problems.
+We assume double buffering, i.e., two log tail pages such that when
+one is being flushed to disk, the other can be filled by log writes.
+Associated with each log tail page is the page ID in the log file it
+corresponds to.  Each page ID is protected by a semaphore.  We denote
+the page ID corresponding to log tail page <i> p</i> as <i> ID<IMG  ALIGN=MIDDLE ALT="" SRC="img25.gif"></i> and
+the semaphore as <i> sp<IMG  ALIGN=MIDDLE ALT="" SRC="img26.gif"></i>.  Figure <A HREF="node25.html#figurenewdesign">3</A>
+illustrates the configuration.
+<P>
+<P><A NAME=409>&#160;</A><A NAME=figurenewdesign>&#160;</A><IMG  ALIGN=BOTTOM ALT="" SRC="img33.gif">
+<BR><STRONG>Figure 3:</STRONG> The design for enhancing concurrency.  Each page in the log
+tail has the page ID of the log file that it corresponds to.  Each
+page ID is protected by a semaphore.  <i> wait<IMG  ALIGN=MIDDLE ALT="" SRC="img30.gif"></i> is the list of
+processes (transactions) waiting for the page ID, <i> ID<IMG  ALIGN=MIDDLE ALT="" SRC="img31.gif"></i>, to
+change.  <i> write<IMG  ALIGN=MIDDLE ALT="" SRC="img32.gif"></i> is the list of transactions that have been
+assigned LSNs for page <i> p</i> but not yet written their records.<BR>
+<P>
+<P>
+	Let us walk through a typical set of log writes.  Initially,
+both buffers are empty.  <i> ID<IMG  ALIGN=MIDDLE ALT="" SRC="img34.gif"></i> is 0, <i> ID<IMG  ALIGN=MIDDLE ALT="" SRC="img35.gif"></i> is 1.  Every
+log write goes through a critical section for assignment of LSN.  Let
+the first five log records get LSNs assigned in page 0.  All five of
+these can now concurrently write to page 0.  Every time an LSN is
+assigned for a log write to page <i> ID<IMG  ALIGN=MIDDLE ALT="" SRC="img36.gif"></i>, an entry is made in
+<i> write<IMG  ALIGN=MIDDLE ALT="" SRC="img37.gif"></i>.  When the corresponding <tt> memcpy</tt> to the log tail
+succeeds, the entry is removed.
+<P>
+	When the sixth log write request arrives, the LSN assignment
+code detects that a page change has occurred<A NAME=tex2html8 HREF="footnode.html#348"><IMG ALIGN=BOTTOM ALT="gif" SRC="http://www.cs.wisc.edu/latex2html//foot_motif.gif"></A>.  Thus, no more log writes to page
+<i> ID<IMG  ALIGN=MIDDLE ALT="" SRC="img38.gif"></i> occurs.  This is made note of.  Now, when <i> write<IMG  ALIGN=MIDDLE ALT="" SRC="img39.gif"></i>
+becomes empty, the flusher can be invoked.
+<P>
+	The flusher will check whether another flusher is active for
+page <i> q</i>.  If so, it waits until that flush completes.  It will
+then start writing the page to disk.  Since <i> write<IMG  ALIGN=MIDDLE ALT="" SRC="img40.gif"></i> is empty,
+it is guaranteed that no further updates to page <i> ID<IMG  ALIGN=MIDDLE ALT="" SRC="img41.gif"></i> will be
+made.  (Flushers can check whether other flushers are active by having
+semaphores per log tail page that are <i> down</i>ed and <i> up</i>ed by
+the flushers only.)
+<P>
+	Meanwhile, LSN assignments and log writes will continue in the
+page <i> ID<IMG  ALIGN=MIDDLE ALT="" SRC="img42.gif"></i>.  Suppose that log writes to page <i> ID<IMG  ALIGN=MIDDLE ALT="" SRC="img43.gif"></i> are
+completed.  No further log writes can occur because the page <i>
+ID<IMG  ALIGN=MIDDLE ALT="" SRC="img44.gif"></i> is still being flushed.  This is detected by writers because
+<i> LSN.pageID <IMG  ALIGN=MIDDLE ALT="" SRC="img45.gif"> ID<IMG  ALIGN=MIDDLE ALT="" SRC="img46.gif"></i><A NAME=tex2html9 HREF="footnode.html#410"><IMG ALIGN=BOTTOM ALT="gif" SRC="http://www.cs.wisc.edu/latex2html//foot_motif.gif"></A>.  When a transaction detects this, it adds
+itself to <i> wait<IMG  ALIGN=MIDDLE ALT="" SRC="img49.gif"></i> and goes to sleep.  (Because of double
+buffering, each transaction will know which buffer it will write to
+eventually.)
+<P>
+	When the flusher is done with page <i> ID<IMG  ALIGN=MIDDLE ALT="" SRC="img50.gif"></i>, it will <i>
+down(sp<IMG  ALIGN=MIDDLE ALT="" SRC="img51.gif">)</i>, update <i> ID<IMG  ALIGN=MIDDLE ALT="" SRC="img52.gif"></i> and <i> up(sp<IMG  ALIGN=MIDDLE ALT="" SRC="img53.gif">)</i>.  Finally, it
+will wake up all processes in <i> wait<IMG  ALIGN=MIDDLE ALT="" SRC="img54.gif"></i>.  These transactions will
+again check <i> LSN.pageID</i> against <i> ID<IMG  ALIGN=MIDDLE ALT="" SRC="img55.gif"></i> before proceeding
+with the log write.
+<P>
+	Not much can be gained by increasing the number of buffers,
+because, finally, a new buffer can be written to only after it has
+been flushed.  Double buffering with the above strategy is likely to
+give good concurrency.
+<P>
+<BR> <HR><A NAME=tex2html312 HREF="node26.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html310 HREF="node23.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html306 HREF="node24.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html313 HREF="node26.html">8 Enhancements to  Minirel</A>
+<B>Up:</B> <A NAME=tex2html311 HREF="node23.html">7 Future Work</A>
+<B> Previous:</B> <A NAME=tex2html307 HREF="node24.html">7.1 Duplex-Disks and Raw </A>
+<BR> <HR> <P>
+<BR> <HR>
+<P><ADDRESS>
+ajitk@cs.wisc.edu, cjin@cs.wisc.edu
+</ADDRESS>
+</BODY>

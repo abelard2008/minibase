@@ -1,0 +1,48 @@
+Received from Mike Carey on April 19:
+
+
+CS-764 Folks,
+
+Here's the timetable for the last two weeks of the semester, for planning
+purposes...
+
+	5/3 (Wednesday) -  Code "slush" (Minirel components)
+	5/5 (Friday)    -  ENDTERM EXAM, 7:15-9:15pm
+	5/8 (Monday)    -  Final code freeze (Minirel components)
+	5/9 (Tuesay)    -  LAST LECTURE (Devoted to project Q&A)
+	5/11 (Thursday) -  Demos of Minirel components (NO LECTURE)
+	5/12 (Friday)   -  Written reports due (all teams)
+	5/15 (Monday)   -  Integrated project demo (project mgmt team)
+
+The basic plan for finishing out the project is that each component's team
+will have two responsibilities - to your individual component, and to help
+in the overall system integration process.  Each team will need to ensure
+that their component works as advertised.  By Wednesday 5/3 you'll need to
+have your code "nearly" frozen (hence the name "slush") and give a compilable
+and runnable (albeit fragile and maybe even slightly buggy) version to the
+project management team.  Then you'll have until Monday 5/8 to finish your
+development work and to give them the final version of your code.  After
+that, the individual component teams can write their reports (which should
+be documents that describe each component) and prepare for their demos.
+Demos will be on 5/12 for the individual components, and there will be no
+lecture that day.  During that last week, you will also be responsible for
+responding to problem/bug reports from the project management team as they
+try to get things working together.  (In theory, if each component works as
+advertised, this will be easy for them - but in practice, they'll surely be
+busy that week, and you'll need to read and respond to their e-mail.)
+
+In order to clear the way for the last push on the project, the endterm exam
+will be given on Friday of the week BEFORE the last week of classes, and no
+new lecture material will be covered after that point.  The second-to-last
+day of class will be a session devoted to discussing the state of the Minirel
+system (attendance mandatory for at least one team member from each group!),
+and the last day of class will be "demo day" for the project components, by
+appointment.  Regarding the endterm, don't panic if you've already planned
+to be out of town that day due to a job interview, a wedding, or whatever;
+just let me know (preferably now) and we can work out a time for you to take
+the exam after you get back from your travels.
+
+Cheers,
+Mike
+
+

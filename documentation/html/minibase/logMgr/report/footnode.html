@@ -1,0 +1,221 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!Converted with LaTeX2HTML 95 (Thu Jan 19 1995) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds >
+<HEAD>
+<TITLE>Footnotes</TITLE>
+</HEAD>
+<BODY>
+<meta name="description" value="Footnotes">
+<meta name="keywords" value="main">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+<P>
+<DL> <A NAME=47><DT>...storage <DD>By stable storage, we mean a duplex-disk setup which
+is safe against single disk failures.</A>
+<PRE><P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+</PRE><A NAME=54><DT>...page <DD>The
+log consists of a set of pages.  Reads and writes to the log are done
+in units of a page.  The reason for this is that logs are typically
+maintained in a separate disk and this disk can be read/written only
+in units of a page, i.e., disk block.</A>
+<PRE><P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+</PRE><A NAME=124><DT>...LSN <DD>Throughout this report, the terms
+next LSN and last LSN are used interchangeably.</A>
+<PRE><P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+</PRE><A NAME=314><DT>...need <DD>Whenever a log
+record is written, a <tt> logrecord::LOG_END</tt> is appended to it.
+This allows detection of end of log as described in
+Section <A HREF="node19.html#subsubsectionimpllogread">5.4.6</A>.  Therefore, the length of
+the log record used in this computation is one more than the length of
+the supplied log record.</A>
+<PRE><P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+</PRE><A NAME=348><DT>...occurred <DD>We are assuming
+that the first five log records exactly fit a page.  This need not be
+the case.  If a log record is split across pages, we can treat it as
+though it were two log records, one fitting into the current page and
+the other fitting into a new page.  The only difference is that the
+second part does not get an LSN.</A>
+<PRE><P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+</PRE><A NAME=410><DT>...ID <DD>Each writer will <i>
+down(sp<IMG  ALIGN=MIDDLE ALT="" SRC="img47.gif">)</i> before checking <i> ID<IMG  ALIGN=MIDDLE ALT="" SRC="img48.gif"></i> and <i> up</i> it just before
+writing or sleeping.</A>
+<PRE><P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+</PRE> </DL>
+<P><ADDRESS>
+ajitk@cs.wisc.edu, cjin@cs.wisc.edu
+</ADDRESS>
+</BODY>

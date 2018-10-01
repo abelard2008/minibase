@@ -1,0 +1,94 @@
+<HTML>
+<HEAD>
+<TITLE> Minibase Global Variables </TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+
+<H1> minibase_globals </H1>
+<IMG SRC="../pics/hline.gif">
+<P>
+
+   The <strong>minibase_globals</strong> variable is a pointer to a
+   SystemDefs object.  The SystemDefs class has public data members
+   for the various components of the system: the buffer manager, the
+   disk space manager, and so on.  These are referred to throughout
+   the Minibase code by C preprocessor macros declared in
+   system_defs.h&emdash;for example, MINIBASE_BM for the buffer
+   manager.
+
+<P>
+
+   This object, minibase_globals, is responsible for creating all its
+   constituent objects to create or open a Minibase database, and for
+   destroying them all to close it again.  You open a database by
+   creating a SystemDefs object and assigning it to minibase_globals,
+   and you close it by deleting minibase_globals.
+
+<P>
+
+   There can only be one instance of the SystemDefs class, and it is
+   always pointed to by minibase_globals.
+
+<P>
+<IMG SRC="../pics/hline.gif">
+<H2> The SystemDefs Class </H2>
+
+   The base SystemDefs class provides slots for the buffer manager
+   (BufMgr class, called MINIBASE_BM), the disk space manager (DB
+   class, called MINIBASE_DB), and the name of the Unix file that
+   holds the database (called MINIBASE_DBNAME).  In addition, the
+   multi-user version has many more slots, for the shared memory
+   manager, the transaction manager, the log manager, and so on.
+
+<P>
+<IMG SRC="../pics/hline.gif">
+<H2> The ExtendedSystemDefs Class</H2>
+
+   ExtendedSystemDefs is a subclass of SystemDefs that adds the
+   Minibase catalogs to the structure.  When you need to use the
+   catalog system, i.e. when you are working with relations rather
+   than the lower-level components of Minibase, you create an
+   ExtendedSystemDefs object in place of a SystemDefs object.
+
+<P>
+
+   In addition to managing the catalog objects for Minibase proper,
+   ExtendedSystemDefs also creates a systemCatalogs object (see below)
+   that knows how to read the Minibase catalogs.  This includes the
+   optimizer, which can operate autonomously from a Minibase database,
+   into the system and lets it work with real data.
+
+<P>
+
+   The reason for separating the catalogs from the rest of the system
+   is simply to allow the lower levels of the software to be used
+   without imposing the higher-level structure required by the
+   catalogs.
+
+
+<P>
+<IMG SRC="../pics/hline.gif">
+<H1> systemCatalogs </H1>
+
+   The systemCatalogs global variable is a pointer to an
+   ii_SystemCatalogs object.  The ii_SystemCatalogs class is an
+   abstract class that returns information about the current catalog
+   for use by the optimizer subsystem.
+
+<P>
+
+   There are two concrete subclasses of ii_SystemCatalogs:
+   ii_BogusSystemCatalogs and ii_MinibaseSystemCatalogs.  The "bogus"
+   one reads a "bogus catalog" file, which is a text file that
+   contains catalog information without the need for an actual
+   database behind it.  This is useful for learning about how
+   optimizers work in different catalog environments.  The other one
+   actually reads the Minibase global catalogs of the current open
+   database.
+
+
+</BODY>
+</HTML>
+

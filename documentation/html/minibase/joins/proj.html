@@ -1,0 +1,35 @@
+<HTML>
+<HEAD>
+<TITLE>Projection</TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+<H1>Projection</H1>
+<IMG SRC="../pics/hline.gif">
+<P>
+A tuple is passed to the projection iterator and fields are either 
+rearranged and / or omitted completely.  
+Unless duplicate elimination is required, projection is done
+as part of selections or joins whenever possible.
+<P>
+
+<H2>Elimination of duplicates</H2>
+A <A HREF="ext_sort.html">sorting</A> iterator is used to perform duplicate elimination.
+
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+The public interface for the projection operator is available
+<i> <A HREF="interface/project.h"> here</A></i><BR>
+The public interface for duplicate elimination is available
+<i> <A HREF="interface/dupl_elim.h"> here</A></i>
+<P>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+<B><A HREF="../project.html">Back to the List of Components</A></B><BR>
+<B><A HREF="../minibase.html">Back to the Minibase Home Page</A></B><BR>
+
+
+</BODY>

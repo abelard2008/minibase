@@ -1,0 +1,38 @@
+<HTML>
+<HEAD>
+<TITLE>QBE</TITLE>
+</HEAD>
+
+<BODY>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<H1>A QBE-style Query Interface</H1>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+This interface supports quite a large subset of QBE queries,
+the main restriction being that no table skeleton can contain
+more than one row.  In addition, no update commands are supported,
+and little if any type checking is done!
+However, aggregate operations, calculated columns, condition boxes,
+negation and complex selections are all supported.
+Queries are translated into SQL-92.
+<P>
+The QBE interface is not integrated with the Minibase front-end.
+It can be run using the command <b>miniqbe</b>, and the resulting
+SQL queries can be cut and pasted (using X windows) into the
+SQL query input box in the main front-end.  However, the user
+should note that the QBE front-end can produce queries that
+may not be handled by Minibase.
+
+<P>
+<IMG SRC="../pics/hline.gif">
+<P>
+<A HREF="../project.html">Back to the List of Components</A><BR>
+<A HREF="../minibase.html">Back to the Minibase Home Page</A><BR>
+
+
+</BODY>
+</HTML>
+
+

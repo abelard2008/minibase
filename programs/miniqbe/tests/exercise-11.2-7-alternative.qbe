@@ -1,0 +1,3 @@
+setComment {Orders of red parts, without a calc column}
+addRelationTable {Orders {}} {sid {}} {pid _pid} {quantity p.}
+addRelationTable {Parts {}} {pid _pid} {pname p.} {color red}

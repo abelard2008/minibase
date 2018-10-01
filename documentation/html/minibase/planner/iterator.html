@@ -1,0 +1,81 @@
+<HTML>
+<HEAD>
+<TITLE>Iterators</TITLE>
+</HEAD>
+<body background = "../pics/ypaper5.gif" bgcolor = #ffdead text    = "#440000" link    = "#339966" vlink   = "#CC0000" alink   = "#0000CC" >
+
+<BODY>
+
+<H1>Iterators</H1>
+
+<IMG SRC="../pics/hline.gif">
+<P>
+
+<H1> Introduction </H1>
+
+Execution is guided by a
+tree of ``iterators'', each of which supports a ``get-next-tuple''
+interface.  When an answer tuple is requested by a get-next-tuple
+call on the root of the tree, similar
+similar calls are generated on iterators lower in the tree.
+Leaf level nodes (File Scan iterators and Index Scan iterators)
+retrieve tuples from a relation,
+and intermediate nodes in the tree (Join iterators)
+correspond to 
+<A HREF="../joins/joins.html"><B>joins</B></A>.
+Selections and projections are ``piggy-backed''
+onto these iterators.
+
+<P>
+
+Click here for diagrams of some example iterator trees.<BR>
+<P>
+<A HREF="treeA.html">Simple Iterator Trees</A>
+<BR>
+<A HREF="treeB.html">Larger Iterator Tree</A>
+<P>
+
+
+<IMG SRC="../pics/hline.gif">
+<P>
+
+<H2>Design Details</H2>
+The output of one iterator can be made the input of another by using the
+uniform "get_next" call. 
+<P>
+<H3>Types of Iterators</H3>
+In principle, there are several types of iterators:
+<UL>
+ <LI>nested loops join
+ <LI>sort merge join
+ <LI>sorting utility
+ <LI>projection
+ <LI>selection
+ <LI>duplicate elimination
+ <LI>file scans
+ <LI>index scans
+</UL>
+
+However, some of these iterators are <B>not used in Minibase</B>.  Projections and selections are actually handled by separate function calls.  Also, duplicate 
+elimination and sorting is triggered by other iterators.  
+In other words, the 
+planner will never create a sort iterator.  If it passes the appropriate
+arguments to a join, for example, the join will create the sort iterator
+internally.
+<P>
+As an example, <A HREF="iterators.gif">click here</A> to see why a
+join iterator in Minibase is really three iterators in one.
+
+
+<IMG SRC="../pics/hline.gif">
+<P>
+<UL>
+ <LI><A HREF="../temp/exampleselect.html">More Examples Using Iterators</A>
+</UL>
+
+<P>
+<B><A HREF="../minibase.html">Back to the Minibase Home Page</A></B><BR>
+<B><A HREF="../project.html">Back to the Components Page</A></B><BR>
+
+</BODY>
+</HTML>

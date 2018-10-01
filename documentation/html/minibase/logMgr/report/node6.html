@@ -1,0 +1,84 @@
+<BODY BGCOLOR="#FFDDDD">
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!Converted with LaTeX2HTML 95 (Thu Jan 19 1995) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds >
+<HEAD>
+<TITLE>4.2 Log records</TITLE>
+</HEAD>
+<BODY>
+<meta name="description" value="4.2 Log records">
+<meta name="keywords" value="main">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+<P>
+ <BR> <HR><A NAME=tex2html108 HREF="node7.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html106 HREF="node4.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html100 HREF="node5.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html109 HREF="node7.html">4.3 Shared Memory Structure</A>
+<B>Up:</B> <A NAME=tex2html107 HREF="node4.html">4 Log Manager Interface</A>
+<B> Previous:</B> <A NAME=tex2html101 HREF="node5.html">4.1 Log Sequence Numbers</A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00042000000000000000>4.2 Log records</A></H2>
+<P>
+<A NAME=subsectioninterfacelogrecords>&#160;</A>
+<P>
+The log consists of a sequence of log records.  Each log record has
+a fixed header portion and a variable data portion.  <tt> Class
+logrecord</tt> (header file: <tt> logrecord.h</tt>) declares the basic log
+record.  The fixed portion of the log record contains the following
+fields:
+<P>
+<OL><LI> A magic number.  This is used (as described in
+Section <A HREF="node9.html#sectionimplementation">5</A>) to distinguish between the end
+of the log and the beginning of a new log record.
+<P>
+	<LI> The LSN of the log record.  This need not necessarily be
+stored in the log record.  However, we store it in the log record to
+make our implementation easier.  Also, whenever the log record is
+output during debugging, the LSN can be output.
+<P>
+	<LI> The length of the log record.  This is the length
+in bytes from the magic number field to the end of the data portion of
+the log record.  However, users of <tt> class logrecord</tt> will only see
+(and set) the length of the data portion.  The implementation will
+take care of setting this field correctly.  This has been done because
+users of the class do not set or retrieve the fixed header portion of
+the log record.
+<P>
+</OL>
+<P>
+	The data portion of the log record is a sequence of bytes.
+<tt> Class logrecord</tt> does not interpret this data in any way.
+However, the recovery subsystem derives from this class to define
+several different kinds of log records [normal updates, checkpoint
+records, commit log records, Compensation Log Records (CLRs), etc.].
+Thus, it is the recovery manager that interprets the contents of the
+data portion of each log record.  Derivation ensures that the fixed
+portion of the log record (which is interpreted by <tt> class
+logrecord</tt>) is available in any kind of log record.
+Figure <A HREF="node6.html#figurelogrecord">1</A> shows an object of <tt> class
+logrecord</tt> and a normal update log record.
+<P>
+<P><A NAME=142>&#160;</A><A NAME=figurelogrecord>&#160;</A><IMG  ALIGN=BOTTOM ALT="" SRC="img15.gif">
+<BR><STRONG>Figure 1:</STRONG> Log records.  The figure at the left shows an object of the
+base <tt> class logrecord</tt>.  The one at the right shows an object of
+a class derived from <tt> class logrecord</tt>.  The derived class object
+shown corresponds to a normal update log record.  For exact
+representation and details, see  [<A HREF="node32.html#recovery">Ramamurthy &amp; Tsoi 95</A>].<BR>
+<P>
+<P>
+	<tt> Class logrecord</tt> provides methods to get and set the data
+length.  It has a method to return a pointer to the data portion of
+the log record.  It provides read access to the LSN of the
+log record and write access to <tt> friend</tt>s.  Finally, it overloads
+<tt> operator <b>&lt;&lt;</b></tt> to output the log record in a human-readable
+format.  The data portion of the log record is dumped in hex and
+ASCII.
+<P>
+<BR> <HR><A NAME=tex2html108 HREF="node7.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.cs.wisc.edu/latex2html//next_motif.gif"></A>   <A NAME=tex2html106 HREF="node4.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.cs.wisc.edu/latex2html//up_motif.gif"></A>   <A NAME=tex2html100 HREF="node5.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.cs.wisc.edu/latex2html//previous_motif.gif"></A>         <BR>
+<B> Next:</B> <A NAME=tex2html109 HREF="node7.html">4.3 Shared Memory Structure</A>
+<B>Up:</B> <A NAME=tex2html107 HREF="node4.html">4 Log Manager Interface</A>
+<B> Previous:</B> <A NAME=tex2html101 HREF="node5.html">4.1 Log Sequence Numbers</A>
+<BR> <HR> <P>
+<BR> <HR>
+<P><ADDRESS>
+ajitk@cs.wisc.edu, cjin@cs.wisc.edu
+</ADDRESS>
+</BODY>

@@ -1,0 +1,1327 @@
+# -*- tcl -*-
+# (setq tcl-default-application "itclsh")
+
+#--------------------------------------------------------------------------
+# Copyright Notice
+#
+# This software is copyright 1996 by Luke Blanshard.  You may use this
+# software for any purpose, provided that you leave this copyright
+# notice intact and that you accept all liability for damage caused by
+# it or any modified version of it.
+#--------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------
+# The QBE Internals module
+#
+# This file contains code to create and manipulate QBE queries as [incr
+# tcl] objects.  This module separates the job of representing these
+# queries from the jobs of displaying them and letting the user manipulate
+# them---see "qbe.itk" for how those jobs are done.
+#
+# If you are only interested in running the user interface, you do not need
+# to concern yourself with this file at all.
+#
+# For a discussion of the implementation design of this module, please read
+# the README file.
+#--------------------------------------------------------------------------
+
+
+namespace ::qbe {}
+
+
+#----------------------------------------------------------------------
+# Class: qbe::Query
+#
+# Represents a QBE query.
+#----------------------------------------------------------------------
+class ::qbe::Query {
+
+    constructor {args} {}
+    destructor {}
+
+    method inconsistentColumns {}		;# Return a list of column objects
+    method sql {}				;# Return SQL representation of query
+
+    method numTables {}
+    method getTables {}
+    method getTable {idx}
+    method indexOfTable {table}
+
+    method addRelationTable {relationName args}
+    method addConditionsBox {args}
+    method addTargetTable {{headValue {}} args}
+
+    method moveTable {fromIdx toIdx}
+    method removeTable {idx}
+
+    method stringRep {}
+    method comment {}			{set _comment}
+    method setComment {comment}		{set _comment $comment}
+
+    variable _tables {}
+    variable _comment {}
+
+
+    # The following methods are used internally by the various other
+    # classes in the QBE package.  They keep query-global state and
+    # provide a simple recursive parser for QBE expressions and
+    # conditions.
+
+    method initString {string}		{set _string $string; set _priorString $string}
+
+    method nextToken {}
+    method ungetToken {}		{set _string $_priorString}
+
+    method remainingString {}		{set _string}
+    method priorString {}		{set _priorString}
+
+    method initDefs {}
+    method isDef {example}		{info exists _defs($example)}
+    method getDef {example}		{set _defs($example)}
+    method addDef {example name}	{set _defs($example) $name}
+    method rmDef {example}		{unset _defs($example)}
+    method setAggregate {}		{set _isAggregate 1}
+    method isAggregate {}		{set _isAggregate}
+    method setGrouped {example}		{set _groupedElements($example) 1}
+    method isGrouped {example}		{info exists _groupedElements($example)}
+    method getUndefs {}			{array names _undefs}
+    method getAggregates {}		{array names _usedInAggregate}
+    method getNonAggregates {}		{array names _usedOutOfAggregate}
+
+    method sqlFromArray {sql}
+
+    method parseCondition {}
+    method parseExpression {}
+
+    proc orderAttrs {a1 a2} {expr [$a1 orderOrder] - [$a2 orderOrder]}
+
+    private {
+	method _condition {}
+	method _relation {}
+	method _expression {}
+	method _primary {}
+	method _exampleElement {name}
+
+	variable _string
+	variable _priorString
+	variable _defs
+	variable _undefs
+	variable _isAggregate
+	variable _groupedElements
+	variable _inCondition
+	variable _inAggregate
+	variable _usedInAggregate
+	variable _usedOutOfAggregate
+	variable _numUses
+    }
+}
+
+
+#----------------------------------------------------------------------
+# Class: qbe::Table
+#
+# Represents a generic QBE example table.  Parent of RelationTable,
+# which holds a relation, and TargetTable, which consists solely of
+# expression columns.
+#----------------------------------------------------------------------
+class ::qbe::Table {
+
+    constructor {query headName headValue} {}
+    destructor {}
+
+    method numColumns {}
+    method getColumn {idx}
+    method getColumns {}
+    method indexOfColumn {col}
+
+    method addExpressionColumn {{value {}}}
+
+    method moveColumn {fromIdx toIdx}
+    method removeColumn {idx}
+
+    method isConditionsBox {}	{return 0}
+    method isRelationTable {}	{return 0}
+    method query {}		{return $_query}
+    method indexInQuery {}	{$_query indexOfTable $this}
+    method inconsistentColumns {}
+
+    method head {}		{return $_head}
+    method printAll {}		{$_head printAll}
+    method distinct {}		{$_head distinct}
+    method negated {}		{$_head negated}
+
+    variable _query
+    variable _head
+    variable _attributes {}
+}
+
+
+#----------------------------------------------------------------------
+# Class: qbe::RelationTable
+#
+# Represents a QBE example table that corresponds to a relation.  Its
+# columns can correspond to attributes of the relation, or can be
+# expressions to be printed.
+#----------------------------------------------------------------------
+class ::qbe::RelationTable {
+    inherit ::qbe::Table
+
+    constructor {query nameAndValue args} {
+	::qbe::Table::constructor $query \
+		[lindex $nameAndValue 0] [lindex $nameAndValue 1]
+    } {}
+
+    method addAttributeColumn {name {value {}}}
+
+    method stringRep {}
+    method loadDefs {}
+    method isRelationTable {}	{return 1}
+    method setTag {tag}		{set _tag $tag}
+    method tag {}		{return $_tag}
+    method name {}		{$_head name}
+    method sql {sqlArray}
+
+    variable _tag
+}
+
+
+#----------------------------------------------------------------------
+# Class: qbe::TargetTable
+#
+# Represents a QBE example table that consists entirely of expressions
+# to be printed.
+#----------------------------------------------------------------------
+class ::qbe::TargetTable {
+    inherit ::qbe::Table
+
+    constructor {query {headValue {}} args} {
+	::qbe::Table::constructor $query {} $headValue
+    } {}
+    method stringRep {}
+    method loadDefs {}
+    method sql {sqlArray}
+}
+
+
+#----------------------------------------------------------------------
+# Class: qbe::ConditionsBox
+#
+# Represents a QBE conditions box.
+#----------------------------------------------------------------------
+class ::qbe::ConditionsBox {
+
+    constructor {query args} {}
+    destructor {}
+
+    method numColumns {}
+    method getColumn {idx}
+    method getColumns {}
+    method indexOfColumn {col}
+
+    method addColumn {{value {}}}
+
+    method moveColumn {fromIdx toIdx}
+    method removeColumn {idx}
+
+    method stringRep {}
+    method isConditionsBox {}	{return 1}
+    method isRelationTable {}	{return 0}
+    method query {}		{return $_query}
+    method indexInQuery {}	{$_query indexOfTable $this}
+    method loadDefs {}
+    method inconsistentColumns {}
+    method sql {sqlArray}
+
+    variable _query
+    variable _columns
+}
+
+
+
+
+class ::qbe::Column {
+
+    constructor {table value} {
+	set _table $table; set _query [$table query]; setValue $value}
+
+    method name {}		{return {}}
+    method printName {}		{$this name}
+    method value {}		{set _value}
+    method setValue {value}
+    method exampleElement {}	{return {}}
+    method isAggregate {}	{string length $_aggregatedRefs}
+    method isGrouped {}		{return 0}
+
+    method error {}		{set _error}
+    method hasError {}		{string length $_error}
+    method inconsistency {}	{expr {[hasError]? "$_error" : "$_inconsistency"}}
+
+    method table {}		{set _table}
+    method query {}		{set _query}
+    method indexInTable {}	{$_table indexOfColumn $this}
+
+    variable _table
+    variable _query
+    variable _value
+    variable _error {}
+    variable _inconsistency {}
+    variable _refs
+    variable _aggregatedRefs	;# These two could overlap; a column could
+    variable _unaggregatedRefs	;# refer to the same element in different ways.
+}
+
+
+class ::qbe::HeadColumn {
+    inherit ::qbe::Column
+
+    constructor {table name value} {
+	set _name $name
+	::qbe::Column::constructor $table $value
+    } {}
+
+    method name {}		{return $_name}
+    method printName {}		{expr {$_name == ""? "--Target--" : $_name}}
+    method setValue {value}
+    method isConsistent {}
+
+    method indexInTable {}	{return 0}
+
+    method printAll {}		{return $_printAll}
+    method distinct {}		{return $_distinct}
+    method negated {}		{return $_negated}
+
+    variable _name
+    variable _printAll
+    variable _distinct
+    variable _negated
+}
+
+class ::qbe::AttributeColumn {
+    inherit ::qbe::Column
+
+    constructor {table name value} {
+	set _name $name
+	::qbe::Column::constructor $table $value
+    } {}
+
+
+    method name {}		{set _name}
+    method setValue {value}
+    method exampleElement {}	{set _example}
+    method isAggregate {}	{expr $_group || [string length $_aggregatedRefs]}
+    method isGrouped {}		{set _group}
+
+    method isConsistent {}
+    method sqlName {}		{return [$_table tag].$_name}
+    method orderDirection {}	{set _order}
+    method orderOrder {}	{set _orderOrder}
+    method sql {sqlArray}
+
+    variable _name
+    variable _print
+    variable _group
+    variable _order
+    variable _orderOrder
+    variable _example {}
+    variable _condition
+}
+
+class ::qbe::ExpressionColumn {
+    inherit ::qbe::Column
+
+    constructor {table value} {
+	::qbe::Column::constructor $table $value
+    } {}
+
+    method printName {}		{return "--Calc--"}
+    method setValue {value}
+    method isConsistent {}
+    method sql {sqlArray}
+
+    variable _print
+    variable _expression
+}
+
+class ::qbe::ConditionColumn {
+    inherit ::qbe::Column
+
+    constructor {table value} {
+	::qbe::Column::constructor $table $value
+    } {}
+
+    method name {}		{return "Conditions"}
+    method setValue {value}
+    method isConsistent {}
+    method sql {sqlArray}
+}
+
+
+
+
+
+
+body ::qbe::Query::constructor {args} {
+    foreach arg $args {eval $arg}
+}
+
+body ::qbe::Query::destructor {} {
+    foreach table $_tables {
+	delete object $table
+    }
+}
+
+body ::qbe::Query::sql {} {
+
+    # Note that the call to `inconsistentColumns' below does a great
+    # deal of setup work for us.
+    if {[llength [inconsistentColumns]]} {
+	error "There are inconsistencies in the query---can't generate SQL"
+    }
+
+    array set sqlArray {select {} distinct 0 from {} where {} group {} having {} order {}}
+
+    foreach table $_tables {
+	$table sql sqlArray
+    }
+
+    sqlFromArray sqlArray
+}
+
+body ::qbe::Query::sqlFromArray {sqlArray} {
+    upvar $sqlArray sql
+    if {![llength $sql(select)]} {
+	error "Nothing to select---include some `P.' commands"
+    }
+    if {![llength $sql(from)]} {
+	error "Nothing to select from---include at least one relation"
+    }
+    if {[info exists sql(distinct)] && $sql(distinct)} {
+	set answer "SELECT DISTINCT\n         "
+    } else {
+	set answer "SELECT   "
+    }
+    append answer [join $sql(select) ",\n         "]
+
+    append answer "\nFROM     "
+    append answer [join $sql(from) ",\n         "]
+
+    if {[llength $sql(where)]} {
+	append answer "\nWHERE    ("
+	append answer [join $sql(where) ")\n  AND    ("]
+	append answer ")"
+    }
+
+    if {[info exists sql(order)] && [llength $sql(order)]} {
+	set ordered [lsort -command [code orderAttrs] $sql(order)]
+	set ob {}
+	foreach attr $ordered {
+	    lappend ob [concat [$attr sqlName] [expr [$attr orderDirection] > 0? {"desc"} : {"asc"}]]
+	}
+	append answer "\nORDER BY [join $ob {, }]"
+    }
+
+    if {[info exists sql(group)] && [llength $sql(group)]} {
+	append answer "\nGROUP BY [join $sql(group) {, }]"
+    }
+
+    if {[info exists sql(having)] && [llength $sql(having)]} {
+	append answer "\nHAVING   ("
+	append answer [join $sql(having) ")\n  AND    ("]
+	append answer ")"
+    }
+
+    set answer
+}
+
+body ::qbe::Query::inconsistentColumns {} {
+
+    set counter 0
+    initDefs
+
+    foreach table $_tables {
+	if {[$table isRelationTable]} {
+	    incr counter
+	    $table setTag "t$counter"
+	}
+	$table loadDefs
+    }
+
+    set answer {}
+    foreach table $_tables {
+	eval lappend answer [$table inconsistentColumns]
+    }
+
+    set answer
+}
+
+body ::qbe::Query::numTables {} {
+    llength $_tables
+}
+
+body ::qbe::Query::getTable {idx} {
+    lindex $_tables $idx
+}
+
+body ::qbe::Query::getTables {} {
+    set _tables
+}
+
+body ::qbe::Query::indexOfTable {table} {
+    lsearch -exact $_tables $table
+}
+
+body ::qbe::Query::addRelationTable {relationName args} {
+    set t ::qbe::Query::[eval RelationTable #auto $this [list $relationName] $args]
+    lappend _tables $t
+    set t
+}
+
+body ::qbe::Query::addConditionsBox {args} {
+    set t ::qbe::Query::[eval ConditionsBox #auto $this $args]
+    lappend _tables $t
+    set t
+}
+
+body ::qbe::Query::addTargetTable {{headValue {}} args} {
+    set t ::qbe::Query::[eval TargetTable #auto $this [list $headValue] $args]
+    lappend _tables $t
+    set t
+}
+
+
+body ::qbe::Query::moveTable {fromIdx toIdx} {
+    set t [lindex $_tables $fromIdx]
+    set _tables [lreplace $_tables $fromIdx $fromIdx]
+    set _tables [linsert $_tables $toIdx $t]
+    set t
+}
+
+body ::qbe::Query::removeTable {idx} {
+    set t [lindex $_tables $idx]
+    set _tables [lreplace $_tables $idx $idx]
+    delete object $t
+}
+
+body ::qbe::Query::stringRep {} {
+    set cmds [list [list setComment $_comment]]
+    foreach table $_tables {lappend cmds [$table stringRep]}
+    join $cmds \n
+}
+
+
+
+body ::qbe::Table::constructor {query headName headValue} {
+    set _query $query
+    set _head ::qbe::Table::[HeadColumn #auto $this $headName $headValue]
+}
+
+body ::qbe::Table::destructor {} {
+    delete object $_head
+    foreach attr $_attributes {delete object $attr}
+}
+
+body ::qbe::Table::numColumns {} {
+    expr 1 + [llength $_attributes]
+}
+
+body ::qbe::Table::getColumn {idx} {
+    if {$idx == 0} {return $_head}
+    lindex $_attributes [expr $idx-1]
+}
+
+body ::qbe::Table::getColumns {} {
+    concat $_head $_attributes
+}
+
+body ::qbe::Table::indexOfColumn {col} {
+    if {$col == $_head} {return 0}
+    set idx [lsearch -exact $_attributes $col]
+    if {$idx < 0} {return $idx}
+    expr $idx + 1
+}
+
+body ::qbe::Table::addExpressionColumn {{value {}}} {
+    set c ::qbe::Table::[ExpressionColumn #auto $this $value]
+    lappend _attributes $c
+    set c
+}
+
+body ::qbe::Table::moveColumn {fromIdx toIdx} {
+    set fromIdx [expr $fromIdx - 1]
+    set c [lindex $_attributes $fromIdx]
+    set _attributes [lreplace $_attributes $fromIdx $fromIdx]
+    set _attributes [linsert $_attributes [expr $toIdx - 1] $c]
+    set c
+}
+
+body ::qbe::Table::removeColumn {idx} {
+    set idx [expr $idx - 1]
+    set c [lindex $_attributes $idx]
+    set _attributes [lreplace $_attributes $idx $idx]
+    delete object $c
+}
+
+body ::qbe::Table::inconsistentColumns {} {
+    set answer {}
+    if {![$_head isConsistent]} {set answer $_head}
+    foreach attr $_attributes {
+	if {![$attr isConsistent]} {
+	    lappend answer $attr
+	}
+    }
+    set answer
+}
+
+
+body ::qbe::RelationTable::constructor {query nameAndValue args} {
+    foreach attr $args {
+	set attrName [lindex $attr 0]
+	set attrValue [lindex $attr 1]
+	if {$attrName == ""} {
+	    addExpressionColumn $attrValue
+	} else {
+	    addAttributeColumn $attrName $attrValue
+	}
+    }
+}
+
+body ::qbe::RelationTable::addAttributeColumn {name {value {}}} {
+    set c ::qbe::RelationTable::[AttributeColumn #auto $this $name $value]
+    lappend _attributes $c
+    set c
+}
+
+body ::qbe::RelationTable::stringRep {} {
+    set answer addRelationTable
+    lappend answer [list [$_head name] [$_head value]]
+    foreach attr $_attributes { lappend answer [list [$attr name] [$attr value]] }
+    set answer
+}
+
+body ::qbe::RelationTable::loadDefs {} {
+    foreach attr $_attributes {
+	if {[$attr isAggregate]} {$_query setAggregate}
+	if {![$_head negated]} {
+	    set ex [$attr exampleElement]
+	    if {[string length $ex] && (![$_query isDef $ex] \
+		    || ([$attr isGrouped] && ![$_query isGrouped $ex]))} {
+		$_query addDef $ex [$attr sqlName]
+		if {[$attr isGrouped]} {$_query setGrouped $ex}
+	    }
+	}
+    }
+}
+
+body ::qbe::RelationTable::sql {sqlArray} {
+    upvar $sqlArray sql
+    if {[$_head negated]} {
+	set subsql(where) {}
+	foreach attr $_attributes {
+	    $attr sql subsql
+	}
+	set sel "SELECT * FROM [name] [tag]"
+	if {[llength $subsql(where)]} {
+	    append sel "\n                      WHERE ("
+	    append sel [join $subsql(where) ")\n                        AND ("]
+	    append sel ")"
+	}
+	lappend sql(where) "not exists ($sel)"
+    } else {
+	lappend sql(from) "[name] [tag]"
+	if {[$_head distinct]} {set sql(distinct) 1}
+	foreach attr $_attributes {
+	    $attr sql sql
+	}
+    }
+}
+
+
+
+body ::qbe::TargetTable::constructor {query {headValue {}} args} {
+    foreach attr $args { addExpressionColumn $attr }
+}
+
+body ::qbe::TargetTable::stringRep {} {
+    set answer addTargetTable
+    lappend answer [$_head value]
+    foreach attr $_attributes { lappend answer [$attr value] }
+    set answer
+}
+
+body ::qbe::TargetTable::loadDefs {} {
+    foreach attr $_attributes {
+	if {[$attr isAggregate]} {$_query setAggregate}
+    }
+}
+
+body ::qbe::TargetTable::sql {sqlArray} {
+    upvar $sqlArray sql
+    if {[$_head distinct]} {set sql(distinct) 1}
+    foreach attr $_attributes {
+	$attr sql sql
+    }
+}
+
+
+
+body ::qbe::ConditionsBox::constructor {query args} {
+    set _query $query
+    foreach cond $args { addColumn $cond }
+}
+
+body ::qbe::ConditionsBox::destructor {} {
+    foreach col $_columns { delete object $col }
+}
+
+body ::qbe::ConditionsBox::numColumns {} {
+    llength $_columns
+}
+
+body ::qbe::ConditionsBox::getColumn {idx} {
+    lindex $_columns $idx
+}
+
+body ::qbe::ConditionsBox::getColumns {} {
+    set _columns
+}
+
+body ::qbe::ConditionsBox::indexOfColumn {col} {
+    lsearch -exact $_columns $col
+}
+
+body ::qbe::ConditionsBox::addColumn {{value {}}} {
+    set c ::qbe::ConditionsBox::[ConditionColumn #auto $this $value]
+    lappend _columns $c
+    set c
+}
+
+body ::qbe::ConditionsBox::moveColumn {fromIdx toIdx} {
+    set c [lindex $_columns $fromIdx]
+    set _columns [lreplace $_columns $fromIdx $fromIdx]
+    set _columns [linsert $_columns $toIdx $c]
+    set c
+}
+
+body ::qbe::ConditionsBox::removeColumn {idx} {
+    set c [lindex $_columns $idx]
+    set _columns [lreplace $_columns $idx $idx]
+    delete object $c
+}
+
+body ::qbe::ConditionsBox::stringRep {} {
+    set answer addConditionsBox
+    foreach col $_columns { lappend answer [$col value] }
+    return $answer
+}
+
+body ::qbe::ConditionsBox::loadDefs {} {
+    foreach col $_columns {
+	if {[$col isAggregate]} {$_query setAggregate}
+    }
+}
+
+body ::qbe::ConditionsBox::inconsistentColumns {} {
+    set answer {}
+    foreach col $_columns {
+	if {![$col isConsistent]} {
+	    lappend answer $col
+	}
+    }
+    set answer
+}
+
+body ::qbe::ConditionsBox::sql {sqlArray} {
+    upvar $sqlArray sql
+    foreach col $_columns {
+	$col sql sql
+    }
+}
+
+
+
+
+body ::qbe::HeadColumn::setValue {value} {
+
+    set _value $value
+    set _error {}
+    set _printAll 0
+    set _distinct 0
+    set _negated 0
+
+    $_query initString $value
+    while {[set tok [$_query nextToken]] != ""} {
+	switch -exact -- [string tolower $tok] {
+	    p.   {set _printAll 1}
+	    all. {set _distinct 0}
+	    unq. {set _distinct 1}
+	    not -
+	    ~    {set _negated 1}
+	    default {set _error "Token `$tok' can't go in a head column"; break}
+	}
+    }
+
+}
+
+body ::qbe::HeadColumn::isConsistent {} {
+    set _inconsistency $_error
+    if {$_negated} {
+	if {$_name == ""} {
+	    set _inconsistency "Target tables can't be negated"
+	} elseif {$_printAll} {
+	    set _inconsistency "Negated tables can't be printed"
+	}
+    }
+    expr ![string length $_inconsistency]
+}
+
+
+body ::qbe::AttributeColumn::setValue {value} {
+
+    set _value $value
+    set _error {}
+    set _refs {}
+    set _aggregatedRefs {}
+    set _unaggregatedRefs {}
+    set _print 0
+    set _group 0
+    set _order 0		;# ascending: -1; descending: 1
+    set _orderOrder 0		;# location in ORDER BY clause
+    set _example {}
+    set _condition {}
+
+    $_query initString $value
+    while {[set tok [$_query nextToken]] != ""} {
+	set ltok [string tolower $tok]
+	switch -glob -- $ltok {
+	    p.   {set _print 1}
+	    g.   {set _group 1}
+	    _*   {
+		if {[string length $_example]} {
+		    set _error \
+			    "Can't define two example elements: found `$_example' and `$tok'"
+		    break
+		}
+		set _example $ltok
+	    }
+	    [ad]o*. {
+		set _order [string compare $ltok do]
+		regexp {\((.*)\)} $ltok {} _orderOrder
+	    }
+	    \( {
+		set _condition [$_query priorString]
+		break
+	    }
+	    between -
+	    in -
+	    like -
+	    not -
+	    [<=>]* {
+		set _condition "_ [$_query priorString]"
+		break
+	    }
+	    default {
+		set _condition "_ = [$_query priorString]"
+		break
+	    }
+	}
+    }
+
+    if {$_example == "_"} {set _example {}}
+    if {$_condition == ""} {
+	set _refs $_example
+    } else {
+	$_query initString $_condition
+	$_query initDefs
+	if {[catch {$_query parseCondition} err]} {
+	    set _error $err
+	} else {
+	    set _refs "$_example [$_query getUndefs]"
+	    set _aggregatedRefs [$_query getAggregates]
+	    set _unaggregatedRefs [$_query getNonAggregates]
+	}
+    }
+}
+
+body ::qbe::AttributeColumn::isConsistent {} {
+    set _inconsistency $_error
+    if {$_order && !($_print || [$_table printAll])} {
+	set _inconsistency "You must print anything you order by"
+    } elseif {[$_query isAggregate] && ($_print || [$_table printAll]) && !$_group} {
+	set _inconsistency "You may not print attributes that aren't grouped in an aggregate query"
+    } elseif {$_print && [$_table negated]} {
+	set _inconsistency "You may not print anything from a negated table"
+    } elseif {$_group && [$_table negated]} {
+	set _inconsistency "You may not group a column from a negated table"
+    } elseif {$_aggregatedRefs != ""} {
+	foreach ref $_unaggregatedRefs {
+	    if {![$_query isGrouped $ref]} {
+		set _inconsistency "Example element `$ref' is neither grouped by nor aggregated"
+		break
+	    }
+	}
+    }
+    foreach ref $_refs {
+	if {$ref != "_" && ![$_query isDef $ref]} {
+	    set _inconsistency "Example element `$ref' is not defined"
+	    break
+	}
+    }
+    expr ![string length $_inconsistency]
+}
+
+body ::qbe::AttributeColumn::sql {sqlArray} {
+    upvar $sqlArray sql
+    if {$_print || [$_table printAll]} {
+	lappend sql(select) [sqlName]
+    }
+    if {$_order} {
+	lappend sql(order) $this
+    }
+    if {$_group} {
+	lappend sql(group) [sqlName]
+    }
+    if {$_example != ""} {
+	set def [$_query getDef $_example]
+	set me [sqlName]
+	if {$def != $me} {
+	    lappend sql(where) "$me = $def"
+	}
+    }
+    if {$_condition != ""} {
+	$_query initString $_condition
+	$_query addDef _ [sqlName]
+	set cond [$_query parseCondition]
+	$_query rmDef _
+	if {[$_table negated]} {
+	    set loc "where"
+	} elseif {$_aggregatedRefs != ""} {
+	    set loc "having"
+	} elseif {$_unaggregatedRefs == ""} {
+	    set loc "where"
+	} else {
+	    set loc "having"
+	    foreach ref $_unaggregatedRefs {
+		if {![$_query isGrouped $ref]} {
+		    set loc "where"
+		    break
+		}
+	    }
+	}
+	lappend sql($loc) $cond
+    }
+}
+
+
+
+body ::qbe::ExpressionColumn::setValue {value} {
+
+    set _value $value
+    set _error {}
+    set _refs {}
+    set _aggregatedRefs {}
+    set _unaggregatedRefs {}
+    set _print 0
+    set _expression {}
+
+    $_query initString $value
+    $_query initDefs
+    while {[set tok [$_query nextToken]] != ""} {
+	switch -glob -- $tok {
+	    [pP]. {set _print 1}
+	    default {
+		$_query ungetToken
+		set _expression [$_query remainingString]
+		if {[catch {$_query parseExpression} err]} {
+		    set _error $err
+		} else {
+		    set _refs [$_query getUndefs]
+		    set _aggregatedRefs [$_query getAggregates]
+		    set _unaggregatedRefs [$_query getNonAggregates]
+		}
+		break
+	    }
+	}
+    }
+
+}
+
+body ::qbe::ExpressionColumn::isConsistent {} {
+    set _inconsistency $_error
+    if {$_expression != ""} {
+	if {!$_print && ![$_table printAll]} {
+	    set _inconsistency "You must print every calculated expression"
+	} elseif {[$_table negated]} {
+	    set _inconsistency "You may not have a calculated expression in a negated table"
+	} elseif {[$_query isAggregate]} {
+	    foreach ref $_unaggregatedRefs {
+		if {![$_query isGrouped $ref]} {
+		    set _inconsistency "Example element `$ref' is neither grouped by nor aggregated"
+		    break
+		}
+	    }
+	}
+	foreach ref $_refs {
+	    if {![$_query isDef $ref]} {
+		set _inconsistency "Example element `$ref' is not defined"
+		break
+	    }
+	}
+    }
+    expr ![string length $_inconsistency]
+}
+
+body ::qbe::ExpressionColumn::sql {sqlArray} {
+    if {$_expression != ""} {
+	upvar $sqlArray sql
+	$_query initString $_expression
+	set expr [$_query parseExpression]
+	lappend sql(select) $expr
+    }
+}
+
+
+
+body ::qbe::ConditionColumn::setValue {value} {
+    set _value $value
+    set _error {}
+    set _refs {}
+    set _aggregatedRefs {}
+    set _unaggregatedRefs {}
+    $_query initString $value
+    if {[$_query nextToken] == ""} {
+	set _value {}
+    } else {
+	$_query ungetToken
+	$_query initDefs
+	if {[catch {$_query parseCondition} err]} {
+	    set _error $err
+	} else {
+	    set _refs [$_query getUndefs]
+	    set _aggregatedRefs [$_query getAggregates]
+	    set _unaggregatedRefs [$_query getNonAggregates]
+	}
+    }
+}
+
+body ::qbe::ConditionColumn::isConsistent {} {
+    set _inconsistency $_error
+    if {[isAggregate]} {
+	foreach ref $_unaggregatedRefs {
+	    if {![$_query isGrouped $ref]} {
+		set _inconsistency "Example element `$ref' is neither grouped by nor aggregated"
+		break
+	    }
+	}
+    }
+    foreach ref $_refs {
+	if {![$_query isDef $ref]} {
+	    set _inconsistency "Example element `$ref' is not defined"
+	    break
+	}
+    }
+    expr ![string length $_inconsistency]
+}
+
+body ::qbe::ConditionColumn::sql {sqlArray} {
+    if {$_value != ""} {
+	upvar $sqlArray sql
+	$_query initString $_value
+	set cond [$_query parseCondition]
+	if {$_aggregatedRefs != ""} {
+	    set loc "having"
+	} elseif {$_unaggregatedRefs == ""} {
+	    set loc "where"
+	} else {
+	    set loc "having"
+	    foreach ref $_unaggregatedRefs {
+		if {![$_query isGrouped $ref]} {
+		    set loc "where"
+		    break
+		}
+	    }
+	}
+	lappend sql($loc) $cond
+    }
+}
+
+
+
+
+# The following regular expression recognizes the subset of QBE that
+# we implement.  The input to the matcher is $_string (the current
+# remaining string to tokenize).  There are three outputs.  The whole
+# string is matched and left in _priorString; the first token in the
+# string is left in answer; and the rest of the string after the token
+# is left in _string.
+body ::qbe::Query::nextToken {} {
+    regexp -nocase {^[
+	 ]*(("[^"]*")+|p\.|g\.|[ad]o(\([0-9]+\))?\.|all\.|unq\.|avg\.|c(ou)?nt\.|max\.|min\.|sum\.|[a-z_][a-z_0-9]*|[0-9]+(\.[0-9]*)?|<=|>=|<>|.|$)(.*$)} \
+	    $_string _priorString token {} {} {} {} _string
+    return $token
+}
+
+
+body ::qbe::Query::initDefs {} {
+    set _isAggregate 0
+    catch {unset _defs}
+    catch {unset _undefs}
+    catch {unset _groupedElements}
+    catch {unset _usedInAggregate}
+    catch {unset _usedOutOfAggregate}
+}
+
+body ::qbe::Query::parseCondition {} {
+    set _inCondition 1
+    set _inAggregate 0
+    set _numUses 0
+    set sql [_condition]
+
+    set tok [nextToken]
+    if {[string length $tok]} {
+	error "Unexpected token `$tok' after condition"
+    }
+
+    set sql
+}
+
+
+body ::qbe::Query::parseExpression {} {
+    set _inCondition 0
+    set _inAggregate 0
+    set _numUses 0
+    set sql [_expression]
+
+    set tok [nextToken]
+    if {[string length $tok]} {
+	error "Unexpected token `$tok' after expression"
+    }
+
+    set sql
+}
+
+
+body ::qbe::Query::_condition {} {
+    set sql {}
+    while 1 {
+	append sql [_relation]
+	set tok [nextToken]
+	set ltok [string tolower $tok]
+	switch -exact -- $ltok {
+	    and -
+	    or		{append sql " $ltok "}
+	    default	{ungetToken; break}
+	}
+    }
+    set sql
+}
+
+
+body ::qbe::Query::_relation {} {
+    set sql {}
+    set tok [nextToken]
+    set ltok [string tolower $tok]
+    if {$ltok == "not"} {
+	append sql "not "
+    } else {
+	ungetToken
+    }
+    set sql [_expression]
+    set tok [nextToken]
+    set ltok [string tolower $tok]
+    if {$ltok == "not"} {
+	set tok [nextToken]
+	set ltok [string tolower $tok]
+	switch -glob -- $ltok {
+	    null {
+		return "$sql is not null"
+	    }
+	    = {
+		return "$sql <> [_expression]"
+	    }
+	    between -
+	    in -
+	    like {
+		append sql " not"
+	    }
+	    default {
+		ungetToken
+		return "$sql <> [_expression]"
+	    }
+	}
+    }
+    switch -exact -- $ltok {
+	between {
+	    append sql " between [_expression]"
+	    set tok [nextToken]
+	    set ltok [string tolower $tok]
+	    if {$ltok != "and"} {
+		error "`BETWEEN' requires a matching `AND'---found `$tok' instead"
+	    }
+	    append sql " and [_expression]"
+	}
+	in {
+	    append sql " in("
+	    set tok [nextToken]
+	    if {$tok != "("} {
+		error "`IN' requires a `(' immediately following---found `$tok' instead"
+	    }
+	    while 1 {
+		set tok [nextToken]
+		switch -glob -- $tok {
+		    \"*\" -
+		    [0-9]* {
+			append sql $tok
+		    }
+		    [a-zA-Z]* {
+			append sql \"$tok\"
+		    }
+		    default {
+			error "Values in an `IN' list must be numbers or strings---found `$tok' instead"
+		    }
+		}
+		set tok [nextToken]
+		if {$tok == ")"} break
+		if {$tok != ","} {
+		    error "Values in an `IN' list must be separated by `,'---found `$tok' instead"
+		}
+		append sql ", "
+	    }
+	    append sql ")"
+	}
+	like {
+	    set tok [nextToken]
+	    if {![string match \"*\" $tok]} {
+		error "`LIKE' requires a string constant after it---found `$tok'"
+	    }
+	    append sql " like $tok"
+	}
+	<> -
+	= {
+	    set tok [nextToken]
+	    if {[string tolower $tok] == "null"} {
+		if {$ltok == "="} {
+		    append sql " is null"
+		} else {
+		    append sql " is not null"
+		}
+	    } else {
+		ungetToken
+		append sql " $ltok [_expression]"
+	    }
+	}
+	< -
+	<= -
+	> -
+	>= {
+	    append sql " $ltok [_expression]"
+	}
+	default	{ungetToken}
+    }
+    set sql
+}
+
+body ::qbe::Query::_expression {} {
+    set sql {}
+    while 1 {
+	append sql [_primary]
+	set tok [nextToken]
+	set ltok [string tolower $tok]
+	switch -exact -- $ltok {
+	    + -
+	    - -
+	    * -
+	    /		{append sql " $ltok "}
+	    default	{ungetToken; break}
+	}
+    }
+    set sql
+}
+
+body ::qbe::Query::_primary {} {
+    set tok [nextToken]
+    set ltok [string tolower $tok]
+    switch -glob -- $ltok {
+	\( {
+	    if {$_inCondition} {set sql "([_condition])"} {set sql "([_expression])"}
+	    set tok [nextToken]
+	    if {$tok != "\)"} {
+		error "`(' requires a matching `)'---found `$tok' instead"
+	    }
+	}
+	c*nt. {
+	    set tok [nextToken]
+	    set ltok [string tolower $tok]
+	    if {![string match _* $tok]} {
+		error "`COUNT.' requires an example element to follow it---found `$tok' instead"
+	    }
+	    if {$_inAggregate} {
+		error "`$tok' may not be used within another aggregate function"
+	    }
+	    set _inAggregate 1
+	    set sql "count(distinct [_exampleElement $ltok])"
+	    set _inAggregate 0
+	}
+	max. -
+	min. -
+	avg. -
+	sum. {
+	    set op [string range $ltok 0 2]
+	    if {$_inAggregate} {
+		error "`$tok' may not be used within another aggregate function"
+	    }
+	    set _inAggregate 1
+	    if {$op == "avg" || $op == "sum"} {
+		set tok2 [nextToken]
+		if {[string tolower $tok2] == "unq."} {
+		    set tok2 [nextToken]
+		    if {[string match _* $tok2]} {
+			set sql "[set op](distinct [_exampleElement [string tolower $tok2]])"
+		    } else {
+			error "`$tok unq.' requires an example element to follow, found `$tok2'"
+		    }
+		} else {
+		    ungetToken
+		}
+	    }
+	    if {![info exists sql]} {
+		set _numUses 0
+		set sql "[set op]([_primary])"
+		if {!$_numUses} {
+		    error "`$tok' requires using at least one example element in its expression"
+		}
+	    }
+	    set _inAggregate 0
+	}
+	_* {
+	    set sql [_exampleElement $ltok]
+	}
+	\"*\" -
+	[0-9]* {
+	    set sql $tok
+	}
+	[a-z]* {
+	    set sql \"$tok\"
+	}
+	{} {error "Ran out of tokens---expression ended early"}
+	default	{
+	    error "Unexpected token `$tok' found, before `[remainingString]'"
+	}
+    }
+    set sql
+}
+
+body ::qbe::Query::_exampleElement {name} {
+    if {[info exists _defs($name)]} {
+	set sql $_defs($name)
+    } else {
+	set sql $name
+	set _undefs($name) 1
+    }
+    if {$_inAggregate} {
+	set _usedInAggregate($name) 1
+    } else {
+	set _usedOutOfAggregate($name) 1
+    }
+    incr _numUses
+    set sql
+}

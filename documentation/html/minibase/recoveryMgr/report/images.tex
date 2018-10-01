@@ -1,0 +1,112 @@
+\batchmode
+\documentstyle[psfig,11pt,defpaper,subfigure]{article}
+\makeatletter
+
+
+\newcommand{\dfrac}[2]{{\displaystyle \frac{#1}{#2}}}
+\newcommand{\declareref}[2]{\newcounter{#1}\setcounter{#1}{\value{#2}}}
+\newcommand{\notaskip}{1.2\baselineskip}
+
+\title{\LARGE MINIREL : Recovery Manager
+\thanks{Project Report for CS764}
+}
+
+\author{Kar Shun Tsoi \and Ranjani Ramamurthy }
+
+
+
+
+
+
+
+\newcommand{\etalchar}[1]{$^{#1}$}
+
+\makeatother
+\newenvironment{tex2html_wrap}{}{}
+\begin{document}
+\pagestyle{empty}
+\stepcounter{section}
+\stepcounter{section}
+\stepcounter{section}
+\stepcounter{subsection}
+\stepcounter{subsection}
+\newpage
+
+{\samepage \clearpage \begin{figure}\centerline{\psfig{file=interaction.ps,height=5in}}
+ 
+\label{fig:interaction}
+\end{figure}
+}
+
+
+\newpage
+
+{\samepage \clearpage \begin{figure}\centerline{\psfig{file=data.ps}}
+ 
+\label{fig:logdata}
+\end{figure}
+}
+
+
+\newpage
+
+{\samepage \clearpage \begin{figure} \label{fig:updclass}
+\begin{verbatim}Sub class definition:
+class UpdateLogRec : public logrecord {
+public :
+
+   /* Methods to retrieve attributes from UpdateLogData */
+   lsn_t    GetPrevLSN() ; 
+   int      Getxid() ;
+   PageID   GetPageID() ;
+   int      GetOffset();
+   int      GetSize() ;
+   char*    GetUndo();
+   char*    GetRedo() ;
+
+   /* Methods to set attributes in UpdateLogData */
+   Status   SetPrevLSN(lsn_t newlsn);
+   Status   Setxid(int newxid);
+   Status   SetPageID(int newpgid);
+   Status   SetOffset(int newoffset);
+   Status   SetSize(int newsize);
+};
+Associated struct definition:
+struct UpdateLogData{
+   /* 'data' portion */
+   LOG_TYPE type;
+   lsn_t    prevlsn;
+   int      xid;
+   PageID   page_id; 
+   int      offset;
+   int      size;
+   char     data[0];
+};\end{verbatim}
+\end{figure}
+}
+
+
+\newpage
+
+{\samepage \clearpage \begin{figure} \label{fig:dat}
+\begin{verbatim}class RecXactTbl{   
+ public: 
+  Status AddEntry(lsn_t lsn, int xid);
+  Status DeleteEntry(int xid);       
+  int Exists(int xid);              
+
+  Status SetLSN(int xid, lsn_t lsn);
+  lsn_t GetLSN(int xid);
+};
+The RecDirtyPgTbl class has a similar in definition.\end{verbatim}
+ 
+\end{figure}
+}
+
+
+\stepcounter{section}
+\stepcounter{section}
+\stepcounter{section}
+\stepcounter{section}
+
+\end{document}
